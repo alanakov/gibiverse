@@ -2,7 +2,7 @@ import { DatabaseError, DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 class ComicBookModel extends Model {
-  comicBookId: number | undefined;
+  id: number | undefined;
   title: string | undefined;
   description: string | undefined;
   coverImage: string | undefined;
@@ -12,7 +12,7 @@ class ComicBookModel extends Model {
 
 ComicBookModel.init(
   {
-    comicBookId: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,

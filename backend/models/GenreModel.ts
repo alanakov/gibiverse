@@ -3,13 +3,13 @@ import sequelize from "../config/database";
 import ComicBookModel from "./ComicBookModel";
 
 class GenreModel extends Model {
-  genreId: number | undefined;
+  id: number | undefined;
   name: string | undefined;
 }
 
 GenreModel.init(
   {
-    genreId: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,

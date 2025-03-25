@@ -2,7 +2,7 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 class UserModel extends Model {
-  userId: number | undefined;
+  id: number | undefined;
   name: string | undefined;
   email: string | undefined;
   password: string | undefined;
@@ -10,7 +10,7 @@ class UserModel extends Model {
 
 UserModel.init(
   {
-    userId: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
