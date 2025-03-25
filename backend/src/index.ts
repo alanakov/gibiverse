@@ -4,7 +4,7 @@ const app = express();
 const port = 3000;
 
 app.get("/", (req, res) => {
-  res.send("Initial page");
+  res.send("Initial route");
 });
 
 app.listen(port, () => {
