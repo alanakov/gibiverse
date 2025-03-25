@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
+import ComicBookModel from "./ComicBookModel";
 
 class GenreModel extends Model {
   genreId: number | undefined;
@@ -24,5 +25,8 @@ GenreModel.init(
     tableName: "genres",
   }
 );
+
+GenreModel.hasMany(ComicBookModel, { foreignKey: "genreId" });
+ComicBookModel.belongsTo(GenreModel, { foreignKey: "genreId" });
 
 export default GenreModel;
