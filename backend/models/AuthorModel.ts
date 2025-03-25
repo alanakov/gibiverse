@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
+import CollectionModel from "./CollectionModel";
 
 class AuthorModel extends Model {
   authorId: number | undefined;
@@ -29,5 +30,8 @@ AuthorModel.init(
     tableName: "authors",
   }
 );
+
+AuthorModel.hasMany(CollectionModel, { foreignKey: "authorId" });
+CollectionModel.belongsTo(AuthorModel, { foreignKey: "authorId" });
 
 export default AuthorModel;
