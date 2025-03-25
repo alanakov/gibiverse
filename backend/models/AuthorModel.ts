@@ -3,14 +3,14 @@ import sequelize from "../config/database";
 import CollectionModel from "./CollectionModel";
 
 class AuthorModel extends Model {
-  authorId: number | undefined;
+  id: number | undefined;
   name: string | undefined;
   bio: string | undefined;
 }
 
 AuthorModel.init(
   {
-    authorId: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,

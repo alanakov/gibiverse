@@ -3,7 +3,7 @@ import sequelize from "../config/database";
 import ComicBookModel from "./ComicBookModel";
 
 class CollectionModel extends Model {
-  comicBookId: number | undefined;
+  id: number | undefined;
   name: string | undefined;
   description: string | undefined;
   writerId: number | undefined;
@@ -11,7 +11,7 @@ class CollectionModel extends Model {
 
 CollectionModel.init(
   {
-    collectionId: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
