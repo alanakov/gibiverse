@@ -11,7 +11,7 @@ import { IoIosPerson } from "react-icons/io";
 import { FaBookOpen } from "react-icons/fa";
 import { IoMdPricetags } from "react-icons/io";
 import { BsCollectionFill } from "react-icons/bs";
-import { IoPerson } from "react-icons/io5";
+import { ProfileSheet } from "./ProfileSheet";
 
 export const DashboardSidebar = () => {
   const sidebarItems = [
@@ -20,21 +20,21 @@ export const DashboardSidebar = () => {
     { label: "Gibis", href: "/books", icon: FaBookOpen },
     { label: "Gêneros", href: "/genders", icon: IoMdPricetags },
     { label: "Coleções", href: "/collections", icon: BsCollectionFill },
-    { label: "Perfil", href: "/profile", icon: IoPerson },
   ];
 
   return (
     <SidebarProvider>
       <Sidebar className="flex w-[100px] flex-col items-center">
-        <SidebarHeader className="flex w-full justify-center bg-(--background-color) p-6">
+        <SidebarHeader className="flex w-full justify-center space-y-6 bg-(--background-color) p-6">
           <div className="flex justify-center">
             <img className="w-10" src="/src/assets/logo.svg" alt="Logo" />
           </div>
+          <ProfileSheet />
         </SidebarHeader>
 
         <SidebarContent className="flex w-full flex-grow flex-col bg-(--background-color)">
           <SidebarGroup>
-            <nav className="mt-40 flex w-full flex-col items-center">
+            <nav className="mt-20 flex w-full flex-col items-center">
               {sidebarItems.map((item) => (
                 <NavLink
                   key={item.label}
