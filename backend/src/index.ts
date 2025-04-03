@@ -1,9 +1,9 @@
 import express from "express";
-import userRoutes from './routes/userRoutes';
-import genreRoutes from './routes/genreRoutes';
-import comicBookRoutes from './routes/comicBookRoutes';
-import collectionRoutes from './routes/collectionRoutes';
-import authorRoutes from './routes/authorRoutes';
+import userRouter from "./routes/UserRoutes";
+import genreRouter from "./routes/GenreRoutes";
+import comicBookRouter from "./routes/ComicBookRoutes";
+import collectionRouter from "./routes/CollectionRoutes";
+import authorRouter from "./routes/AuthorRoutes";
 
 const app = express();
 const port = 3000;
@@ -16,11 +16,11 @@ app.get("/", (req, res) => {
 app.use(express.json());
 
 // Importando e usando as rotas
-app.use('/api', userRoutes);
-app.use('/api', genreRoutes);
-app.use('/api', comicBookRoutes);
-app.use('/api', collectionRoutes);
-app.use('/api', authorRoutes);
+app.use(userRouter);
+app.use(genreRouter);
+app.use(comicBookRouter);
+app.use(collectionRouter);
+app.use(authorRouter);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

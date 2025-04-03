@@ -3,17 +3,16 @@ import UserModel from "../models/UserModel";
 
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, cpf, password } = req.body;
-    if (!name || !email || !cpf || !password) {
-      return res
-        .status(400)
-        .json({ error: "Name, email, and password are required" });
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: "Values required" });
     }
 
-    const user = await UserModel.create({ name, email, document, password });
+    const user = await UserModel.create({ name, email, password });
     res.status(201).json(user);
   } catch (error) {
-    res.status(500).json({ error });
+    res.status(500).json("Erro interno no servidor " + error);
   }
 };
 
@@ -72,7 +71,7 @@ export const updateUser = async (
   }
 };
 
-export const deleteUser = async (
+export const destroyUser = async (
   req: Request<{ id: string }>,
   res: Response
 ) => {
