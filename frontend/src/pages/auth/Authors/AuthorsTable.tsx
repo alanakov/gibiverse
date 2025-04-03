@@ -16,8 +16,9 @@ export function AuthorsTable({
   ],
   onDelete,
   onEdit,
+  currentPage,
 }: AuthorsTableProps) {
-  console.log("Authors:", authors);
+  console.log("Authors:", authors, "Page:", currentPage);
 
   return (
     <div className="w-[1500px] overflow-x-auto">
