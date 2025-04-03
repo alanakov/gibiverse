@@ -13,7 +13,7 @@ interface DashboardPaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export function DashboardTablePagination({
+export function DashboardPagination({
   currentPage,
   totalPages,
   onPageChange,
@@ -43,7 +43,7 @@ export function DashboardTablePagination({
                   e.preventDefault();
                   onPageChange(page);
                 }}
-                className="hover:bg-[#222] hover:text-inherit focus:bg-[#222] focus:text-inherit"
+                className="bg-(--background-color) hover:bg-[#222] hover:text-inherit focus:bg-[#222] focus:text-inherit"
               >
                 {page}
               </PaginationLink>
