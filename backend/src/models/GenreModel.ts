@@ -3,6 +3,9 @@ import sequelize from "../config/database";
 import ComicBookModel from "./ComicBookModel";
 
 class GenreModel extends Model {
+  static findByPk(id: any) {
+    throw new Error("Method not implemented.");
+  }
   id: number | undefined;
   name: string | undefined;
 }

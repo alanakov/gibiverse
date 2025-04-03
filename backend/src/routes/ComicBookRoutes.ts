@@ -1,0 +1,20 @@
+import express from "express";
+import {
+  createComicBook,
+  destroyComicBookById,
+  getAllComicBooks,
+  getComicBookById,
+  updateComicBook,
+} from "../controllers/comicBookController";
+import { authMiddleware } from "../middleware/authMiddleware";
+
+const comicBookRouter = express.Router();
+
+comicBookRouter.post("/comicbooks", createComicBook);
+
+comicBookRouter.get("/comicbooks", authMiddleware, getAllComicBooks);
+comicBookRouter.get("/comicbooks/:id", authMiddleware, getComicBookById);
+comicBookRouter.put("/comicbooks/:id", authMiddleware, updateComicBook);
+comicBookRouter.delete("/comicbooks/:id", authMiddleware, destroyComicBookById);
+
+export default comicBookRouter;
