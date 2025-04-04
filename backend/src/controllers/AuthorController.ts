@@ -32,8 +32,21 @@ export const createAuthor = async (req: Request, res: Response) => {
 
 export const getAllAuthors = async (req: Request, res: Response) => {
   try {
-    const authors = await AuthorModel.findAll();
-    res.json(authors);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await AuthorModel.findAndCountAll({
+      offset,
+      limit,
+      order: [["name", "ASC"]],
+    });
+
+    res.json({
+      data: rows,
+      total: count,
+      totalPages: Math.ceil(count / limit),
+    });
   } catch (error) {
     res.status(500).json({ error: "Erro interno no servidor " + error });
   }
