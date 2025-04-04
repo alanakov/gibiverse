@@ -1,30 +1,21 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { SheetClose } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { updateAuthor } from "@/http/authors/updateAuthor";
 import { FormInput } from "@/components/custom/FormInput";
-import { CreateButton } from "@/components/custom/CreateButton";
-import { useEffect } from "react";
-import { Author } from "./types";
-import { FormTextarea } from "@/components/custom/FormTextArea";
+import { editAuthorSchema, EditAuthorSchemaType } from "@/schemas/authorSchema";
 
-const editAuthorSchema = z.object({
-  nome: z
-    .string()
-    .min(3, { message: "Nome precisa ter pelo menos 3 caracteres" }),
-  biografia: z
-    .string()
-    .min(10, { message: "Biografia precisa ter pelo menos 10 caracteres" }),
-});
-
-type EditAuthorSchemaType = z.infer<typeof editAuthorSchema>;
-
-interface UpdateAuthorFormProps {
-  author: Author;
-  onSave: (data: EditAuthorSchemaType) => void;
+interface EditAuthorFormProps {
+  author: {
+    id: number;
+    name: string;
+    bio: string;
+  };
+  onSuccess?: () => void;
 }
 
-export function UpdateAuthorForm({ author, onSave }: UpdateAuthorFormProps) {
+export const EditAuthorForm = ({ author, onSuccess }: EditAuthorFormProps) => {
   const {
     register,
     handleSubmit,
@@ -32,44 +23,52 @@ export function UpdateAuthorForm({ author, onSave }: UpdateAuthorFormProps) {
     formState: { errors },
   } = useForm<EditAuthorSchemaType>({
     resolver: zodResolver(editAuthorSchema),
-    defaultValues: {
-      nome: author.nome,
-      biografia: author.biografia,
-    },
   });
 
   useEffect(() => {
-    setValue("nome", author.nome);
-    setValue("biografia", author.biografia);
+    setValue("name", author.name);
+    setValue("bio", author.bio);
   }, [author, setValue]);
 
-  const onSubmit = (data: EditAuthorSchemaType) => {
-    onSave(data);
+  const onSubmit = async (data: EditAuthorSchemaType) => {
+    try {
+      await updateAuthor(author.id, {
+        name: data.name,
+        bio: data.bio,
+      });
+
+      alert(`Autor "${data.name}" atualizado com sucesso!`);
+      onSuccess?.();
+    } catch (error) {
+      console.error("Erro ao atualizar autor:", error);
+      alert("Erro ao atualizar autor.");
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <FormInput
         label="Nome"
-        name="nome"
+        name="name"
         placeholder="Nome do Autor"
         register={register}
-        error={errors.nome?.message}
+        error={errors.name?.message}
       />
 
-      <FormTextarea
+      <FormInput
         label="Biografia"
-        name="biografia"
+        name="bio"
         placeholder="Biografia do Autor"
         register={register}
-        error={errors.biografia?.message}
+        error={errors.bio?.message}
       />
 
-      <div className="flex justify-end">
-        <SheetClose>
-          <CreateButton type="submit">Salvar</CreateButton>
-        </SheetClose>
+      <div className="flex justify-end gap-2">
+        <Button type="button" variant="outline">
+          Cancelar
+        </Button>
+        <Button type="submit">Salvar</Button>
       </div>
     </form>
   );
-}
+};

@@ -6,11 +6,22 @@ import { DashboardSidebar } from "@/components/custom/DashboardSidebar";
 import { AuthorsHeader } from "./AuthorsHeader";
 import { AuthorsTable } from "./AuthorsTable";
 import { DashboardPagination } from "@/components/custom/DashboardPagination";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { EditAuthorForm } from "./UpdateAuthorForm";
 
 export function AuthorsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [authors, setAuthors] = useState<Author[]>([]);
   const [totalPages, setTotalPages] = useState(1);
+
+  const [selectedAuthorToEdit, setSelectedAuthorToEdit] =
+    useState<Author | null>(null);
 
   const fetchData = async () => {
     try {
@@ -45,7 +56,31 @@ export function AuthorsPage() {
             authors={authors}
             onDelete={handleDelete}
             currentPage={currentPage}
+            onEdit={(author) => setSelectedAuthorToEdit(author)}
           />
+
+          <Sheet
+            open={!!selectedAuthorToEdit}
+            onOpenChange={() => setSelectedAuthorToEdit(null)}
+          >
+            <SheetContent className="border-0 bg-(--background-color) p-4 sm:max-w-md">
+              <SheetHeader>
+                <SheetTitle className="text-white">Editar Autor</SheetTitle>
+                <SheetDescription>
+                  Atualize as informações do autor abaixo.
+                </SheetDescription>
+              </SheetHeader>
+              {selectedAuthorToEdit && (
+                <EditAuthorForm
+                  author={selectedAuthorToEdit}
+                  onSuccess={() => {
+                    fetchData();
+                    setSelectedAuthorToEdit(null);
+                  }}
+                />
+              )}
+            </SheetContent>
+          </Sheet>
           <DashboardPagination
             currentPage={currentPage}
             totalPages={totalPages}
