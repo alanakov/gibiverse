@@ -1,11 +1,19 @@
-import { TableRow, TableCell } from "@/components/ui/table";
+import { DeleteButton } from "@/components/custom/DeleteButton";
 import { Author } from "./types";
-import { AuthorActions } from "./AuthorActions";
+import { TableCell, TableRow } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal } from "lucide-react";
 
 interface AuthorRowProps {
   author: Author;
-  onEdit: (author: Author) => void;
-  onDelete: (id: number) => void;
+  onEdit?: (author: Author) => void;
+  onDelete?: (id: number) => void;
 }
 
 export function AuthorRow({ author, onEdit, onDelete }: AuthorRowProps) {
@@ -14,7 +22,24 @@ export function AuthorRow({ author, onEdit, onDelete }: AuthorRowProps) {
       <TableCell>{author.name}</TableCell>
       <TableCell>{author.bio}</TableCell>
       <TableCell className="text-center">
-        <AuthorActions author={author} onEdit={onEdit} onDelete={onDelete} />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onEdit?.(author)}>
+              Editar
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <DeleteButton
+                itemName={author.name}
+                onDelete={() => onDelete?.(author.id)}
+              />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </TableCell>
     </TableRow>
   );

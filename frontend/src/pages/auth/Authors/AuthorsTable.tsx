@@ -6,22 +6,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AuthorsTableProps } from "./types";
 import { AuthorRow } from "./AuthorRow";
+import { Author } from "./types";
+
+interface AuthorsTableProps {
+  authors: Author[];
+  onDelete?: (id: number) => void;
+  onEdit?: (author: Author) => void;
+  currentPage?: number;
+}
 
 export function AuthorsTable({
-  authors = [
-    { id: 1, name: "Stan Lee", bio: "Criador de vários heróis da Marvel." },
-    { id: 2, name: "Mauricio de Sousa", bio: "Criador da Turma da Mônica." },
-  ],
+  authors,
   onDelete,
   onEdit,
   currentPage,
 }: AuthorsTableProps) {
-  console.log("Authors:", authors, "Page:", currentPage);
-
   return (
-    <div className="w-[1500px] overflow-x-auto">
+    <div className="w-full overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-zinc-800">
@@ -41,12 +43,13 @@ export function AuthorsTable({
               />
             ))
           ) : (
-            <TableRow>
-              <TableCell colSpan={3} className="p-4 text-center">
-                Nenhum autor encontrado.
-              </TableCell>
+            <TableRow className="flex">
+              <TableCell colSpan={3}>Nenhum autor foi encontrado.</TableCell>
             </TableRow>
           )}
+          <p className="text-muted-foreground mb-4 text-sm">
+            Exibindo página {currentPage}
+          </p>
         </TableBody>
       </Table>
     </div>

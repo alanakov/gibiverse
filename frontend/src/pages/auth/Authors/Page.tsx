@@ -1,23 +1,51 @@
-import { useState } from "react";
+import { deleteAuthor } from "@/http/authors/deleteAuthor";
+import { useEffect, useState } from "react";
+import { Author } from "./types";
+import { getAllAuthors } from "@/http/authors/getAllAuthors";
 import { DashboardSidebar } from "@/components/custom/DashboardSidebar";
-import { AuthorsTable } from "./AuthorsTable";
 import { AuthorsHeader } from "./AuthorsHeader";
+import { AuthorsTable } from "./AuthorsTable";
 import { DashboardPagination } from "@/components/custom/DashboardPagination";
 
 export function AuthorsPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 5;
+  const [authors, setAuthors] = useState<Author[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const fetchData = async () => {
+    try {
+      const data = await getAllAuthors(currentPage, 10);
+      setAuthors(data.data);
+      setTotalPages(data.totalPages);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [currentPage]);
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteAuthor(id);
+      fetchData();
+    } catch (error) {
+      console.error("Erro ao deletar autor:", error);
+    }
+  };
 
   return (
     <div className="flex h-screen w-screen">
       <DashboardSidebar />
-
-      <div className="flex h-full flex-col space-y-10 pt-30">
+      <div className="flex h-full flex-col space-y-10 pt-10 pr-10 pb-10 pl-10">
         <AuthorsHeader />
-
-        <div className="flex h-[100%] flex-col justify-between pb-30">
-          <AuthorsTable currentPage={currentPage} />
-
+        <div className="flex h-full flex-col justify-between">
+          <AuthorsTable
+            authors={authors}
+            onDelete={handleDelete}
+            currentPage={currentPage}
+          />
           <DashboardPagination
             currentPage={currentPage}
             totalPages={totalPages}
