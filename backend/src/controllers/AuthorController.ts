@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import AuthorModel from "../models/AuthorModel";
+import { paginate } from "../utils/paginate";
 
 export const getAuthorById = async (
   req: Request<{ id: string }>,
@@ -34,19 +35,15 @@ export const getAllAuthors = async (req: Request, res: Response) => {
   try {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
-    const offset = (page - 1) * limit;
 
-    const { count, rows } = await AuthorModel.findAndCountAll({
-      offset,
+    const result = await paginate({
+      model: AuthorModel,
+      page,
       limit,
       order: [["name", "ASC"]],
     });
 
-    res.json({
-      data: rows,
-      total: count,
-      totalPages: Math.ceil(count / limit),
-    });
+    res.json(result);
   } catch (error) {
     res.status(500).json({ error: "Erro interno no servidor " + error });
   }
