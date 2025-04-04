@@ -5,7 +5,7 @@ import {
   getAllGenres,
   getGenreById,
   updateGenre,
-} from "../controllers/genreController";
+} from "../controllers/GenreController";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 const genreRouter = express.Router();

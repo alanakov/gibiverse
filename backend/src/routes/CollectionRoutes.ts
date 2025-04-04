@@ -5,7 +5,7 @@ import {
   getAllCollections,
   getCollectionById,
   updateCollection,
-} from "../controllers/collectionController";
+} from "../controllers/CollectionController";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 const collectionRouter = express.Router();

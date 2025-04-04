@@ -5,7 +5,7 @@ import {
   getAllComicBooks,
   getComicBookById,
   updateComicBook,
-} from "../controllers/comicBookController";
+} from "../controllers/ComicBookController";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 const comicBookRouter = express.Router();

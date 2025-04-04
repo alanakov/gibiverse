@@ -5,7 +5,7 @@ import {
   getAllUsers,
   getUserById,
   updateUser,
-} from "../controllers/userController";
+} from "../controllers/UserController";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 const userRouter = express.Router();

@@ -5,7 +5,7 @@ import {
   getAllAuthors,
   getAuthorById,
   updateAuthor,
-} from "../controllers/authorController";
+} from "../controllers/AuthorController";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 const authorRouter = express.Router();
