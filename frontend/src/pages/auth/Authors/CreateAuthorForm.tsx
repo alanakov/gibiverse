@@ -1,22 +1,17 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { SheetClose } from "@/components/ui/sheet";
+import { toast } from "sonner";
 import { FormInput } from "@/components/custom/FormInput";
 import { CreateButton } from "@/components/custom/CreateButton";
+import { createAuthor } from "@/http/authors/createAuthor";
+import { createAuthorSchema, CreateAuthorSchemaType } from "@/schemas/authorSchema";
 
-const createAuthorSchema = z.object({
-  nome: z
-    .string()
-    .min(3, { message: "Nome precisa ter pelo menos 3 caracteres" }),
-  biografia: z
-    .string()
-    .min(10, { message: "Biografia precisa ter pelo menos 10 caracteres" }),
-});
+interface CreateAuthorFormProps {
+  onSuccess?: () => void;
+  onCancel?: () => void;
+}
 
-type CreateAuthorSchemaType = z.infer<typeof createAuthorSchema>;
-
-export function CreateAuthorForm() {
+export function CreateAuthorForm({ onSuccess, onCancel }: CreateAuthorFormProps) {
   const {
     register,
     handleSubmit,
@@ -25,34 +20,42 @@ export function CreateAuthorForm() {
     resolver: zodResolver(createAuthorSchema),
   });
 
-  const onSubmit = (data: CreateAuthorSchemaType) => {
-    // simulaçao
-    console.log("Dados do formulário:", data);
-    alert(`Autor "${data.nome}" criado com sucesso!`);
-
-    // implementar a chamada da api para salvar o autor no banco de dados
+  const onSubmit = async (data: CreateAuthorSchemaType) => {
+    try {
+      await createAuthor(data);
+      toast.success("Autor criado com sucesso!");
+      onSuccess?.();
+    } catch (error) {
+      console.error("Erro ao criar autor:", error);
+      toast.error("Erro ao criar autor");
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <FormInput
         label="Nome"
-        name="nome"
+        name="name"
         placeholder="Nome do Autor"
         register={register}
-        error={errors.nome?.message}
+        error={errors.name?.message}
       />
       <FormInput
         label="Biografia"
-        name="biografia"
+        name="bio"
         placeholder="Biografia do Autor"
         register={register}
-        error={errors.biografia?.message}
+        error={errors.bio?.message}
       />
-      <div className="flex justify-end">
-        <SheetClose>
-          <CreateButton type="submit">Criar</CreateButton>
-        </SheetClose>
+      <div className="flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="cursor-pointer rounded-md border border-white px-4 py-2 text-sm font-medium text-white hover:bg-white hover:text-black"
+        >
+          Cancelar
+        </button>
+        <CreateButton type="submit">Salvar</CreateButton>
       </div>
     </form>
   );

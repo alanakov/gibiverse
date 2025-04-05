@@ -47,11 +47,11 @@ export function AuthorsPage() {
   };
 
   return (
-    <div className="flex h-screen w-screen">
+    <div className="flex min-h-screen w-full">
       <DashboardSidebar />
-      <div className="flex h-full flex-col space-y-10 pt-10 pr-10 pb-10 pl-10">
-        <AuthorsHeader />
-        <div className="flex h-full flex-col justify-between">
+      <div className="flex flex-1 flex-col space-y-10 p-10">
+        <AuthorsHeader onAuthorCreated={fetchData} />
+        <div className="flex flex-1 flex-col justify-between">
           <AuthorsTable
             authors={authors}
             onDelete={handleDelete}
@@ -77,6 +77,7 @@ export function AuthorsPage() {
                     fetchData();
                     setSelectedAuthorToEdit(null);
                   }}
+                  onCancel={() => setSelectedAuthorToEdit(null)}
                 />
               )}
             </SheetContent>
