@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AuthorRow } from "./AuthorRow";
-import { Author } from "./types";
+import { Author } from "@/types/author";
 
 type AuthorsTableProps = {
   authors: Author[];

@@ -1,5 +1,5 @@
+import { Author } from "@/types/author";
 import { AuthorActions } from "./AuthorActions";
-import { Author } from "./types";
 import { TableCell, TableRow } from "@/components/ui/table";
 
 interface AuthorRowProps {

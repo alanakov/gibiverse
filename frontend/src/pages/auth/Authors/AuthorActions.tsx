@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import { EditButton } from "@/components/custom/EditButton";
 import { DeleteButton } from "@/components/custom/DeleteButton";
-import { Author } from "@/pages/auth/Authors/types";
+import { Author } from "@/types/author";
 
 interface AuthorActionsProps {
   author: Author;
@@ -36,7 +36,7 @@ export function AuthorActions({
         <DropdownMenuItem onSelect={() => onEdit?.(author)}>
           <EditButton />
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => onDelete?.(author.id)}>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()} asChild>
           <DeleteButton
             itemName={author.name}
             onDelete={() => onDelete?.(author.id)}
