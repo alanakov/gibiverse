@@ -4,12 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/custom/FormInput";
 import { FormTextarea } from "@/components/custom/FormTextArea";
 import { CreateButton } from "@/components/custom/CreateButton";
-import { useUpdateComicBook } from "@/hooks/comicBooks/useUpdateComicBook";
 import { ComicBook } from "@/types/comicBook";
 import {
   editComicBookSchema,
   EditComicBookSchemaType,
 } from "@/schemas/comicBookSchema";
+import { useUpdateComicBook } from "@/hooks/comicbooks/useUpdateComicBook";
 
 interface EditComicBookFormProps {
   comicBook: ComicBook;
