@@ -13,7 +13,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { EditAuthorForm } from "./UpdateAuthorForm";
+import { UpdateAuthorForm } from "./UpdateAuthorForm";
 
 export function AuthorsPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -71,7 +71,7 @@ export function AuthorsPage() {
                 </SheetDescription>
               </SheetHeader>
               {selectedAuthorToEdit && (
-                <EditAuthorForm
+                <UpdateAuthorForm
                   author={selectedAuthorToEdit}
                   onSuccess={() => {
                     fetchData();

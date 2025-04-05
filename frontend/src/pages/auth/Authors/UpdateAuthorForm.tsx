@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
 import { updateAuthor } from "@/http/authors/updateAuthor";
 import { FormInput } from "@/components/custom/FormInput";
 import { editAuthorSchema, EditAuthorSchemaType } from "@/schemas/authorSchema";
+import { CreateButton } from "@/components/custom/CreateButton";
 
 interface EditAuthorFormProps {
   author: {
@@ -15,7 +15,10 @@ interface EditAuthorFormProps {
   onSuccess?: () => void;
 }
 
-export const EditAuthorForm = ({ author, onSuccess }: EditAuthorFormProps) => {
+export const UpdateAuthorForm = ({
+  author,
+  onSuccess,
+}: EditAuthorFormProps) => {
   const {
     register,
     handleSubmit,
@@ -64,10 +67,13 @@ export const EditAuthorForm = ({ author, onSuccess }: EditAuthorFormProps) => {
       />
 
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline">
+        <button
+          type="button"
+          className="cursor-pointer rounded-md border border-white px-4 py-2 text-sm font-medium text-white hover:bg-white hover:text-black"
+        >
           Cancelar
-        </Button>
-        <Button type="submit">Salvar</Button>
+        </button>
+        <CreateButton type="submit">Salvar</CreateButton>
       </div>
     </form>
   );
