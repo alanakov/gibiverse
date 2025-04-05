@@ -1,6 +1,6 @@
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ConfirmDelete } from "@/pages/auth/Authors/ConfirmDelete";
+import { ConfirmDelete } from "./ConfirmDelete";
 
 interface DeleteButtonProps {
   itemName: string;
@@ -22,7 +22,7 @@ export function DeleteButton({
           size="sm"
           className="flex w-full cursor-pointer items-center text-red-500 hover:bg-zinc-700 hover:text-red-500"
         >
-          <Trash2 className="mr-2" />
+          <Trash2 className="mr-2 h-4 w-4" />
           {label}
         </Button>
       )}
