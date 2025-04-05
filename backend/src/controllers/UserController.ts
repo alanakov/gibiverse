@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import UserModel from "../models/UserModel";
+import { paginate } from "../utils/paginate";
 
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -18,10 +19,19 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await UserModel.findAll();
-    res.json(users);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const result = await paginate({
+      model: UserModel,
+      page,
+      limit,
+      order: [["name", "ASC"]],
+    });
+
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ error: "ERROR" });
+    res.status(500).json({ error: "Erro interno no servidor " + error });
   }
 };
 
