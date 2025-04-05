@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Author } from "./types";
 import { getAuthorById } from "@/http/authors/getAuthorById";
 import { DashboardSidebar } from "@/components/custom/DashboardSidebar";
 import { AuthorsHeader } from "./AuthorsHeader";
@@ -15,6 +14,7 @@ import {
 import { UpdateAuthorForm } from "./UpdateAuthorForm";
 import { useAuthors } from "@/hooks/authors/useAuthors";
 import { useDeleteAuthor } from "@/hooks/authors/useDeleteAuthor";
+import { Author } from "@/types/author";
 
 export function AuthorsPage() {
   const { authors, currentPage, totalPages, fetchAuthors, setCurrentPage } =
