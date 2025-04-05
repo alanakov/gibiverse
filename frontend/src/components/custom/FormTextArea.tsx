@@ -1,3 +1,5 @@
+import { Textarea } from "@/components/ui/textarea";
+
 interface FormTextareaProps {
   label: string;
   name: string;
@@ -20,14 +22,12 @@ export function FormTextarea({
       <label htmlFor={name} className="text-sm font-medium text-zinc-300">
         {label}
       </label>
-      <textarea
+      <Textarea
         id={name}
         placeholder={placeholder}
         {...register(name)}
         disabled={disabled}
-        className={`w-full resize-none rounded-md border border-zinc-700 bg-(--background-color) px-4 py-2 text-white outline-none focus:border-red-500 ${
-          error ? "border-red-500" : ""
-        } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+        className={error ? "border-red-500" : ""}
         rows={4}
       />
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}

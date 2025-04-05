@@ -2,63 +2,63 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/custom/FormInput";
-import { JSX } from "react/jsx-runtime";
+
+type FormField = {
+  name: string;
+  label: string;
+  type?: string;
+  placeholder: string;
+};
 
 interface AuthFormProps {
   title: string;
-  fields: { name: string; label: string; type?: string; placeholder: string }[];
+  fields: FormField[];
   schema: any;
   onSubmit: (data: any) => Promise<void>;
   buttonText: string;
-  extraContent?: JSX.Element;
+  extraContent?: React.ReactNode;
 }
 
-export function AuthForm({
-  title,
-  fields,
-  schema,
-  onSubmit,
-  buttonText,
-  extraContent,
-}: AuthFormProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm({ resolver: zodResolver(schema), mode: "onSubmit" });
+export function AuthForm(props: AuthFormProps) {
+  const form = useForm({
+    resolver: zodResolver(props.schema),
+  });
 
   return (
-    <section className="flex min-h-screen items-center justify-center bg-(--background-color)">
-      <div className="w-full max-w-2xl rounded-lg bg-zinc-800 p-12 shadow-md">
-        <div className="mb-10 flex items-center space-x-4">
-          <img className="w-10" src="../../src/assets/logo.svg" />
-          <h1 className="text-4xl font-bold">Gibiverse</h1>
-        </div>
-        <h1 className="pb-4 text-4xl font-semibold">{title}</h1>
-        {extraContent && (
-          <div className="mb-4 text-zinc-400">{extraContent}</div>
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="w-full max-w-md rounded bg-zinc-800 p-8 shadow">
+        <header className="mb-6 flex items-center gap-3">
+          <img className="w-8" src="../../src/assets/logo.svg" />
+          <h1 className="text-2xl font-bold">Gibiverse</h1>
+        </header>
+
+        <h2 className="mb-4 text-2xl">{props.title}</h2>
+        {props.extraContent && (
+          <div className="mb-4 text-zinc-400">{props.extraContent}</div>
         )}
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          {fields.map(({ name, label, type, placeholder }) => (
+
+        <form
+          onSubmit={form.handleSubmit(props.onSubmit)}
+          className="space-y-4"
+        >
+          {props.fields.map((field) => (
             <FormInput
-              key={name}
-              label={label}
-              name={name}
-              type={type || "text"}
-              placeholder={placeholder}
-              register={register}
-              error={errors[name]?.message as string}
+              key={field.name}
+              {...field}
+              register={form.register}
+              error={form.formState.errors[field.name]?.message as string}
             />
           ))}
+
           <Button
             type="submit"
-            className="mt-4 w-full cursor-pointer rounded-md bg-red-500 py-4 font-semibold text-white hover:bg-red-700"
-            disabled={isSubmitting}
+            className="w-full bg-red-500 hover:bg-red-600"
+            disabled={form.formState.isSubmitting}
           >
-            {isSubmitting ? "Processando..." : buttonText}
+            {form.formState.isSubmitting ? "Processando..." : props.buttonText}
           </Button>
         </form>
       </div>
-    </section>
+    </div>
   );
 }

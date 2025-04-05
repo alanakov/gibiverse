@@ -1,17 +1,15 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateAuthor } from "@/http/authors/updateAuthor";
 import { FormInput } from "@/components/custom/FormInput";
+import { FormTextarea } from "@/components/custom/FormTextArea";
 import { editAuthorSchema, EditAuthorSchemaType } from "@/schemas/authorSchema";
 import { CreateButton } from "@/components/custom/CreateButton";
+import { useUpdateAuthor } from "@/hooks/authors/useUpdateAuthor";
+import { Author } from "@/types/author";
 
 interface EditAuthorFormProps {
-  author: {
-    id: number;
-    name: string;
-    bio: string;
-  };
+  author: Author;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -21,6 +19,10 @@ export const UpdateAuthorForm = ({
   onSuccess,
   onCancel,
 }: EditAuthorFormProps) => {
+  const { handleUpdateAuthor, isSubmitting } = useUpdateAuthor(
+    author.id,
+    onSuccess,
+  );
   const {
     register,
     handleSubmit,
@@ -35,23 +37,8 @@ export const UpdateAuthorForm = ({
     setValue("bio", author.bio);
   }, [author, setValue]);
 
-  const onSubmit = async (data: EditAuthorSchemaType) => {
-    try {
-      await updateAuthor(author.id, {
-        name: data.name,
-        bio: data.bio,
-      });
-
-      alert(`Autor "${data.name}" atualizado com sucesso!`);
-      onSuccess?.();
-    } catch (error) {
-      console.error("Erro ao atualizar autor:", error);
-      alert("Erro ao atualizar autor.");
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(handleUpdateAuthor)} className="space-y-4">
       <FormInput
         label="Nome"
         name="name"
@@ -60,7 +47,7 @@ export const UpdateAuthorForm = ({
         error={errors.name?.message}
       />
 
-      <FormInput
+      <FormTextarea
         label="Biografia"
         name="bio"
         placeholder="Biografia do Autor"
@@ -76,7 +63,9 @@ export const UpdateAuthorForm = ({
         >
           Cancelar
         </button>
-        <CreateButton type="submit">Salvar</CreateButton>
+        <CreateButton type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Salvando..." : "Salvar"}
+        </CreateButton>
       </div>
     </form>
   );

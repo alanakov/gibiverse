@@ -1,17 +1,23 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import { FormInput } from "@/components/custom/FormInput";
+import { FormTextarea } from "@/components/custom/FormTextArea";
 import { CreateButton } from "@/components/custom/CreateButton";
-import { createAuthor } from "@/http/authors/createAuthor";
-import { createAuthorSchema, CreateAuthorSchemaType } from "@/schemas/authorSchema";
+import { useCreateAuthor } from "@/hooks/authors/useCreateAuthor";
+import {
+  createAuthorSchema,
+  CreateAuthorSchemaType,
+} from "@/schemas/authorSchema";
 
-interface CreateAuthorFormProps {
+type CreateAuthorFormProps = {
   onSuccess?: () => void;
   onCancel?: () => void;
-}
+};
 
-export function CreateAuthorForm({ onSuccess, onCancel }: CreateAuthorFormProps) {
+export function CreateAuthorForm({
+  onSuccess,
+  onCancel,
+}: CreateAuthorFormProps) {
   const {
     register,
     handleSubmit,
@@ -20,19 +26,10 @@ export function CreateAuthorForm({ onSuccess, onCancel }: CreateAuthorFormProps)
     resolver: zodResolver(createAuthorSchema),
   });
 
-  const onSubmit = async (data: CreateAuthorSchemaType) => {
-    try {
-      await createAuthor(data);
-      toast.success("Autor criado com sucesso!");
-      onSuccess?.();
-    } catch (error) {
-      console.error("Erro ao criar autor:", error);
-      toast.error("Erro ao criar autor");
-    }
-  };
+  const { handleCreateAuthor, isSubmitting } = useCreateAuthor(onSuccess);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(handleCreateAuthor)} className="space-y-4">
       <FormInput
         label="Nome"
         name="name"
@@ -40,7 +37,7 @@ export function CreateAuthorForm({ onSuccess, onCancel }: CreateAuthorFormProps)
         register={register}
         error={errors.name?.message}
       />
-      <FormInput
+      <FormTextarea
         label="Biografia"
         name="bio"
         placeholder="Biografia do Autor"
@@ -55,7 +52,9 @@ export function CreateAuthorForm({ onSuccess, onCancel }: CreateAuthorFormProps)
         >
           Cancelar
         </button>
-        <CreateButton type="submit">Salvar</CreateButton>
+        <CreateButton type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Salvando..." : "Salvar"}
+        </CreateButton>
       </div>
     </form>
   );

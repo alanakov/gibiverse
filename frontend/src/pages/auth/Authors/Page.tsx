@@ -1,7 +1,6 @@
-import { deleteAuthor } from "@/http/authors/deleteAuthor";
 import { useEffect, useState } from "react";
 import { Author } from "./types";
-import { getAllAuthors } from "@/http/authors/getAllAuthors";
+import { getAuthorById } from "@/http/authors/getAuthorById";
 import { DashboardSidebar } from "@/components/custom/DashboardSidebar";
 import { AuthorsHeader } from "./AuthorsHeader";
 import { AuthorsTable } from "./AuthorsTable";
@@ -14,35 +13,26 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { UpdateAuthorForm } from "./UpdateAuthorForm";
+import { useAuthors } from "@/hooks/authors/useAuthors";
+import { useDeleteAuthor } from "@/hooks/authors/useDeleteAuthor";
 
 export function AuthorsPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [authors, setAuthors] = useState<Author[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
-
+  const { authors, currentPage, totalPages, fetchAuthors, setCurrentPage } =
+    useAuthors();
+  const { handleDeleteAuthor } = useDeleteAuthor(fetchAuthors);
   const [selectedAuthorToEdit, setSelectedAuthorToEdit] =
     useState<Author | null>(null);
 
-  const fetchData = async () => {
-    try {
-      const data = await getAllAuthors(currentPage, 10);
-      setAuthors(data.data);
-      setTotalPages(data.totalPages);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   useEffect(() => {
-    fetchData();
+    fetchAuthors();
   }, [currentPage]);
 
-  const handleDelete = async (id: number) => {
+  const handleEdit = async (id: number) => {
     try {
-      await deleteAuthor(id);
-      fetchData();
+      const author = await getAuthorById(id);
+      setSelectedAuthorToEdit(author);
     } catch (error) {
-      console.error("Erro ao deletar autor:", error);
+      console.error("Erro ao buscar autor:", error);
     }
   };
 
@@ -50,13 +40,13 @@ export function AuthorsPage() {
     <div className="flex min-h-screen w-full">
       <DashboardSidebar />
       <div className="flex flex-1 flex-col space-y-10 p-10">
-        <AuthorsHeader onAuthorCreated={fetchData} />
+        <AuthorsHeader onAuthorCreated={fetchAuthors} />
         <div className="flex flex-1 flex-col justify-between">
           <AuthorsTable
             authors={authors}
-            onDelete={handleDelete}
+            onDelete={handleDeleteAuthor}
             currentPage={currentPage}
-            onEdit={(author) => setSelectedAuthorToEdit(author)}
+            onEdit={(author) => handleEdit(author.id)}
           />
 
           <Sheet
@@ -74,7 +64,7 @@ export function AuthorsPage() {
                 <UpdateAuthorForm
                   author={selectedAuthorToEdit}
                   onSuccess={() => {
-                    fetchData();
+                    fetchAuthors();
                     setSelectedAuthorToEdit(null);
                   }}
                   onCancel={() => setSelectedAuthorToEdit(null)}

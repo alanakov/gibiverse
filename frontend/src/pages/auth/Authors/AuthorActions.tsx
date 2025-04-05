@@ -1,5 +1,3 @@
-// src/components/custom/AuthorActions.tsx
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,10 +33,10 @@ export function AuthorActions({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="rounded-md bg-zinc-800">
-        <DropdownMenuItem asChild>
-          <EditButton onClick={() => onEdit?.(author)} />
+        <DropdownMenuItem onSelect={() => onEdit?.(author)}>
+          <EditButton />
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem onSelect={() => onDelete?.(author.id)}>
           <DeleteButton
             itemName={author.name}
             onDelete={() => onDelete?.(author.id)}

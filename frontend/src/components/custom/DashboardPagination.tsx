@@ -18,6 +18,12 @@ export function DashboardPagination({
   totalPages,
   onPageChange,
 }: DashboardPaginationProps) {
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      onPageChange(page);
+    }
+  };
+
   return (
     <div className="mt-4 flex justify-center">
       <Pagination>
@@ -27,38 +33,45 @@ export function DashboardPagination({
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                onPageChange(currentPage - 1);
+                handlePageChange(currentPage - 1);
               }}
-              disabled={currentPage === 1}
-              className="hover:bg-[#222] hover:text-inherit focus:bg-[#222] focus:text-inherit"
+              className={`hover:bg-[#222] hover:text-inherit focus:bg-[#222] focus:text-inherit ${
+                currentPage === 1 ? "pointer-events-none opacity-50" : ""
+              }`}
             />
           </PaginationItem>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <PaginationItem key={page}>
-              <PaginationLink
-                href="#"
-                isActive={page === currentPage}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onPageChange(page);
-                }}
-                className="bg-(--background-color) hover:bg-[#222] hover:text-inherit focus:bg-[#222] focus:text-inherit"
-              >
-                {page}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
+          {[...Array(totalPages)].map((_, index) => {
+            const page = index + 1;
+            return (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  href="#"
+                  isActive={page === currentPage}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(page);
+                  }}
+                  className="bg-(--background-color) hover:bg-[#222] hover:text-inherit focus:bg-[#222] focus:text-inherit"
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            );
+          })}
 
           <PaginationItem>
             <PaginationNext
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                onPageChange(currentPage + 1);
+                handlePageChange(currentPage + 1);
               }}
-              disabled={currentPage === totalPages}
-              className="hover:bg-[#222] hover:text-inherit focus:bg-[#222] focus:text-inherit"
+              className={`hover:bg-[#222] hover:text-inherit focus:bg-[#222] focus:text-inherit ${
+                currentPage === totalPages
+                  ? "pointer-events-none opacity-50"
+                  : ""
+              }`}
             />
           </PaginationItem>
         </PaginationContent>

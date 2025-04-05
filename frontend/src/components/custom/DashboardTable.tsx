@@ -11,9 +11,10 @@ import {
 interface DashboardTableProps<T> {
   data: T[];
   columns: {
-    key: keyof T;
+    key: string;
     label: string;
     render?: (item: T) => React.ReactNode;
+    accessor: keyof T;
   }[];
   className?: string;
 }
@@ -42,7 +43,7 @@ export function DashboardTable<T>({
                 <TableCell key={column.key} className="py-4">
                   {column.render
                     ? column.render(item)
-                    : String(item[column.key])}
+                    : String(item[column.accessor])}
                 </TableCell>
               ))}
             </TableRow>

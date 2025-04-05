@@ -9,12 +9,12 @@ import {
 import { AuthorRow } from "./AuthorRow";
 import { Author } from "./types";
 
-interface AuthorsTableProps {
+type AuthorsTableProps = {
   authors: Author[];
   onDelete?: (id: number) => void;
   onEdit?: (author: Author) => void;
   currentPage?: number;
-}
+};
 
 export function AuthorsTable({
   authors,
@@ -22,18 +22,20 @@ export function AuthorsTable({
   onEdit,
   currentPage,
 }: AuthorsTableProps) {
+  const hasAuthors = authors.length > 0;
+
   return (
-    <div className="w-full max-w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto">
       <Table>
         <TableHeader>
-          <TableRow className="hover:bg-zinc-800">
-            <TableHead className="w-1/3 text-zinc-400">Nome</TableHead>
-            <TableHead className="w-1/2 text-zinc-400">Biografia</TableHead>
-            <TableHead className="text-center text-zinc-400">Ações</TableHead>
+          <TableRow>
+            <TableHead>Nome</TableHead>
+            <TableHead>Biografia</TableHead>
+            <TableHead className="text-center">Ações</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="h-full">
-          {authors.length > 0 ? (
+        <TableBody>
+          {hasAuthors ? (
             authors.map((author) => (
               <AuthorRow
                 key={author.id}
@@ -51,9 +53,11 @@ export function AuthorsTable({
           )}
         </TableBody>
       </Table>
-      <p className="text-muted-foreground mt-4 text-sm">
-        Exibindo página {currentPage}
-      </p>
+      {currentPage && (
+        <p className="text-muted-foreground mt-4 text-sm">
+          Exibindo página {currentPage}
+        </p>
+      )}
     </div>
   );
 }

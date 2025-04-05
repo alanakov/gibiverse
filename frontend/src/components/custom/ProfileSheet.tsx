@@ -3,15 +3,10 @@ import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/custom/FormInput";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useProfile } from "@/contexts/ProfileContext";
 import { CgProfile } from "react-icons/cg";
 import { toast } from "sonner";
-
-const profileSchema = z.object({
-  name: z.string().min(3, "O nome é obrigatório"),
-  email: z.string().email("E-mail inválido").min(1, "O e-mail é obrigatório"),
-});
+import { profileSchema, ProfileSchemaType } from "@/schemas/profileSchema";
 
 export const ProfileSheet = () => {
   const { open, setOpen, user, setUser } = useProfile();
@@ -19,7 +14,7 @@ export const ProfileSheet = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<ProfileSchemaType>({
     resolver: zodResolver(profileSchema),
     defaultValues: user,
   });

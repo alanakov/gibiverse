@@ -8,19 +8,16 @@ import {
 } from "@/components/ui/sheet";
 import { CreateButton } from "@/components/custom/CreateButton";
 import { CreateAuthorForm } from "./CreateAuthorForm";
-import { useState } from "react";
 
 interface AuthorsHeaderProps {
   onAuthorCreated?: () => void;
 }
 
 export function AuthorsHeader({ onAuthorCreated }: AuthorsHeaderProps) {
-  const [open, setOpen] = useState(false);
-
   return (
     <div className="flex items-center justify-between">
       <h1 className="text-2xl font-bold">Autores</h1>
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet>
         <SheetTrigger>
           <CreateButton name="Autor" />
         </SheetTrigger>
@@ -31,13 +28,7 @@ export function AuthorsHeader({ onAuthorCreated }: AuthorsHeaderProps) {
               Preencha os campos abaixo para criar um novo autor.
             </SheetDescription>
           </SheetHeader>
-          <CreateAuthorForm
-            onSuccess={() => {
-              setOpen(false);
-              onAuthorCreated?.();
-            }}
-            onCancel={() => setOpen(false)}
-          />
+          <CreateAuthorForm onSuccess={onAuthorCreated} onCancel={() => {}} />
         </SheetContent>
       </Sheet>
     </div>

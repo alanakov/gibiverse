@@ -1,3 +1,5 @@
+import { Input } from "@/components/ui/input";
+
 interface FormInputProps {
   label: string;
   name: string;
@@ -22,15 +24,13 @@ export function FormInput({
       <label htmlFor={name} className="text-sm font-medium text-zinc-300">
         {label}
       </label>
-      <input
+      <Input
         id={name}
         type={type}
         placeholder={placeholder}
         {...register(name)}
         disabled={disabled}
-        className={`w-full rounded-md border border-zinc-700 bg-(--background-color) px-4 py-2 text-white outline-none focus:border-red-500 ${
-          error ? "border-red-500" : ""
-        } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+        className={error ? "border-red 500" : ""}
       />
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </div>
