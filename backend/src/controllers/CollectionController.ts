@@ -37,7 +37,7 @@ export const getCollectionById = async (
 
 export const createCollection = async (req: Request, res: Response) => {
   try {
-    const { name, description, writerId } = req.body;
+    const { name, description, authorId } = req.body;
     if (!name) {
       return res.status(400).json({ error: "Name is required" });
     }
@@ -45,7 +45,7 @@ export const createCollection = async (req: Request, res: Response) => {
     const collection = await CollectionModel.create({
       name,
       description,
-      writerId,
+      authorId,
     });
     res.status(201).json(collection);
   } catch (error) {
@@ -58,7 +58,7 @@ export const updateCollection = async (
   res: Response
 ) => {
   try {
-    const { name, description, writerId } = req.body;
+    const { name, description, authorId } = req.body;
     const collection = await CollectionModel.findByPk(req.params.id);
     if (!collection) {
       return res.status(404).json({ error: "Collection not found" });
@@ -66,7 +66,7 @@ export const updateCollection = async (
 
     collection.name = name || collection.name;
     collection.description = description || collection.description;
-    collection.writerId = writerId || collection.writerId;
+    collection.authorId = authorId || collection.authorId;
 
     await collection.save();
     res.status(200).json(collection);

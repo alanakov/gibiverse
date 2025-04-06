@@ -7,6 +7,7 @@ import { HomePage } from "./pages/auth/Home/Page";
 import { AuthorsPage } from "./pages/auth/Authors/Page";
 import { ComicBooksPage } from "./pages/auth/ComicBooks/Page";
 import { GenresPage } from "./pages/auth/Genres/Page";
+import { CollectionsPage } from "./pages/auth/Collections/Page";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
             <Route path="/authors" element={<AuthorsPage />} />
             <Route path="/books" element={<ComicBooksPage />} />
             <Route path="/genres" element={<GenresPage />} />
+            <Route path="/collections" element={<CollectionsPage />} />
           </Routes>
         </ProfileProvider>
       </Router>

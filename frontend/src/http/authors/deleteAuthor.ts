@@ -1,12 +1,6 @@
-export async function deleteAuthor(id: number) {
-  const res = await fetch(`http://localhost:3000/authors/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
+import api from "@/services/api";
 
-  if (!res.ok) {
-    throw new Error("Erro ao deletar autor");
-  }
+export async function deleteAuthor(id: number) {
+  const response = await api.delete(`/genres/${id}`);
+  return response.data;
 }

@@ -6,7 +6,7 @@ class CollectionModel extends Model {
   id: number | undefined;
   name: string | undefined;
   description: string | undefined;
-  writerId: number | undefined;
+  authorId: number | undefined;
 }
 
 CollectionModel.init(
@@ -24,7 +24,7 @@ CollectionModel.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    writerId: {
+    authorId: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
