@@ -2,28 +2,27 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/custom/FormInput";
-import { FormTextarea } from "@/components/custom/FormTextArea";
-import {
-  updateAuthorSchema,
-  UpdateAuthorSchemaType,
-} from "@/schemas/authorSchema";
 import { CreateButton } from "@/components/custom/CreateButton";
-import { useUpdateAuthor } from "@/hooks/authors/useUpdateAuthor";
-import { Author } from "@/types/author";
+import {
+  updateGenreSchema,
+  UpdateGenreSchemaType,
+} from "@/schemas/genreSchema";
+import { useUpdateGenre } from "@/hooks/genres/useUpdateGenre";
+import { Genre } from "@/types/genre";
 
-interface EditAuthorFormProps {
-  author: Author;
+interface UpdateGenreFormProps {
+  genre: Genre;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
-export const UpdateAuthorForm = ({
-  author,
+export function UpdateGenreForm({
+  genre,
   onSuccess,
   onCancel,
-}: EditAuthorFormProps) => {
-  const { handleUpdateAuthor, isSubmitting } = useUpdateAuthor(
-    author.id,
+}: UpdateGenreFormProps) {
+  const { handleUpdateGenre, isSubmitting } = useUpdateGenre(
+    genre.id,
     onSuccess,
   );
   const {
@@ -31,31 +30,22 @@ export const UpdateAuthorForm = ({
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<UpdateAuthorSchemaType>({
-    resolver: zodResolver(updateAuthorSchema),
+  } = useForm<UpdateGenreSchemaType>({
+    resolver: zodResolver(updateGenreSchema),
   });
 
   useEffect(() => {
-    setValue("name", author.name);
-    setValue("bio", author.bio);
-  }, [author, setValue]);
+    setValue("name", genre.name);
+  }, [genre, setValue]);
 
   return (
-    <form onSubmit={handleSubmit(handleUpdateAuthor)} className="space-y-4">
+    <form onSubmit={handleSubmit(handleUpdateGenre)} className="space-y-4">
       <FormInput
         label="Nome"
         name="name"
-        placeholder="Nome do Autor"
+        placeholder="Nome do Gênero"
         register={register}
         error={errors.name?.message}
-      />
-
-      <FormTextarea
-        label="Biografia"
-        name="bio"
-        placeholder="Biografia do Autor"
-        register={register}
-        error={errors.bio?.message}
       />
 
       <div className="flex justify-end gap-2">
@@ -72,4 +62,4 @@ export const UpdateAuthorForm = ({
       </div>
     </form>
   );
-};
+}

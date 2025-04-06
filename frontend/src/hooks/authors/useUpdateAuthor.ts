@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { EditAuthorSchemaType } from "@/schemas/authorSchema";
+import { UpdateAuthorSchemaType } from "@/schemas/authorSchema";
 import { updateAuthor } from "@/http/authors/updateAuthor";
 import { toast } from "sonner";
 
 export function useUpdateAuthor(id: number, onSuccess?: () => void) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleUpdateAuthor = async (data: EditAuthorSchemaType) => {
+  const handleUpdateAuthor = async (data: UpdateAuthorSchemaType) => {
     try {
       setIsSubmitting(true);
       await updateAuthor(id, data);

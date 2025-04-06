@@ -15,6 +15,6 @@ export const createAuthorSchema = z.object({
 
 export type CreateAuthorSchemaType = z.infer<typeof createAuthorSchema>;
 
-export const editAuthorSchema = createAuthorSchema;
+export const updateAuthorSchema = createAuthorSchema;
 
-export type EditAuthorSchemaType = z.infer<typeof editAuthorSchema>;
+export type UpdateAuthorSchemaType = z.infer<typeof updateAuthorSchema>;

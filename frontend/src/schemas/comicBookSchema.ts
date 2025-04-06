@@ -12,6 +12,6 @@ export const createComicBookSchema = z.object({
 
 export type CreateComicBookSchemaType = z.infer<typeof createComicBookSchema>;
 
-export const editComicBookSchema = createComicBookSchema;
+export const updateComicBookSchema = createComicBookSchema;
 
-export type EditComicBookSchemaType = z.infer<typeof editComicBookSchema>;
+export type UpdateComicBookSchemaType = z.infer<typeof updateComicBookSchema>;

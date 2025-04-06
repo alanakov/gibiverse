@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { EditComicBookSchemaType } from "@/schemas/comicBookSchema";
+import { UpdateComicBookSchemaType } from "@/schemas/comicBookSchema";
 import { toast } from "sonner";
 import { updateComicBook } from "@/http/comicBooks/updateComicBook";
 
 export function useUpdateComicBook(id: number, onSuccess?: () => void) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleUpdateComicBook = async (data: EditComicBookSchemaType) => {
+  const handleUpdateComicBook = async (data: UpdateComicBookSchemaType) => {
     try {
       setIsSubmitting(true);
       await updateComicBook(id, data);

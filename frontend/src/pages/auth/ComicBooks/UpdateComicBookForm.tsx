@@ -6,8 +6,8 @@ import { FormTextarea } from "@/components/custom/FormTextArea";
 import { CreateButton } from "@/components/custom/CreateButton";
 import { ComicBook } from "@/types/comicBook";
 import {
-  editComicBookSchema,
-  EditComicBookSchemaType,
+  updateComicBookSchema,
+  UpdateComicBookSchemaType,
 } from "@/schemas/comicBookSchema";
 import { useUpdateComicBook } from "@/hooks/comicbooks/useUpdateComicBook";
 
@@ -31,8 +31,8 @@ export const UpdateComicBookForm = ({
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<EditComicBookSchemaType>({
-    resolver: zodResolver(editComicBookSchema),
+  } = useForm<UpdateComicBookSchemaType>({
+    resolver: zodResolver(updateComicBookSchema),
   });
 
   useEffect(() => {
