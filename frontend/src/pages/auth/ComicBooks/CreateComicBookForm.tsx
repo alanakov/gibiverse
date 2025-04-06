@@ -3,6 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/custom/FormInput";
 import { FormTextarea } from "@/components/custom/FormTextArea";
 import { CreateButton } from "@/components/custom/CreateButton";
+import { AuthorSelect } from "@/components/custom/AuthorSelect";
+import { GenreSelect } from "@/components/custom/GenreSelect";
 import {
   createComicBookSchema,
   CreateComicBookSchemaType,
@@ -22,6 +24,8 @@ export function CreateComicBookForm({
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm<CreateComicBookSchemaType>({
     resolver: zodResolver(createComicBookSchema),
   });
@@ -44,14 +48,26 @@ export function CreateComicBookForm({
         register={register}
         error={errors.description?.message}
       />
-      <FormInput
-        label="ID do Autor"
-        name="authorId"
-        placeholder="ID do Autor"
-        type="number"
-        register={register}
-        error={errors.authorId?.message}
-      />
+      <div>
+        <label className="block text-sm font-medium text-white">Autor</label>
+        <AuthorSelect
+          value={watch("authorId")}
+          onChange={(id) => setValue("authorId", id)}
+        />
+        {errors.authorId && (
+          <p className="text-sm text-red-500">{errors.authorId.message}</p>
+        )}
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-white">Gênero</label>
+        <GenreSelect
+          value={watch("genreId")}
+          onChange={(id) => setValue("genreId", id)}
+        />
+        {errors.genreId && (
+          <p className="text-sm text-red-500">{errors.genreId.message}</p>
+        )}
+      </div>
       <FormInput
         label="URL da Capa"
         name="coverUrl"

@@ -1,5 +1,5 @@
 export async function deleteComicBook(id: number) {
-  const res = await fetch(`http://localhost:3000/comic-books/${id}`, {
+  const res = await fetch(`http://localhost:3000/comicbooks/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,

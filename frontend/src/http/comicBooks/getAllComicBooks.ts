@@ -1,7 +1,7 @@
 export async function getAllComicBooks(page: number = 1, limit: number = 10) {
   try {
     const res = await fetch(
-      `http://localhost:3000/comic-books?page=${page}&limit=${limit}`,
+      `http://localhost:3000/comicbooks?page=${page}&limit=${limit}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -5,7 +5,7 @@ class ComicBookModel extends Model {
   id: number | undefined;
   title: string | undefined;
   description: string | undefined;
-  coverImage: string | undefined;
+  coverUrl: string | undefined;
   collectionId: number | undefined;
   genreId: number | undefined;
 }
@@ -25,7 +25,7 @@ ComicBookModel.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    coverImage: {
+    coverUrl: {
       type: DataTypes.TEXT,
       allowNull: false,
     },

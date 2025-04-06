@@ -3,7 +3,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
+} from "@/components/ui/dropdown-menu"; // Corrigindo o import
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import { EditButton } from "@/components/custom/EditButton";

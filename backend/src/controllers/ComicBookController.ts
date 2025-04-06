@@ -4,17 +4,17 @@ import { paginate } from "../utils/paginate";
 
 export const createComicBook = async (req: Request, res: Response) => {
   try {
-    const { title, description, coverImage, genreId, collectionId } = req.body;
-    if (!title || !coverImage || !genreId) {
+    const { title, description, coverUrl, genreId, collectionId } = req.body;
+    if (!title || !coverUrl || !genreId) {
       return res
         .status(400)
-        .json({ error: "Title, coverImage, and genreId are required" });
+        .json({ error: "Title, coverUrl, and genreId are required" });
     }
 
     const comicBook = await ComicBookModel.create({
       title,
       description,
-      coverImage,
+      coverUrl,
       genreId,
       collectionId,
     });
@@ -33,12 +33,13 @@ export const getAllComicBooks = async (req: Request, res: Response) => {
       model: ComicBookModel,
       page,
       limit,
-      order: [["name", "ASC"]],
+      order: [["title", "ASC"]],
     });
 
     res.json(result);
   } catch (error) {
-    res.status(500).json({ error: "Erro interno no servidor " + error });
+    console.error("Erro ao buscar gibis:", error);
+    res.status(500).json({ error: "Erro interno no servidor: " + error });
   }
 };
 
@@ -62,7 +63,7 @@ export const updateComicBook = async (
   res: Response
 ) => {
   try {
-    const { title, description, coverImage, genreId, collectionId } = req.body;
+    const { title, description, coverUrl, genreId, collectionId } = req.body;
     const comicBook = await ComicBookModel.findByPk(req.params.id);
     if (!comicBook) {
       return res.status(404).json({ error: "Comic Book not found" });
@@ -70,7 +71,7 @@ export const updateComicBook = async (
 
     comicBook.title = title || comicBook.title;
     comicBook.description = description || comicBook.description;
-    comicBook.coverImage = coverImage || comicBook.coverImage;
+    comicBook.coverUrl = coverUrl || comicBook.coverUrl;
     comicBook.genreId = genreId || comicBook.genreId;
     comicBook.collectionId = collectionId || comicBook.collectionId;
 

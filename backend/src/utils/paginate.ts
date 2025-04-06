@@ -15,20 +15,25 @@ export async function paginate({
   order = [["id", "ASC"]],
   include = [],
 }: PaginateParams) {
-  const offset = (page - 1) * limit;
+  try {
+    const offset = (page - 1) * limit;
 
-  const { count, rows } = await model.findAndCountAll({
-    where,
-    order,
-    offset,
-    limit,
-    include,
-  });
+    const { count, rows } = await model.findAndCountAll({
+      where,
+      order,
+      offset,
+      limit,
+      include,
+    });
 
-  return {
-    data: rows,
-    total: count,
-    totalPages: Math.ceil(count / limit),
-    currentPage: page,
-  };
+    return {
+      data: rows,
+      total: count,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+    };
+  } catch (error) {
+    console.error("Erro na paginação:", error);
+    throw new Error("Erro ao paginar os dados");
+  }
 }
