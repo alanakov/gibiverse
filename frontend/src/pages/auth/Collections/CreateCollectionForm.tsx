@@ -8,6 +8,7 @@ import {
   createCollectionSchema,
   CreateCollectionSchemaType,
 } from "@/schemas/collectionSchema";
+import { AuthorSelect } from "@/components/custom/AuthorSelect";
 
 interface CreateCollectionFormProps {
   onSuccess?: () => void;
@@ -22,6 +23,8 @@ export function CreateCollectionForm({
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm<CreateCollectionSchemaType>({
     resolver: zodResolver(createCollectionSchema),
   });
@@ -34,16 +37,26 @@ export function CreateCollectionForm({
       <FormInput
         label="Nome"
         name="name"
+        placeholder="Nome da Coleção"
         register={register}
         error={errors.name?.message}
       />
       <FormTextarea
         label="Descrição"
         name="description"
+        placeholder="Descrição da Coleção"
         register={register}
         error={errors.description?.message}
       />
-
+      <div>
+        <AuthorSelect
+          value={watch("authorId")}
+          onChange={(id) => setValue("authorId", id)}
+        />
+        {errors.authorId && (
+          <p className="text-sm text-red-500">{errors.authorId.message}</p>
+        )}
+      </div>
       <div className="flex justify-end gap-2">
         <button
           type="button"

@@ -9,6 +9,7 @@ import {
 } from "@/schemas/collectionSchema";
 import { useUpdateCollection } from "@/hooks/collections/useUpdateCollection";
 import { Collection } from "@/types/collection";
+import { AuthorSelect } from "@/components/custom/AuthorSelect";
 
 interface UpdateCollectionFormProps {
   collection: Collection;
@@ -29,6 +30,7 @@ export function UpdateCollectionForm({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<UpdateCollectionSchemaType>({
     resolver: zodResolver(updateCollectionSchema),
@@ -55,7 +57,15 @@ export function UpdateCollectionForm({
         register={register}
         error={errors.description?.message}
       />
-
+      <div>
+        <AuthorSelect
+          value={collection.authorId}
+          onChange={(id) => setValue("authorId", id)}
+        />
+        {errors.authorId && (
+          <p className="text-sm text-red-500">{errors.authorId.message}</p>
+        )}
+      </div>
       <div className="flex justify-end gap-2">
         <button
           type="button"

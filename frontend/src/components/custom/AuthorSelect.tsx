@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getAllAuthors } from "@/http/authors/getAllAuthors";
 import {
   Select,
   SelectContent,
@@ -6,62 +7,62 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getAllAuthors } from "@/http/authors/getAllAuthors";
-import { Author } from "@/types/author";
 
 interface AuthorSelectProps {
-  value?: number;
-  onChange: (authorId: number) => void;
-  error?: string;
+  value: number | null;
+  onChange: (id: number) => void;
 }
 
-export function AuthorSelect({ value, onChange, error }: AuthorSelectProps) {
+export function AuthorSelect({ value, onChange }: AuthorSelectProps) {
+  interface Author {
+    id: number;
+    name: string;
+  }
   const [authors, setAuthors] = useState<Author[]>([]);
-  const [selectedAuthor, setSelectedAuthor] = useState<Author | null>(null);
+  const [selectedValue, setSelectedValue] = useState<string>("");
 
   useEffect(() => {
     async function fetchAuthors() {
       try {
         const data = await getAllAuthors();
         setAuthors(data.data);
-
-        if (value) {
-          const author = data.data.find((a: Author) => a.id === value) || null;
-          setSelectedAuthor(author);
-        }
       } catch (error) {
         console.error("Erro ao buscar autores:", error);
       }
     }
     fetchAuthors();
-  }, [value]);
+  }, []);
 
-  const handleSelectChange = (val: string) => {
-    const id = Number(val);
-    const author = authors.find((a) => a.id === id) || null;
-    setSelectedAuthor(author);
-    onChange(id);
+  useEffect(() => {
+    if (value !== null) {
+      const selectedAuthor = authors.find((author) => author.id === value);
+      setSelectedValue(selectedAuthor ? String(selectedAuthor.id) : "");
+    }
+  }, [value, authors]);
+
+  const handleChange = (id: string) => {
+    setSelectedValue(id);
+    onChange(Number(id));
   };
 
   return (
     <div>
-      <label className="block text-sm font-medium text-white">Autor</label>
-      <Select
-        value={selectedAuthor?.id.toString()}
-        onValueChange={handleSelectChange}
-      >
+      <label className="mb-1 block text-sm text-zinc-200">Autor</label>
+      <Select value={selectedValue} onValueChange={handleChange}>
         <SelectTrigger className="w-full">
-          <SelectValue placeholder="Selecione um autor" />
+          <SelectValue placeholder="Selecione um autor">
+            {authors.find((author) => String(author.id) === selectedValue)
+              ?.name || "Selecione um autor"}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {authors.map((author) => (
-            <SelectItem key={author.id} value={author.id.toString()}>
+            <SelectItem key={author.id} value={String(author.id)}>
               {author.name}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
 }
