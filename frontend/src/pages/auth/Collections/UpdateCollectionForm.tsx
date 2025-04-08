@@ -37,7 +37,7 @@ export function UpdateCollectionForm({
 
   useEffect(() => {
     setValue("name", collection.name ?? "");
-    setValue("description", collection.description ?? "");
+    setValue("description", collection.description ?? ""); // Certifique-se de que o valor inicial está correto
     setValue("authorId", collection.authorId);
   }, [collection, setValue]);
 

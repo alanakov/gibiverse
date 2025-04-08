@@ -30,7 +30,7 @@ export function FormInput({
         placeholder={placeholder}
         {...register(name)}
         disabled={disabled}
-        className={error ? "border-red 500" : ""}
+        className={error ? "border-red-500" : ""}
       />
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </div>

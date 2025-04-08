@@ -1,36 +1,30 @@
-import { Textarea } from "@/components/ui/textarea";
-
 interface FormTextareaProps {
   label: string;
   name: string;
-  placeholder?: string;
   register: any;
   error?: string;
-  disabled?: boolean;
+  placeholder?: string;
 }
 
-export function FormTextarea({
+export const FormTextarea = ({
   label,
   name,
-  placeholder,
   register,
   error,
-  disabled = false,
-}: FormTextareaProps) {
+  placeholder,
+}: FormTextareaProps) => {
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={name} className="text-sm font-medium text-zinc-300">
+      <label htmlFor={name} className="text-sm font-medium text-white">
         {label}
       </label>
-      <Textarea
+      <textarea
         id={name}
         placeholder={placeholder}
         {...register(name)}
-        disabled={disabled}
-        className={error ? "border-red-500" : ""}
-        rows={4}
+        className="min-h-[100px] rounded-md border border-gray-300 bg-transparent p-2 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      {error && <span className="text-sm text-red-500">{error}</span>}
     </div>
   );
-}
+};

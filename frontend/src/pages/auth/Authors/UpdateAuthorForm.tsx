@@ -26,22 +26,33 @@ export const UpdateAuthorForm = ({
     author.id,
     onSuccess,
   );
+
   const {
     register,
     handleSubmit,
-    setValue,
+    reset,
     formState: { errors },
   } = useForm<UpdateAuthorSchemaType>({
     resolver: zodResolver(updateAuthorSchema),
   });
 
   useEffect(() => {
-    setValue("name", author.name);
-    setValue("bio", author.bio);
-  }, [author, setValue]);
+    if (author) {
+      console.log("Resetando com:", author);
+      reset({
+        name: author.name,
+        bio: author.bio,
+      });
+    }
+  }, [author, reset]);
+
+  const onSubmit = (data: UpdateAuthorSchemaType) => {
+    console.log("Dados enviados:", data);
+    handleUpdateAuthor(data);
+  };
 
   return (
-    <form onSubmit={handleSubmit(handleUpdateAuthor)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <FormInput
         label="Nome"
         name="name"
