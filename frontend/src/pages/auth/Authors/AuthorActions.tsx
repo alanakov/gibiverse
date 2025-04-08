@@ -36,27 +36,16 @@ export function AuthorActions({
       <DropdownMenuContent
         align="end"
         sideOffset={5}
-        className="rounded-md border-0 bg-zinc-800 hover:bg-zinc-700"
+        className="rounded-md border-0 bg-zinc-800"
       >
-        <DropdownMenuItem
-          onClick={() => {
-            onEdit?.(author);
-          }}
-          className="cursor-pointer bg-zinc-800 hover:bg-zinc-700"
-        >
-          <EditButton />
+        <DropdownMenuItem asChild>
+          <EditButton onClick={() => onEdit?.(author)} />
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={(e) => {
-            e.preventDefault();
-          }}
-          asChild
-        >
+
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()} asChild>
           <DeleteButton
             itemName={author.name}
-            onDelete={() => {
-              onDelete?.(author.id);
-            }}
+            onDelete={() => onDelete?.(author.id)}
           />
         </DropdownMenuItem>
       </DropdownMenuContent>
