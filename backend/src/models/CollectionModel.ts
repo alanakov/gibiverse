@@ -26,7 +26,7 @@ CollectionModel.init(
     },
     authorId: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
     },
   },
   {

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { toast } from "sonner";
-import { CreateCollectionSchemaType } from "@/schemas/collectionSchema";
 import { createCollection } from "@/http/collections/createCollection";
+import { CreateCollectionSchemaType } from "@/schemas/collectionSchema";
+import { toast } from "sonner";
 
 export function useCreateCollection(onSuccess?: () => void) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -10,10 +10,10 @@ export function useCreateCollection(onSuccess?: () => void) {
     try {
       setIsSubmitting(true);
       await createCollection(data);
-      toast.success("Coleção criado com sucesso!");
+      toast.success("Coleção criada com sucesso!");
       onSuccess?.();
     } catch (error) {
-      console.error("Erro ao criar coleção", error);
+      console.error("Erro ao criar coleção:", error);
       toast.error("Erro ao criar coleção");
     } finally {
       setIsSubmitting(false);

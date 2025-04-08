@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import { ComicBook } from "@/types/comicBook";
-import { getComicBookById } from "@/http/comicBooks/getComicBookById";
 import { DashboardSidebar } from "@/components/custom/DashboardSidebar";
-import { ComicBooksHeader } from "./ComicBookHeader";
-import { ComicBooksTable } from "./ComicBooksTable";
 import { DashboardPagination } from "@/components/custom/DashboardPagination";
 import {
   Sheet,
@@ -12,9 +8,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { UpdateComicBookForm } from "./UpdateComicBookForm";
 import { useComicBooks } from "@/hooks/comicbooks/useComicBooks";
 import { useDeleteComicBook } from "@/hooks/comicbooks/useDeleteComicBook";
+import { ComicBook } from "@/types/comicBook";
+import { ComicBooksTable } from "./ComicBooksTable";
+import { UpdateComicBookForm } from "./UpdateComicBookForm";
+import { getComicBookById } from "@/http/comicBooks/getComicBookById";
+import { ComicBooksHeader } from "./ComicBookHeader";
 
 export function ComicBooksPage() {
   const {
@@ -24,7 +24,9 @@ export function ComicBooksPage() {
     fetchComicBooks,
     setCurrentPage,
   } = useComicBooks();
+
   const { handleDeleteComicBook } = useDeleteComicBook(fetchComicBooks);
+
   const [selectedComicBookToEdit, setSelectedComicBookToEdit] =
     useState<ComicBook | null>(null);
 
@@ -41,6 +43,10 @@ export function ComicBooksPage() {
     }
   };
 
+  const handleCloseSheet = () => {
+    setSelectedComicBookToEdit(null);
+  };
+
   return (
     <div className="flex min-h-screen w-full">
       <DashboardSidebar />
@@ -50,13 +56,13 @@ export function ComicBooksPage() {
           <ComicBooksTable
             comicBooks={comicBooks}
             onDelete={handleDeleteComicBook}
-            currentPage={currentPage}
             onEdit={(comicBook) => handleEdit(comicBook.id)}
+            currentPage={currentPage}
           />
 
           <Sheet
             open={!!selectedComicBookToEdit}
-            onOpenChange={() => setSelectedComicBookToEdit(null)}
+            onOpenChange={handleCloseSheet}
           >
             <SheetContent className="border-0 bg-(--background-color) p-4 sm:max-w-md">
               <SheetHeader>
@@ -69,14 +75,15 @@ export function ComicBooksPage() {
                 <UpdateComicBookForm
                   comicBook={selectedComicBookToEdit}
                   onSuccess={() => {
+                    handleCloseSheet();
                     fetchComicBooks();
-                    setSelectedComicBookToEdit(null);
                   }}
-                  onCancel={() => setSelectedComicBookToEdit(null)}
+                  onCancel={handleCloseSheet}
                 />
               )}
             </SheetContent>
           </Sheet>
+
           <DashboardPagination
             currentPage={currentPage}
             totalPages={totalPages}

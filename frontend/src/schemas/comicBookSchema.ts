@@ -2,7 +2,9 @@ import { z } from "zod";
 
 export const createComicBookSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
-  description: z.string().optional(),
+  description: z
+    .string()
+    .min(10, "Descrição deve ter pelo menos 10 caracteres"),
   authorId: z.number().min(1, "O autor é obrigatório"),
   coverUrl: z
     .string()

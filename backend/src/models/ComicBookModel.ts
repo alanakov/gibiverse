@@ -8,6 +8,7 @@ class ComicBookModel extends Model {
   coverUrl: string | undefined;
   collectionId: number | undefined;
   genreId: number | undefined;
+  authorId: number | undefined;
 }
 
 ComicBookModel.init(
@@ -34,6 +35,10 @@ ComicBookModel.init(
       allowNull: true,
     },
     genreId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    authorId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

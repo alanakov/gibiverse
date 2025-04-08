@@ -3,5 +3,6 @@ export interface ComicBook {
   title: string;
   description: string;
   authorId: number;
+  genreId: number;
   coverUrl: string;
 }

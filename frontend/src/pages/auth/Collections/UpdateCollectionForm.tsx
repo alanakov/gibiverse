@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/custom/FormInput";
@@ -26,20 +25,19 @@ export function UpdateCollectionForm({
     collection.id,
     onSuccess,
   );
+
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<UpdateCollectionSchemaType>({
     resolver: zodResolver(updateCollectionSchema),
+    defaultValues: {
+      name: collection.name,
+      description: collection.description || "",
+      authorId: collection.authorId,
+    },
   });
-
-  useEffect(() => {
-    setValue("name", collection.name ?? "");
-    setValue("description", collection.description ?? ""); // Certifique-se de que o valor inicial está correto
-    setValue("authorId", collection.authorId);
-  }, [collection, setValue]);
 
   return (
     <form onSubmit={handleSubmit(handleUpdateCollection)} className="space-y-4">
@@ -57,14 +55,7 @@ export function UpdateCollectionForm({
         register={register}
         error={errors.description?.message}
       />
-      <FormInput
-        label="ID do Autor"
-        name="authorId"
-        placeholder="ID do Autor"
-        type="number"
-        register={register}
-        error={errors.authorId?.message}
-      />
+
       <div className="flex justify-end gap-2">
         <button
           type="button"

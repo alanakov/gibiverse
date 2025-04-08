@@ -4,11 +4,12 @@ import { paginate } from "../utils/paginate";
 
 export const createComicBook = async (req: Request, res: Response) => {
   try {
-    const { title, description, coverUrl, genreId, collectionId } = req.body;
-    if (!title || !coverUrl || !genreId) {
+    const { title, description, coverUrl, genreId, collectionId, authorId } =
+      req.body;
+    if (!title || !coverUrl || !genreId || !authorId) {
       return res
         .status(400)
-        .json({ error: "Title, coverUrl, and genreId are required" });
+        .json({ error: "Title, coverUrl, genreId, and authorId are required" });
     }
 
     const comicBook = await ComicBookModel.create({
@@ -17,6 +18,7 @@ export const createComicBook = async (req: Request, res: Response) => {
       coverUrl,
       genreId,
       collectionId,
+      authorId,
     });
     res.status(201).json(comicBook);
   } catch (error) {
@@ -63,7 +65,8 @@ export const updateComicBook = async (
   res: Response
 ) => {
   try {
-    const { title, description, coverUrl, genreId, collectionId } = req.body;
+    const { title, description, coverUrl, genreId, collectionId, authorId } =
+      req.body;
     const comicBook = await ComicBookModel.findByPk(req.params.id);
     if (!comicBook) {
       return res.status(404).json({ error: "Comic Book not found" });
@@ -74,6 +77,7 @@ export const updateComicBook = async (
     comicBook.coverUrl = coverUrl || comicBook.coverUrl;
     comicBook.genreId = genreId || comicBook.genreId;
     comicBook.collectionId = collectionId || comicBook.collectionId;
+    comicBook.authorId = authorId || comicBook.authorId;
 
     await comicBook.save();
     res.status(200).json(comicBook);

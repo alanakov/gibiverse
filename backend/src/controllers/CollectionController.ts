@@ -38,8 +38,8 @@ export const getCollectionById = async (
 export const createCollection = async (req: Request, res: Response) => {
   try {
     const { name, description, authorId } = req.body;
-    if (!name) {
-      return res.status(400).json({ error: "Name is required" });
+    if (!name || !authorId) {
+      return res.status(400).json({ error: "Name and authorId are required" });
     }
 
     const collection = await CollectionModel.create({

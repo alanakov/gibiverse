@@ -1,46 +1,49 @@
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormInput } from "@/components/custom/FormInput";
-import { FormTextarea } from "@/components/custom/FormTextArea";
-import { CreateButton } from "@/components/custom/CreateButton";
 import { ComicBook } from "@/types/comicBook";
 import {
   updateComicBookSchema,
   UpdateComicBookSchemaType,
 } from "@/schemas/comicBookSchema";
+import { FormInput } from "@/components/custom/FormInput";
+import { FormTextarea } from "@/components/custom/FormTextArea";
+import { GenreSelect } from "@/components/custom/GenreSelect";
+import { AuthorSelect } from "@/components/custom/AuthorSelect";
+import { CreateButton } from "@/components/custom/CreateButton";
 import { useUpdateComicBook } from "@/hooks/comicbooks/useUpdateComicBook";
 
-interface EditComicBookFormProps {
+interface UpdateComicBookFormProps {
   comicBook: ComicBook;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
-export const UpdateComicBookForm = ({
+export function UpdateComicBookForm({
   comicBook,
   onSuccess,
   onCancel,
-}: EditComicBookFormProps) => {
+}: UpdateComicBookFormProps) {
   const { handleUpdateComicBook, isSubmitting } = useUpdateComicBook(
     comicBook.id,
     onSuccess,
   );
+
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<UpdateComicBookSchemaType>({
     resolver: zodResolver(updateComicBookSchema),
+    defaultValues: {
+      title: comicBook.title,
+      description: comicBook.description || "",
+      coverUrl: comicBook.coverUrl,
+      authorId: comicBook.authorId,
+      genreId: comicBook.genreId,
+    },
   });
-
-  useEffect(() => {
-    setValue("title", comicBook.title);
-    setValue("description", comicBook.description);
-    setValue("authorId", comicBook.authorId);
-    setValue("coverUrl", comicBook.coverUrl);
-  }, [comicBook, setValue]);
 
   return (
     <form onSubmit={handleSubmit(handleUpdateComicBook)} className="space-y-4">
@@ -51,7 +54,6 @@ export const UpdateComicBookForm = ({
         register={register}
         error={errors.title?.message}
       />
-
       <FormTextarea
         label="Descrição"
         name="description"
@@ -59,24 +61,29 @@ export const UpdateComicBookForm = ({
         register={register}
         error={errors.description?.message}
       />
-
-      <FormInput
-        label="ID do Autor"
-        name="authorId"
-        placeholder="ID do Autor"
-        type="number"
-        register={register}
-        error={errors.authorId?.message}
-      />
-
+      <div>
+        <AuthorSelect
+          value={watch("authorId")}
+          onChange={(id) => setValue("authorId", id)}
+          error={errors.authorId?.message}
+        />
+      </div>
+      <div>
+        <GenreSelect
+          value={watch("genreId")}
+          onChange={(id) => setValue("genreId", id)}
+        />
+        {errors.genreId && (
+          <p className="text-sm text-red-500">{errors.genreId.message}</p>
+        )}
+      </div>
       <FormInput
         label="URL da Capa"
         name="coverUrl"
-        placeholder="URL da Capa"
+        placeholder="URL da imagem de capa"
         register={register}
         error={errors.coverUrl?.message}
       />
-
       <div className="flex justify-end gap-2">
         <button
           type="button"
@@ -91,4 +98,4 @@ export const UpdateComicBookForm = ({
       </div>
     </form>
   );
-};
+}

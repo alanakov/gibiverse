@@ -8,16 +8,14 @@ export const createCollectionSchema = z.object({
     .trim(),
   description: z
     .string()
-    .max(1000, "A descrição deve ter no máximo 1000 caracteres"),
-  authorId: z
-    .number()
-    .int("O ID do escritor deve ser um número inteiro")
-    .positive("O ID do escritor deve ser um número positivo")
+    .max(1000, "A descrição deve ter no máximo 1000 caracteres")
     .optional(),
+  authorId: z.number({
+    required_error: "O autor é obrigatório",
+  }),
 });
 
 export type CreateCollectionSchemaType = z.infer<typeof createCollectionSchema>;
 
 export const updateCollectionSchema = createCollectionSchema;
-
 export type UpdateCollectionSchemaType = z.infer<typeof updateCollectionSchema>;

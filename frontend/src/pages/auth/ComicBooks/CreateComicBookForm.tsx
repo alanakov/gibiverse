@@ -49,7 +49,6 @@ export function CreateComicBookForm({
         error={errors.description?.message}
       />
       <div>
-        <label className="block text-sm font-medium text-white">Autor</label>
         <AuthorSelect
           value={watch("authorId")}
           onChange={(id) => setValue("authorId", id)}
@@ -59,7 +58,6 @@ export function CreateComicBookForm({
         )}
       </div>
       <div>
-        <label className="block text-sm font-medium text-white">Gênero</label>
         <GenreSelect
           value={watch("genreId")}
           onChange={(id) => setValue("genreId", id)}
