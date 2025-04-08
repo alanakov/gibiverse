@@ -3,7 +3,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"; // Corrigindo o import
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import { EditButton } from "@/components/custom/EditButton";
@@ -23,19 +23,25 @@ export function ComicBookActions({
 }: ComicBookActionsProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger>
         <Button
+          type="button"
           variant="ghost"
           size="icon"
           className="cursor-pointer hover:bg-zinc-700 hover:text-white"
         >
-          <MoreHorizontal />
+          <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="rounded-md bg-zinc-800">
-        <DropdownMenuItem onSelect={() => onEdit?.(comicBook)}>
-          <EditButton />
+      <DropdownMenuContent
+        align="end"
+        sideOffset={5}
+        className="rounded-md border-0 bg-zinc-800"
+      >
+        <DropdownMenuItem asChild>
+          <EditButton onClick={() => onEdit?.(comicBook)} />
         </DropdownMenuItem>
+
         <DropdownMenuItem onSelect={(e) => e.preventDefault()} asChild>
           <DeleteButton
             itemName={comicBook.title}

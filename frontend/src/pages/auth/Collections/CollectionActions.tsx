@@ -23,19 +23,25 @@ export function CollectionActions({
 }: CollectionActionsProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger>
         <Button
+          type="button"
           variant="ghost"
           size="icon"
           className="cursor-pointer hover:bg-zinc-700 hover:text-white"
         >
-          <MoreHorizontal />
+          <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="rounded-md bg-zinc-800">
-        <DropdownMenuItem onSelect={() => onEdit?.(collection)}>
-          <EditButton />
+      <DropdownMenuContent
+        align="end"
+        sideOffset={5}
+        className="rounded-md border-0 bg-zinc-800"
+      >
+        <DropdownMenuItem asChild>
+          <EditButton onClick={() => onEdit?.(collection)} />
         </DropdownMenuItem>
+
         <DropdownMenuItem onSelect={(e) => e.preventDefault()} asChild>
           <DeleteButton
             itemName={collection.name}
