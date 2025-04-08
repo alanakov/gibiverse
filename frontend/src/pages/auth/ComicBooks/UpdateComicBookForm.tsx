@@ -23,9 +23,6 @@ export function UpdateComicBookForm({
   onSuccess,
   onCancel,
 }: UpdateComicBookFormProps) {
-  console.log("Debug - comicBook:", comicBook); // Verificar todo o objeto
-  console.log("Debug - comicBook.authorId:", comicBook.authorId); // Verificar especificamente o authorId
-
   const { handleUpdateComicBook, isSubmitting } = useUpdateComicBook(
     comicBook.id,
     onSuccess,
