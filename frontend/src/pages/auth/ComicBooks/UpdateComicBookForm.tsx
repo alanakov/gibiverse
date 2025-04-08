@@ -8,9 +8,9 @@ import {
 import { FormInput } from "@/components/custom/FormInput";
 import { FormTextarea } from "@/components/custom/FormTextArea";
 import { GenreSelect } from "@/components/custom/GenreSelect";
-import { AuthorSelect } from "@/components/custom/AuthorSelect";
 import { CreateButton } from "@/components/custom/CreateButton";
 import { useUpdateComicBook } from "@/hooks/comicbooks/useUpdateComicBook";
+import { AuthorSelect } from "@/components/custom/AuthorSelect";
 
 interface UpdateComicBookFormProps {
   comicBook: ComicBook;
@@ -23,6 +23,9 @@ export function UpdateComicBookForm({
   onSuccess,
   onCancel,
 }: UpdateComicBookFormProps) {
+  console.log("Debug - comicBook:", comicBook); // Verificar todo o objeto
+  console.log("Debug - comicBook.authorId:", comicBook.authorId); // Verificar especificamente o authorId
+
   const { handleUpdateComicBook, isSubmitting } = useUpdateComicBook(
     comicBook.id,
     onSuccess,
@@ -62,19 +65,22 @@ export function UpdateComicBookForm({
         error={errors.description?.message}
       />
       <div>
-        <AuthorSelect
-          value={watch("authorId")}
-          onChange={(id) => setValue("authorId", id)}
-          error={errors.authorId?.message}
-        />
-      </div>
-      <div>
         <GenreSelect
           value={watch("genreId")}
           onChange={(id) => setValue("genreId", id)}
         />
         {errors.genreId && (
           <p className="text-sm text-red-500">{errors.genreId.message}</p>
+        )}
+      </div>
+
+      <div>
+        <AuthorSelect
+          value={comicBook.authorId}
+          onChange={(id) => setValue("authorId", id)}
+        />
+        {errors.authorId && (
+          <p className="text-sm text-red-500">{errors.authorId.message}</p>
         )}
       </div>
       <FormInput

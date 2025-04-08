@@ -1,4 +1,4 @@
-import { DatabaseError, DataTypes, Model } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 class ComicBookModel extends Model {

@@ -3,13 +3,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/custom/FormInput";
 import { FormTextarea } from "@/components/custom/FormTextArea";
 import { CreateButton } from "@/components/custom/CreateButton";
-import { AuthorSelect } from "@/components/custom/AuthorSelect";
 import { GenreSelect } from "@/components/custom/GenreSelect";
 import {
   createComicBookSchema,
   CreateComicBookSchemaType,
 } from "@/schemas/comicBookSchema";
 import { useCreateComicBook } from "@/hooks/comicbooks/useCreateComicBook";
+import { AuthorSelect } from "@/components/custom/AuthorSelect";
 
 type CreateComicBookFormProps = {
   onSuccess?: () => void;
@@ -48,15 +48,7 @@ export function CreateComicBookForm({
         register={register}
         error={errors.description?.message}
       />
-      <div>
-        <AuthorSelect
-          value={watch("authorId")}
-          onChange={(id) => setValue("authorId", id)}
-        />
-        {errors.authorId && (
-          <p className="text-sm text-red-500">{errors.authorId.message}</p>
-        )}
-      </div>
+
       <div>
         <GenreSelect
           value={watch("genreId")}
@@ -64,6 +56,15 @@ export function CreateComicBookForm({
         />
         {errors.genreId && (
           <p className="text-sm text-red-500">{errors.genreId.message}</p>
+        )}
+      </div>
+      <div>
+        <AuthorSelect
+          value={watch("authorId")}
+          onChange={(id) => setValue("authorId", id)}
+        />
+        {errors.authorId && (
+          <p className="text-sm text-red-500">{errors.authorId.message}</p>
         )}
       </div>
       <FormInput
