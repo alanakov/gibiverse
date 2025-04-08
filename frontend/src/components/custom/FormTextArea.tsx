@@ -15,14 +15,14 @@ export const FormTextarea = ({
 }: FormTextareaProps) => {
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={name} className="text-sm font-medium text-white">
+      <label htmlFor={name} className="text-sm font-medium text-zinc-300">
         {label}
       </label>
       <textarea
         id={name}
         placeholder={placeholder}
         {...register(name)}
-        className="min-h-[100px] rounded-md border border-gray-300 bg-transparent p-2 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        className="min-h-[100px] rounded-md border border-zinc-700 bg-transparent p-2 text-sm text-slate-300 focus:ring-1 focus:ring-gray-400 focus:outline-none"
       />
       {error && <span className="text-sm text-red-500">{error}</span>}
     </div>
