@@ -6,14 +6,16 @@ import {
   getUserById,
   updateUser,
 } from "../controllers/UserController";
-import { loginUsuario } from "../controllers/LoginController";
+import { getLoggedUser, loginUser } from "../controllers/LoginController";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 const userRouter = express.Router();
 
 userRouter.post("/users", createUser);
-userRouter.post("/login", loginUsuario);
+userRouter.post("/login", loginUser);
 
+// Mova a rota /users/me para antes de /users/:id
+userRouter.get("/users/me", authMiddleware, getLoggedUser);
 userRouter.get("/users", authMiddleware, getAllUsers);
 userRouter.get("/users/:id", authMiddleware, getUserById);
 userRouter.put("/users/:id", authMiddleware, updateUser);

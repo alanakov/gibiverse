@@ -35,7 +35,7 @@ export const createUser = async (req: Request, res: Response) => {
     });
 
     // Gera o token JWT
-    const token = generateToken(user);
+    const token = generateToken({ id: user.id!, email: user.email! });
 
     res.status(201).json({
       id: user.id,
@@ -87,7 +87,7 @@ export const updateUser = async (
   res: Response
 ) => {
   try {
-    const usuarioLogado = req.body.usuario.usuario.idUsuario;
+    const usuarioLogado = req.user?.id;
     const idUsuarioAtualizar = Number(req.params.id);
 
     if (usuarioLogado !== idUsuarioAtualizar) {
@@ -96,16 +96,9 @@ export const updateUser = async (
         .json({ error: "Você não tem permissão para editar este usuário" });
     }
 
-    const { name, email, cpf, password } = req.body;
-    if (!name || !email || !cpf) {
-      return res
-        .status(400)
-        .json({ error: "Nome, email e CPF são obrigatórios" });
-    }
-
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: "Email inválido" });
+    const { name, email, cpf } = req.body;
+    if (!name || !email) {
+      return res.status(400).json({ error: "Nome e email são obrigatórios" });
     }
 
     const user = await UserModel.findByPk(req.params.id);
@@ -113,23 +106,9 @@ export const updateUser = async (
       return res.status(404).json({ error: "Usuário não encontrado" });
     }
 
-    const validacaoNivelSenha = UserModel.validarNivelSenha(password);
-    if (!validacaoNivelSenha.valida) {
-      return res.status(400).json({
-        error: "Senha muito fraca",
-        detalhes: validacaoNivelSenha.requisitos,
-      });
-    }
-
     user.name = name;
     user.email = email;
-    user.cpf = cpf;
-
-    // Se uma nova senha foi fornecida, criptografa antes de salvar
-    if (password) {
-      const saltRounds = 10;
-      user.password = await bcrypt.hash(password, saltRounds);
-    }
+    if (cpf) user.cpf = cpf;
 
     await user.save();
 
@@ -140,6 +119,7 @@ export const updateUser = async (
       cpf: user.cpf,
     });
   } catch (error) {
+    console.error("Erro ao atualizar usuário:", error);
     res.status(500).json({ error: "Erro interno no servidor" });
   }
 };

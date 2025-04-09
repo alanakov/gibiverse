@@ -5,30 +5,47 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useProfile } from "@/contexts/ProfileContext";
 import { CgProfile } from "react-icons/cg";
-import { toast } from "sonner";
 import { profileSchema, ProfileSchemaType } from "@/schemas/profileSchema";
+import { useEffect } from "react";
 
 export const ProfileSheet = () => {
-  const { open, setOpen, user, setUser } = useProfile();
+  const { open, setOpen, user, updateUser } = useProfile();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<ProfileSchemaType>({
     resolver: zodResolver(profileSchema),
-    defaultValues: user,
+    defaultValues: {
+      name: "",
+      email: "",
+      cpf: "",
+    },
   });
 
-  const onSubmit = async (data) => {
+  useEffect(() => {
+    if (user) {
+      reset({
+        name: user.name,
+        email: user.email,
+        cpf: user.cpf ?? "", // Use nullish coalescing to provide empty string as fallback
+      });
+    }
+  }, [user, reset]);
+
+  const onSubmit = async (data: ProfileSchemaType) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setUser(data);
-      toast.success("Perfil atualizado com sucesso!");
+      await updateUser(data);
       setOpen(false);
     } catch (error) {
-      toast.error("Erro ao atualizar perfil. Tente novamente.");
+      console.error("Erro ao atualizar perfil:", error);
     }
   };
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
