@@ -8,6 +8,7 @@ import { AuthorsPage } from "./pages/auth/Authors/Page";
 import { ComicBooksPage } from "./pages/auth/ComicBooks/Page";
 import { GenresPage } from "./pages/auth/Genres/Page";
 import { CollectionsPage } from "./pages/auth/Collections/Page";
+import { Toaster } from "./components/ui/toaster";
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
           </Routes>
         </ProfileProvider>
       </Router>
+      <Toaster richColors closeButton position="bottom-left" />
     </AuthProvider>
   );
 }

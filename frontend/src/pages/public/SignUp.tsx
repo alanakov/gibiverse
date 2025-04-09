@@ -44,49 +44,51 @@ export function Signup() {
   };
 
   return (
-    <AuthForm
-      title="Criar Conta"
-      fields={[
-        {
-          name: "name",
-          label: "Nome",
-          placeholder: "Digite seu nome",
-        },
-        {
-          name: "email",
-          label: "E-mail",
-          type: "email",
-          placeholder: "Digite seu e-mail",
-        },
-        {
-          name: "cpf",
-          label: "CPF",
-          placeholder: "Digite seu CPF",
-        },
-        {
-          name: "password",
-          label: "Senha",
-          type: "password",
-          placeholder: "Digite sua senha",
-        },
-        {
-          name: "confirmPassword",
-          label: "Confirmar Senha",
-          type: "password",
-          placeholder: "Confirme sua senha",
-        },
-      ]}
-      schema={signupSchema}
-      onSubmit={onSubmit}
-      buttonText="Cadastrar"
-      extraContent={
-        <p className="text-zinc-400">
-          Já tem uma conta?{" "}
-          <Link to="/login" className="text-red-400 hover:underline">
-            Faça login
-          </Link>
-        </p>
-      }
-    />
+    <>
+      <AuthForm
+        title="Criar Conta"
+        fields={[
+          {
+            name: "name",
+            label: "Nome",
+            placeholder: "Digite seu nome",
+          },
+          {
+            name: "email",
+            label: "E-mail",
+            type: "email",
+            placeholder: "Digite seu e-mail",
+          },
+          {
+            name: "cpf",
+            label: "CPF",
+            placeholder: "Digite seu CPF",
+          },
+          {
+            name: "password",
+            label: "Senha",
+            type: "password",
+            placeholder: "Digite sua senha",
+          },
+          {
+            name: "confirmPassword",
+            label: "Confirmar Senha",
+            type: "password",
+            placeholder: "Confirme sua senha",
+          },
+        ]}
+        schema={signupSchema}
+        onSubmit={onSubmit}
+        buttonText="Cadastrar"
+        extraContent={
+          <p className="text-zinc-400">
+            Já tem uma conta?{" "}
+            <Link to="/login" className="text-red-400 hover:underline">
+              Faça login
+            </Link>
+          </p>
+        }
+      />
+    </>
   );
 }
