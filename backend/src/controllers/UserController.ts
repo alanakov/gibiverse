@@ -1,19 +1,46 @@
 import { Request, Response } from "express";
 import UserModel from "../models/UserModel";
 import { paginate } from "../utils/paginate";
+import * as bcrypt from "bcrypt";
 
 export const createUser = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ error: "Values required" });
+      return res
+        .status(400)
+        .json({ error: "Todos os campos são obrigatórios" });
     }
 
-    const user = await UserModel.create({ name, email, password });
-    res.status(201).json(user);
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: "Email inválido" });
+    }
+    // Verifica se o usuário já existe
+    const existingUser = await UserModel.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ error: "Email já está em uso" });
+    }
+
+    // Criptografa a senha antes de salvar
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const user = await UserModel.create({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    res.status(201).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      // Não retornar a senha, mesmo criptografada
+    });
   } catch (error) {
-    res.status(500).json("Erro interno no servidor " + error);
+    res.status(500).json({ error: "Erro interno no servidor " + error });
   }
 };
 
@@ -55,29 +82,60 @@ export const updateUser = async (
   res: Response
 ) => {
   try {
+    const usuarioLogado = req.body.usuario.usuario.idUsuario;
+    const idUsuarioAtualizar = Number(req.params.id);
+
+    if (usuarioLogado !== idUsuarioAtualizar) {
+      return res
+        .status(403)
+        .json({ error: "Você não tem permissão para editar este usuário" });
+    }
+
     const { name, email, cpf, password } = req.body;
-    if (!name || !email || !cpf || !password) {
+    if (!name || !email || !cpf) {
       return res
         .status(400)
-        .json({ error: "Name, email and cpf are required" });
+        .json({ error: "Nome, email e CPF são obrigatórios" });
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: "Email inválido" });
     }
 
     const user = await UserModel.findByPk(req.params.id);
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+
+    const validacaoNivelSenha = UserModel.validarNivelSenha(password);
+    if (!validacaoNivelSenha.valida) {
+      return res.status(400).json({
+        error: "Senha muito fraca",
+        detalhes: validacaoNivelSenha.requisitos,
+      });
     }
 
     user.name = name;
     user.email = email;
     user.cpf = cpf;
+
+    // Se uma nova senha foi fornecida, criptografa antes de salvar
     if (password) {
-      user.password = password;
+      const saltRounds = 10;
+      user.password = await bcrypt.hash(password, saltRounds);
     }
+
     await user.save();
 
-    res.json(user);
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      cpf: user.cpf,
+    });
   } catch (error) {
-    res.status(500).json({ error: "ERROR" });
+    res.status(500).json({ error: "Erro interno no servidor" });
   }
 };
 
