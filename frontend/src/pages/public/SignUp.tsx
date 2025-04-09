@@ -24,17 +24,17 @@ export function Signup() {
 
   const onSubmit = async (data: any) => {
     try {
-      const response = await api.post("/users", {
+      await api.post("/users", {
         name: data.name,
         email: data.email,
         cpf: data.cpf,
         password: data.password,
       });
 
-      localStorage.setItem("authToken", response.data.token);
-
-      toast.success("Cadastro realizado com sucesso!");
-      navigate("/home");
+      toast.success(
+        "Cadastro realizado com sucesso! Faça login para continuar.",
+      );
+      navigate("/login");
     } catch (error: any) {
       console.error("Erro ao cadastrar:", error);
       toast.error(
