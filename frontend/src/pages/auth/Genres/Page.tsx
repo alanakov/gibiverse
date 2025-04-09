@@ -10,7 +10,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useGenres } from "@/hooks/genres/useGenre";
+import { useGenres } from "@/hooks/genres/useGenres";
 import { useDeleteGenre } from "@/hooks/genres/useDeleteGenre";
 import { Genre } from "@/types/genre";
 import { getGenreById } from "@/http/genres/getGenreById";

@@ -1,8 +1,9 @@
 import api from "@/services/api";
+import { UpdateCollectionSchemaType } from "@/schemas/collectionSchema";
 
 export async function updateCollection(
   id: number,
-  data: { name: string; description?: string; authorId?: number },
+  data: UpdateCollectionSchemaType,
 ) {
   const response = await api.put(`/collections/${id}`, data);
   return response.data;

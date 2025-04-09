@@ -1,12 +1,5 @@
-export async function deleteComicBook(id: number) {
-  const res = await fetch(`http://localhost:3000/comicbooks/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
+import api from "@/services/api";
 
-  if (!res.ok) {
-    throw new Error("Erro ao deletar gibi");
-  }
+export async function deleteComicBook(id: number) {
+  await api.delete(`/comicbooks/${id}`);
 }

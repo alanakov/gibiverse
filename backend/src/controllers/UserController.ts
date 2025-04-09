@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import UserModel from "../models/UserModel";
 import { paginate } from "../utils/paginate";
 import * as bcrypt from "bcrypt";
+import { generateToken } from "../utils/jwt"; // Importa a função para gerar o token
 
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -33,10 +34,14 @@ export const createUser = async (req: Request, res: Response) => {
       password: hashedPassword,
     });
 
+    // Gera o token JWT
+    const token = generateToken(user);
+
     res.status(201).json({
       id: user.id,
       name: user.name,
       email: user.email,
+      token,
       // Não retornar a senha, mesmo criptografada
     });
   } catch (error) {

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { getAllAuthors } from "@/http/authors/getAllAuthors";
 import { toast } from "sonner";
 import { Author } from "@/types/author";
+import { getAllAuthors } from "@/http/authors/getAllAuthors";
 
 export function useAuthors(initialPage = 1, pageSize = 10) {
   const [currentPage, setCurrentPage] = useState(initialPage);

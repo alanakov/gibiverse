@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
 import { AuthForm } from "@/components/custom/AuthForm";
+import api from "@/services/api";
 
 const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
 
@@ -23,11 +24,22 @@ export function Signup() {
 
   const onSubmit = async (data: any) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //simulando
+      const response = await api.post("/users", {
+        name: data.name,
+        email: data.email,
+        cpf: data.cpf,
+        password: data.password,
+      });
+
+      localStorage.setItem("authToken", response.data.token);
+
       toast.success("Cadastro realizado com sucesso!");
-      navigate("/login");
-    } catch {
-      toast.error("Erro ao cadastrar. Tente novamente.");
+      navigate("/home");
+    } catch (error: any) {
+      console.error("Erro ao cadastrar:", error);
+      toast.error(
+        error.response?.data?.error || "Erro ao cadastrar. Tente novamente.",
+      );
     }
   };
 

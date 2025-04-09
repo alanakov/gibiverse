@@ -15,7 +15,7 @@ export function Login() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000)); //simulando
       toast.success("Login realizado com sucesso!");
-      navigate("/dashboard");
+      navigate("/home");
     } catch {
       toast.error("Erro ao fazer login. Tente novamente.");
     }
