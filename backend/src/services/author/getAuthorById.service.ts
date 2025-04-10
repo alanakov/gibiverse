@@ -1,11 +1,11 @@
-import AuthorModel from "../../models/AuthorModel";
+import GenreModel from "../../models/GenreModel";
 
-export const getAuthorByIdService = async (id: string) => {
-  const author = await AuthorModel.findByPk(id);
+export const getGenreByIdService = async (id: string) => {
+  const genre = await GenreModel.findByPk(id);
 
-  if (!author) {
+  if (!genre) {
     throw new Error("NOT_FOUND");
   }
 
-  return author;
+  return genre;
 };
