@@ -19,12 +19,14 @@ export const getAuthorById = async (
 
 export const createAuthor = async (req: Request, res: Response) => {
   try {
-    const { name, bio } = req.body;
-    if (!name || !bio) {
-      return res.status(400).json({ error: "Name and bio are required" });
+    const { name, bio, coverUrl } = req.body;
+    if (!name || !bio || !coverUrl) {
+      return res
+        .status(400)
+        .json({ error: "Name, bio and coverUrl are required" });
     }
 
-    const author = await AuthorModel.create({ name, bio });
+    const author = await AuthorModel.create({ name, bio, coverUrl });
     res.status(201).json(author);
   } catch (error) {
     res.status(500).json({ error: "Erro interno no servidor " + error });
@@ -54,7 +56,7 @@ export const updateAuthor = async (
   res: Response
 ) => {
   try {
-    const { name, bio } = req.body;
+    const { name, bio, coverUrl } = req.body;
     const author = await AuthorModel.findByPk(req.params.id);
     if (!author) {
       return res.status(404).json({ error: "Author not found" });
@@ -62,6 +64,7 @@ export const updateAuthor = async (
 
     author.name = name || author.name;
     author.bio = bio || author.bio;
+    author.coverUrl = coverUrl || author.coverUrl;
 
     await author.save();
     res.status(200).json(author);

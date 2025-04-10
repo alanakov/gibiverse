@@ -11,6 +11,7 @@ export const createComicBookSchema = z.object({
     .url("URL da imagem de capa inválida")
     .min(1, "URL da imagem de capa é obrigatória"),
   genreId: z.number().min(1, "O gênero é obrigatório"),
+  collectionId: z.number().nullable().optional(),
 });
 
 export type CreateComicBookSchemaType = z.infer<typeof createComicBookSchema>;

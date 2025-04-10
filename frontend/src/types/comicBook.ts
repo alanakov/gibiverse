@@ -5,4 +5,5 @@ export interface ComicBook {
   authorId: number;
   genreId: number;
   coverUrl: string;
+  collectionId?: number | null;
 }

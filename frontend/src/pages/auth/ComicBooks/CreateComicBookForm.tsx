@@ -10,6 +10,7 @@ import {
 } from "@/schemas/comicBookSchema";
 import { useCreateComicBook } from "@/hooks/comicbooks/useCreateComicBook";
 import { AuthorSelect } from "@/components/custom/AuthorSelect";
+import { CollectionSelect } from "@/components/custom/CollectionSelect";
 
 type CreateComicBookFormProps = {
   onSuccess?: () => void;
@@ -66,6 +67,12 @@ export function CreateComicBookForm({
         {errors.authorId && (
           <p className="text-sm text-red-500">{errors.authorId.message}</p>
         )}
+      </div>
+      <div>
+        <CollectionSelect
+          value={watch("collectionId")}
+          onChange={(id) => setValue("collectionId", id)}
+        />
       </div>
       <FormInput
         label="URL da Capa"

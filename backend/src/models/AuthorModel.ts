@@ -6,6 +6,7 @@ class AuthorModel extends Model {
   id: number | undefined;
   name: string | undefined;
   bio: string | undefined;
+  coverUrl: string | undefined;
 }
 
 AuthorModel.init(
@@ -20,6 +21,10 @@ AuthorModel.init(
       allowNull: false,
     },
     bio: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    coverUrl: {
       type: DataTypes.TEXT,
       allowNull: false,
     },

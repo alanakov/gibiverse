@@ -11,6 +11,7 @@ import { GenreSelect } from "@/components/custom/GenreSelect";
 import { CreateButton } from "@/components/custom/CreateButton";
 import { useUpdateComicBook } from "@/hooks/comicbooks/useUpdateComicBook";
 import { AuthorSelect } from "@/components/custom/AuthorSelect";
+import { CollectionSelect } from "@/components/custom/CollectionSelect";
 
 interface UpdateComicBookFormProps {
   comicBook: ComicBook;
@@ -79,6 +80,12 @@ export function UpdateComicBookForm({
         {errors.authorId && (
           <p className="text-sm text-red-500">{errors.authorId.message}</p>
         )}
+      </div>
+      <div>
+        <CollectionSelect
+          value={watch("collectionId")}
+          onChange={(id) => setValue("collectionId", id)}
+        />
       </div>
       <FormInput
         label="URL da Capa"

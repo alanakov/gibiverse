@@ -37,15 +37,18 @@ export const getCollectionById = async (
 
 export const createCollection = async (req: Request, res: Response) => {
   try {
-    const { name, description, authorId } = req.body;
-    if (!name || !authorId) {
-      return res.status(400).json({ error: "Name and authorId are required" });
+    const { name, description, authorId, coverUrl } = req.body;
+    if (!name || !authorId || !coverUrl) {
+      return res
+        .status(400)
+        .json({ error: "Name, authorId and coverUrl are required" });
     }
 
     const collection = await CollectionModel.create({
       name,
       description,
       authorId,
+      coverUrl,
     });
     res.status(201).json(collection);
   } catch (error) {
@@ -58,7 +61,7 @@ export const updateCollection = async (
   res: Response
 ) => {
   try {
-    const { name, description, authorId } = req.body;
+    const { name, description, authorId, coverUrl } = req.body;
     const collection = await CollectionModel.findByPk(req.params.id);
     if (!collection) {
       return res.status(404).json({ error: "Collection not found" });
@@ -67,6 +70,7 @@ export const updateCollection = async (
     collection.name = name || collection.name;
     collection.description = description || collection.description;
     collection.authorId = authorId || collection.authorId;
+    collection.coverUrl = coverUrl || collection.coverUrl;
 
     await collection.save();
     res.status(200).json(collection);

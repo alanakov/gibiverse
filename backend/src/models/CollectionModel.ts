@@ -6,6 +6,7 @@ class CollectionModel extends Model {
   id: number | undefined;
   name: string | undefined;
   description: string | undefined;
+  coverUrl: string | undefined;
   authorId: number | undefined;
 }
 
@@ -23,6 +24,10 @@ CollectionModel.init(
     description: {
       type: DataTypes.TEXT,
       allowNull: true,
+    },
+    coverUrl: {
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
     authorId: {
       type: DataTypes.INTEGER,
