@@ -1,35 +1,40 @@
 import { Request, Response } from "express";
 import AuthorModel from "../models/AuthorModel";
 import { paginate } from "../utils/paginate";
+import { getAuthorByIdService } from "../services/author/getAuthorById.service";
+import { createAuthorService } from "../services/author/createAuthor.service";
+import { getAllAuthorsService } from "../services/author/getAllAuthor.service";
+import { updateAuthorService } from "../services/author/updateAuthor.service";
+import { deleteAuthorByIdService } from "../services/author/deleteAuthorById.service";
 
 export const getAuthorById = async (
   req: Request<{ id: string }>,
   res: Response
 ) => {
   try {
-    const author = await AuthorModel.findByPk(req.params.id);
-    if (!author) {
+    const author = await getAuthorByIdService(req.params.id);
+    return res.status(200).json(author);
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
       return res.status(404).json({ error: "Author not found" });
     }
-    res.json(author);
-  } catch (error) {
-    res.status(500).json({ error: "Erro interno no servidor " + error });
+
+    return res.status(500).json({ error: "Erro interno no servidor" });
   }
 };
 
 export const createAuthor = async (req: Request, res: Response) => {
   try {
-    const { name, bio, coverUrl } = req.body;
-    if (!name || !bio || !coverUrl) {
+    const author = await createAuthorService(req.body);
+    return res.status(201).json(author);
+  } catch (error) {
+    if (error instanceof Error && error.message === "MISSING_FIELDS") {
       return res
         .status(400)
         .json({ error: "Name, bio and coverUrl are required" });
     }
 
-    const author = await AuthorModel.create({ name, bio, coverUrl });
-    res.status(201).json(author);
-  } catch (error) {
-    res.status(500).json({ error: "Erro interno no servidor " + error });
+    return res.status(500).json({ error: "Erro interno no servidor" });
   }
 };
 
@@ -38,16 +43,10 @@ export const getAllAuthors = async (req: Request, res: Response) => {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
 
-    const result = await paginate({
-      model: AuthorModel,
-      page,
-      limit,
-      order: [["name", "ASC"]],
-    });
-
-    res.json(result);
+    const authors = await getAllAuthorsService({ page, limit });
+    return res.status(200).json(authors);
   } catch (error) {
-    res.status(500).json({ error: "Erro interno no servidor " + error });
+    return res.status(500).json({ error: "Erro interno no servidor" });
   }
 };
 
@@ -56,20 +55,18 @@ export const updateAuthor = async (
   res: Response
 ) => {
   try {
-    const { name, bio, coverUrl } = req.body;
-    const author = await AuthorModel.findByPk(req.params.id);
-    if (!author) {
+    const updated = await updateAuthorService({
+      id: req.params.id,
+      ...req.body,
+    });
+
+    if (!updated) {
       return res.status(404).json({ error: "Author not found" });
     }
 
-    author.name = name || author.name;
-    author.bio = bio || author.bio;
-    author.coverUrl = coverUrl || author.coverUrl;
-
-    await author.save();
-    res.status(200).json(author);
+    return res.status(200).json(updated);
   } catch (error) {
-    res.status(500).json({ error: "Erro interno no servidor " + error });
+    return res.status(500).json({ error: "Erro interno no servidor" });
   }
 };
 
@@ -78,14 +75,14 @@ export const destroyAuthorById = async (
   res: Response
 ) => {
   try {
-    const author = await AuthorModel.findByPk(req.params.id);
-    if (!author) {
+    const deleted = await deleteAuthorByIdService(req.params.id);
+
+    if (!deleted) {
       return res.status(404).json({ error: "Author not found" });
     }
 
-    await author.destroy();
-    res.status(204).send();
+    return res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: "Erro interno no servidor " + error });
+    return res.status(500).json({ error: "Erro interno no servidor" });
   }
 };

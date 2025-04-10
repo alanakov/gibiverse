@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { verifyToken } from "../utils/jwt";
-import { extractTokenFromHeader } from "../utils/extractToken";
-import { isValidDecodedToken } from "../utils/validateDecodedToken";
+import { verifyToken } from "../utils/auth/jwt";
+import { extractTokenFromHeader } from "../utils/auth/extractToken";
+import { isValidDecodedToken } from "../utils/auth/validateDecodedToken";
 
 declare global {
   namespace Express {

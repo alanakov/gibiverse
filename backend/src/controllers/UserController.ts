@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import UserModel from "../models/UserModel";
 import { paginate } from "../utils/paginate";
 import * as bcrypt from "bcrypt";
-import { generateToken } from "../utils/jwt";
+import { generateToken } from "../utils/auth/jwt";
 import { cpf as cpfValidator } from "cpf-cnpj-validator";
 import { Op } from "sequelize";
 
