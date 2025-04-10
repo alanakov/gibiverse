@@ -74,7 +74,7 @@ export function UpdateComicBookForm({
 
       <div>
         <AuthorSelect
-          value={comicBook.authorId}
+          value={watch("authorId")}
           onChange={(id) => setValue("authorId", id)}
         />
         {errors.authorId && (
