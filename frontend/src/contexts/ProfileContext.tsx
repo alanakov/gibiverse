@@ -36,8 +36,7 @@ export const ProfileProvider = ({
     try {
       const { data } = await api.get<User>("/users/me");
       setUser(data);
-    } catch (error) {
-      console.error("Erro ao buscar usuário:", error);
+    } catch {
       toast.error("Erro ao carregar informações do usuário");
     }
   };
@@ -49,8 +48,7 @@ export const ProfileProvider = ({
       const { data } = await api.put<User>(`/users/${user.id}`, userData);
       setUser(data);
       toast.success("Perfil atualizado com sucesso!");
-    } catch (error) {
-      console.error("Erro ao atualizar usuário:", error);
+    } catch {
       toast.error("Erro ao atualizar perfil");
     }
   };
