@@ -1,12 +1,10 @@
 import { Request, Response } from "express";
 import request from "supertest";
-import {
-  updateGenre,
-  destroyGenreById,
-} from "../src/controllers/GenreController";
 import GenreModel from "../src/models/GenreModel";
 import app from "../src/index";
 import sequelize from "../src/config/database";
+import { updateGenre } from "../src/controllers/genre/updateGenre.controller";
+import { deleteGenreById } from "../src/controllers/genre/deleteGenreById.controller";
 
 describe("Testes das rotas de gêneros", () => {
   let req: Partial<Request>;
@@ -52,7 +50,7 @@ describe("Testes das rotas de gêneros", () => {
     test("Erro 404 ao deletar gênero inexistente", async () => {
       jest.spyOn(GenreModel, "findByPk").mockResolvedValue(null);
 
-      await destroyGenreById(req as Request<{ id: string }>, res as Response);
+      await deleteGenreById(req as Request<{ id: string }>, res as Response);
 
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ error: "Genre not found" });

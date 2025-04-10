@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import UserModel from "../src/models/UserModel";
-import { generateToken } from "../src/utils/auth/jwt";
 import { loginUser } from "../src/controllers/login/loginUser.controller";
+import { generateToken } from "../src/utils/auth/jwt";
 
 jest.mock("../src/models/UserModel");
-jest.mock("../src/utils/jwt");
+jest.mock("../src/utils/auth/jwt");
 
 describe("Testes de autenticação do usuário", () => {
   let req: Partial<Request>;

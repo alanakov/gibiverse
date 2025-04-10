@@ -1,12 +1,10 @@
 import { Request, Response } from "express";
 import request from "supertest";
-import {
-  updateAuthor,
-  destroyAuthorById,
-} from "../src/controllers/AuthorController";
 import AuthorModel from "../src/models/AuthorModel";
 import app from "../src/index";
 import sequelize from "../src/config/database";
+import { updateAuthor } from "../src/controllers/author/updateAuthor.controller";
+import { deleteAuthorById } from "../src/controllers/author/deleteAuthorById.controller";
 
 describe("Testes das rotas de autores", () => {
   let req: Partial<Request>;
@@ -54,7 +52,7 @@ describe("Testes das rotas de autores", () => {
     test("Erro 404 ao deletar autor inexistente", async () => {
       jest.spyOn(AuthorModel, "findByPk").mockResolvedValue(null);
 
-      await destroyAuthorById(req as Request<{ id: string }>, res as Response);
+      await deleteAuthorById(req as Request<{ id: string }>, res as Response);
 
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ error: "Author not found" });

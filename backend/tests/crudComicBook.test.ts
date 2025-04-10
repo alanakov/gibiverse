@@ -1,12 +1,10 @@
 import { Request, Response } from "express";
 import request from "supertest";
-import {
-  updateComicBook,
-  destroyComicBookById,
-} from "../src/controllers/ComicBookController";
 import ComicBookModel from "../src/models/ComicBookModel";
 import app from "../src/index";
 import sequelize from "../src/config/database";
+import { updateComicBook } from "../src/controllers/comicBook/updateComicBook.controller";
+import { deleteComicBookById } from "../src/controllers/comicBook/deleteComicBookById.controller";
 
 describe("Testes das rotas de gibis", () => {
   let req: Partial<Request>;
@@ -57,7 +55,7 @@ describe("Testes das rotas de gibis", () => {
     test("Erro 404 ao deletar gibi inexistente", async () => {
       jest.spyOn(ComicBookModel, "findByPk").mockResolvedValue(null);
 
-      await destroyComicBookById(
+      await deleteComicBookById(
         req as Request<{ id: string }>,
         res as Response
       );

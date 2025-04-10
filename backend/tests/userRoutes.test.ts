@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import request from "supertest";
-import { destroyUser } from "../src/controllers/UserController";
 import UserModel from "../src/models/UserModel";
 import app from "../src/app";
 import sequelize from "../src/config/database";
 import * as cpfValidator from "cpf-cnpj-validator";
 import bcrypt from "bcrypt";
+import { deleteUserById } from "../src/controllers/user/deleteUserById.controller";
 
 // Mock dos models e validações
 jest.mock("../src/models/UserModel");
@@ -48,7 +48,7 @@ describe("Testes das rotas de usuario", () => {
       jest.spyOn(UserModel, "findByPk").mockResolvedValue(null);
 
       req.params = { id: "1" };
-      await destroyUser(req as Request<{ id: string }>, res as Response);
+      await deleteUserById(req as Request<{ id: string }>, res as Response);
 
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({

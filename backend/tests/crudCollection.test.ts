@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
 import request from "supertest";
-import {
-  updateCollection,
-  destroyCollectionById,
-} from "../src/controllers/CollectionController";
+
 import CollectionModel from "../src/models/CollectionModel";
 import app from "../src/index";
 import sequelize from "../src/config/database";
+import { updateCollection } from "../src/controllers/collection/updateCollection.controller";
+import { deleteCollectionById } from "../src/controllers/collection/deleteCollectionById.controller";
 
 describe("Testes das rotas de coleções", () => {
   let req: Partial<Request>;
@@ -55,7 +54,7 @@ describe("Testes das rotas de coleções", () => {
     test("Erro 404 ao deletar coleção inexistente", async () => {
       jest.spyOn(CollectionModel, "findByPk").mockResolvedValue(null);
 
-      await destroyCollectionById(
+      await deleteCollectionById(
         req as Request<{ id: string }>,
         res as Response
       );

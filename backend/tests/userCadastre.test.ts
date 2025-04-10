@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { createUser } from "../src/controllers/UserController";
 import UserModel from "../src/models/UserModel";
 import { cpf as cpfValidator } from "cpf-cnpj-validator";
 import bcrypt from "bcrypt";
+import { createUser } from "../src/controllers/user/createUser.controller";
 
 jest.mock("../src/models/UserModel");
 jest.mock("cpf-cnpj-validator");
@@ -90,7 +90,7 @@ describe("Testes de cadastro de usuário", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({
       error: "Senha muito fraca",
-      detalhes: {
+      details: {
         temMaiuscula: false,
         temMinuscula: false,
         temNumero: true,

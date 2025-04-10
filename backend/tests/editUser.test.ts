@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { updateUser } from "../src/controllers/UserController";
 import UserModel from "../src/models/UserModel";
 import * as cpfValidator from "cpf-cnpj-validator";
 import bcrypt from "bcrypt";
+import { updateUser } from "../src/controllers/user/updateUser.controller";
 
 // Mock dos models e validações
 jest.mock("../src/models/UserModel");
