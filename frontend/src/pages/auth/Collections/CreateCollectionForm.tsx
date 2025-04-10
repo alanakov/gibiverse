@@ -48,6 +48,7 @@ export function CreateCollectionForm({
         register={register}
         error={errors.description?.message}
       />
+
       <div>
         <AuthorSelect
           value={watch("authorId")}
