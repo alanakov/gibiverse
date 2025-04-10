@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/custom/FormInput";
@@ -28,15 +27,13 @@ export function UpdateGenreForm({
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<UpdateGenreSchemaType>({
     resolver: zodResolver(updateGenreSchema),
+    defaultValues: {
+      name: genre.name,
+    },
   });
-
-  useEffect(() => {
-    setValue("name", genre.name);
-  }, [genre, setValue]);
 
   return (
     <form onSubmit={handleSubmit(handleUpdateGenre)} className="space-y-4">

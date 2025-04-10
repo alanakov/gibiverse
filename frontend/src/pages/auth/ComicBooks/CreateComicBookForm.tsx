@@ -74,13 +74,15 @@ export function CreateComicBookForm({
           onChange={(id) => setValue("collectionId", id ?? undefined)}
         />
       </div>
+
       <FormInput
-        label="URL da Imagem do Autor"
+        label="URL da Capa do Gibi"
         name="coverUrl"
-        placeholder="URL da Imagem do Autor"
+        placeholder="URL da Capa do Gibi"
         register={register}
         error={errors.coverUrl?.message}
       />
+
       <div className="flex justify-end gap-2">
         <button
           type="button"

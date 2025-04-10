@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { DashboardSidebar } from "@/components/custom/DashboardSidebar";
 import { GenresHeader } from "./GenresHeader";
 import { GenresTable } from "./GenresTable";
 import { DashboardPagination } from "@/components/custom/DashboardPagination";
@@ -28,6 +27,10 @@ export function GenresPage() {
     fetchGenres();
   }, [currentPage]);
 
+  const handleCloseSheet = () => {
+    setSelectedGenreToEdit(null);
+  };
+
   const handleEdit = async (id: number) => {
     try {
       const genre = await getGenreById(id);
@@ -39,7 +42,6 @@ export function GenresPage() {
 
   return (
     <div className="flex min-h-screen w-full">
-      <DashboardSidebar />
       <div className="flex flex-1 flex-col space-y-10 p-10">
         <GenresHeader onGenreCreated={fetchGenres} />
         <div className="flex flex-1 flex-col justify-between">
@@ -47,12 +49,10 @@ export function GenresPage() {
             genres={genres}
             onDelete={handleDeleteGenre}
             onEdit={(genre) => handleEdit(genre.id)}
+            currentPage={currentPage}
           />
 
-          <Sheet
-            open={!!selectedGenreToEdit}
-            onOpenChange={() => setSelectedGenreToEdit(null)}
-          >
+          <Sheet open={!!selectedGenreToEdit} onOpenChange={handleCloseSheet}>
             <SheetContent className="border-0 bg-(--background-color) p-4 sm:max-w-md">
               <SheetHeader>
                 <SheetTitle className="text-white">Editar Gênero</SheetTitle>
@@ -64,10 +64,10 @@ export function GenresPage() {
                 <UpdateGenreForm
                   genre={selectedGenreToEdit}
                   onSuccess={() => {
+                    handleCloseSheet();
                     fetchGenres();
-                    setSelectedGenreToEdit(null);
                   }}
-                  onCancel={() => setSelectedGenreToEdit(null)}
+                  onCancel={handleCloseSheet}
                 />
               )}
             </SheetContent>

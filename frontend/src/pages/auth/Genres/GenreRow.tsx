@@ -11,8 +11,8 @@ interface GenreRowProps {
 export function GenreRow({ genre, onEdit, onDelete }: GenreRowProps) {
   return (
     <TableRow className="hover:bg-zinc-800">
-      <TableCell>{genre.name}</TableCell>
-      <TableCell className="text-center">
+      <TableCell className="w-[200px]">{genre.name}</TableCell>
+      <TableCell className="w-[10px] text-center">
         <GenreActions genre={genre} onEdit={onEdit} onDelete={onDelete} />
       </TableCell>
     </TableRow>

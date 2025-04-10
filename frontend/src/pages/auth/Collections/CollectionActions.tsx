@@ -42,12 +42,10 @@ export function CollectionActions({
           <EditButton onClick={() => onEdit?.(collection)} />
         </DropdownMenuItem>
 
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()} asChild>
-          <DeleteButton
-            itemName={collection.name}
-            onDelete={() => onDelete?.(collection.id)}
-          />
-        </DropdownMenuItem>
+        <DeleteButton
+          itemName={collection.name}
+          onDelete={() => onDelete?.(collection.id)}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );

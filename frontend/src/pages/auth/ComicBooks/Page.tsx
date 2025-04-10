@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { DashboardSidebar } from "@/components/custom/DashboardSidebar";
 import { DashboardPagination } from "@/components/custom/DashboardPagination";
 import {
   Sheet,
@@ -49,7 +48,6 @@ export function ComicBooksPage() {
 
   return (
     <div className="flex min-h-screen w-full">
-      <DashboardSidebar />
       <div className="flex flex-1 flex-col space-y-10 p-10">
         <ComicBooksHeader onComicBookCreated={fetchComicBooks} />
         <div className="flex flex-1 flex-col justify-between">

@@ -31,6 +31,7 @@ export function UpdateCollectionForm({
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<UpdateCollectionSchemaType>({
     resolver: zodResolver(updateCollectionSchema),
@@ -60,7 +61,7 @@ export function UpdateCollectionForm({
       />
       <div>
         <AuthorSelect
-          value={collection.authorId}
+          value={watch("authorId")}
           onChange={(id) => setValue("authorId", id)}
         />
         {errors.authorId && (

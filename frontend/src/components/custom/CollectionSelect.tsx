@@ -35,7 +35,8 @@ export function CollectionSelect({ value, onChange }: CollectionSelectProps) {
   }, [value, collections]);
 
   const handleChange = (id: string) => {
-    if (id === "") {
+    if (id === "none") {
+      // Changed from "" to "none"
       setSelectedValue("");
       onChange(null);
       return;
@@ -56,7 +57,8 @@ export function CollectionSelect({ value, onChange }: CollectionSelectProps) {
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">Nenhuma coleção</SelectItem>
+          <SelectItem value="none">Nenhuma coleção</SelectItem>{" "}
+          {/* Changed from "" to "none" */}
           {collections.map((collection) => (
             <SelectItem key={collection.id} value={String(collection.id)}>
               {collection.name}

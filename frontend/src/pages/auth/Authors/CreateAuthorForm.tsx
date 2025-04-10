@@ -45,9 +45,9 @@ export function CreateAuthorForm({
         error={errors.bio?.message}
       />
       <FormInput
-        label="URL da Capa"
+        label="URL da Imagem do Autor"
         name="coverUrl"
-        placeholder="URL da Capa"
+        placeholder="URL da Imagem do Autor"
         register={register}
         error={errors.coverUrl?.message}
       />

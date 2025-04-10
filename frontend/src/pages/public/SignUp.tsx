@@ -19,16 +19,18 @@ const signupSchema = z
     path: ["confirmPassword"],
   });
 
+type SignUpData = z.infer<typeof signupSchema>;
+
 export function Signup() {
   const navigate = useNavigate();
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async ({ name, email, cpf, password }: SignUpData) => {
     try {
       await api.post("/users", {
-        name: data.name,
-        email: data.email,
-        cpf: data.cpf,
-        password: data.password,
+        name,
+        email,
+        cpf,
+        password,
       });
 
       toast.success(
@@ -36,10 +38,7 @@ export function Signup() {
       );
       navigate("/login");
     } catch (error: any) {
-      console.error("Erro ao cadastrar:", error);
-      toast.error(
-        error.response?.data?.error || "Erro ao cadastrar. Tente novamente.",
-      );
+      toast.error(error.response?.data?.error ?? "Erro ao cadastrar");
     }
   };
 
