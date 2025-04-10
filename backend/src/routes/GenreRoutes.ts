@@ -1,4 +1,5 @@
 import express from "express";
+import { listGenres } from "../controllers/GenreController";
 import {
   createGenre,
   destroyGenreById,

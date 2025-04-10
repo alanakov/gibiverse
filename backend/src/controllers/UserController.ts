@@ -13,14 +13,37 @@ export const createUser = async (req: Request, res: Response) => {
         .json({ error: "Todos os campos são obrigatórios" });
     }
 
+    // Validação de CPF
+    if (!cpfValidator.cpf.isValid(cpf)) {
+      return res.status(400).json({ error: "CPF inválido" });
+    }
+
+    // Validação de email
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: "Email inválido" });
     }
-    // Verifica se o usuário já existe
-    const existingUser = await UserModel.findOne({ where: { email } });
+
+    // Validação de força da senha
+    const passwordValidation = UserModel.validarNivelSenha(password);
+    if (!passwordValidation.valida) {
+      return res.status(400).json({
+        error: "Senha muito fraca",
+        detalhes: passwordValidation.requisitos,
+      });
+    }
+
+    // Verifica se usuário já existe
+    const existingUser = await UserModel.findOne({
+      where: {
+        [Op.or]: [{ email }, { cpf }],
+      },
+    });
+
     if (existingUser) {
-      return res.status(409).json({ error: "Email já está em uso" });
+      return res.status(409).json({
+        error: "Email ou CPF já cadastrado",
+      });
     }
 
     // Criptografa a senha antes de salvar
@@ -31,16 +54,18 @@ export const createUser = async (req: Request, res: Response) => {
       name,
       email,
       password: hashedPassword,
+      cpf,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       id: user.id,
       name: user.name,
       email: user.email,
-      // Não retornar a senha, mesmo criptografada
+      cpf: user.cpf,
     });
   } catch (error) {
-    res.status(500).json({ error: "Erro interno no servidor " + error });
+    console.error("Erro no registro:", error);
+    return res.status(500).json({ error: "Erro interno no servidor" });
   }
 };
 
@@ -56,6 +81,12 @@ export const getAllUsers = async (req: Request, res: Response) => {
       order: [["name", "ASC"]],
     });
 
+    // Exclude the password field from the retrieved data
+    result.data = result.data.map((user: any) => {
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    });
+
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: "Erro interno no servidor " + error });
@@ -67,7 +98,9 @@ export const getUserById = async (
   res: Response
 ) => {
   try {
-    const user = await UserModel.findByPk(req.params.id);
+    const user = await UserModel.findByPk(req.params.id, {
+      attributes: { exclude: ["password"] }, // Não retorna a senha
+    });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -103,28 +136,34 @@ export const updateUser = async (
       return res.status(400).json({ error: "Email inválido" });
     }
 
+    // Validação de CPF
+    if (!cpfValidator.cpf.isValid(cpf)) {
+      return res.status(400).json({ error: "CPF inválido" });
+    }
+
     const user = await UserModel.findByPk(req.params.id);
     if (!user) {
       return res.status(404).json({ error: "Usuário não encontrado" });
     }
 
-    const validacaoNivelSenha = UserModel.validarNivelSenha(password);
-    if (!validacaoNivelSenha.valida) {
-      return res.status(400).json({
-        error: "Senha muito fraca",
-        detalhes: validacaoNivelSenha.requisitos,
-      });
+    // Validação de senha (se foi fornecida)
+    if (password) {
+      const passwordValidation = UserModel.validarNivelSenha(password);
+      if (!passwordValidation.valida) {
+        return res.status(400).json({
+          error: "Senha muito fraca",
+          detalhes: passwordValidation.requisitos,
+        });
+      }
+
+      // Criptografa a nova senha
+      const saltRounds = 10;
+      user.password = await bcrypt.hash(password, saltRounds);
     }
 
     user.name = name;
     user.email = email;
     user.cpf = cpf;
-
-    // Se uma nova senha foi fornecida, criptografa antes de salvar
-    if (password) {
-      const saltRounds = 10;
-      user.password = await bcrypt.hash(password, saltRounds);
-    }
 
     await user.save();
 

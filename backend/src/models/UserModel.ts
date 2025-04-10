@@ -58,6 +58,20 @@ UserModel.init(
       allowNull: false,
       unique: true,
     },
+    cpf: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isValidCPF(value: string) {
+          // Validação personalizada
+          const cpfValidator = require("cpf-cnpj-validator");
+          if (!cpfValidator.cpf.isValid(value)) {
+            throw new Error("CPF inválido");
+          }
+        },
+      },
+    },
   },
   {
     sequelize,
