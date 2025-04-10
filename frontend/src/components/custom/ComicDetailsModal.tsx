@@ -55,17 +55,13 @@ export function ComicDetailsModal({
               </div>
 
               <div className="mt-auto flex w-100 items-center justify-between pt-4">
-                {comic.Author && (
-                  <p className="italic">
-                    <span className="font-semibold italic">Autor:</span>{" "}
-                    {comic.Author.name}
-                  </p>
-                )}
-                {comic.Genre && (
-                  <span className="rounded-md bg-zinc-700 px-4 py-1 text-sm text-white">
-                    {comic.Genre.name}
-                  </span>
-                )}
+                <p className="italic">
+                  <span className="font-semibold italic">Autor:</span>{" "}
+                  {comic.Author?.name || "Autor desconhecido"}
+                </p>
+                <span className="rounded-md bg-zinc-700 px-4 py-1 text-sm text-white">
+                  {comic.Genre?.name || "Sem gênero"}
+                </span>
               </div>
             </div>
           </div>

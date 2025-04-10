@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "@/services/api";
-import { CustomCard } from "../custom/CustomCard";
-import { ComicDetailsModal } from "../../pages/auth/Home/ComicDetailsModal";
+import { CustomCard } from "../../../../components/custom/CustomCard";
+import { ComicDetailsModal } from "../../../../components/custom/ComicDetailsModal";
 import { toast } from "sonner";
 
 interface Comic {

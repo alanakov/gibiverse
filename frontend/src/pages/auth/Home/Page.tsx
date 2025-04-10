@@ -1,6 +1,6 @@
 import { useProfile } from "@/contexts/ProfileContext";
-import { LatestComics } from "@/components/sections/LatestComics";
-import { LatestAuthors } from "@/components/sections/LatestAuthors";
+import { LatestComics } from "@/pages/auth/Home/sections/LatestComics";
+import { LatestAuthors } from "@/pages/auth/Home/sections/LatestAuthors";
 
 export function HomePage() {
   const { user } = useProfile();
