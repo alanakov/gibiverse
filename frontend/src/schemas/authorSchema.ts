@@ -11,6 +11,7 @@ export const createAuthorSchema = z.object({
     .min(10, "A biografia deve ter pelo menos 10 caracteres")
     .max(1000, "A biografia deve ter no máximo 1000 caracteres")
     .trim(),
+  coverUrl: z.string().url("URL inválida"),
 });
 
 export type CreateAuthorSchemaType = z.infer<typeof createAuthorSchema>;

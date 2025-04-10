@@ -10,6 +10,7 @@ export const createCollectionSchema = z.object({
     .string()
     .max(1000, "A descrição deve ter no máximo 1000 caracteres")
     .optional(),
+  coverUrl: z.string().url("URL inválida"),
   authorId: z.number({
     required_error: "O autor é obrigatório",
   }),

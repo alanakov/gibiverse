@@ -42,6 +42,7 @@ export const UpdateAuthorForm = ({
       reset({
         name: author.name,
         bio: author.bio,
+        coverUrl: author.coverUrl,
       });
     }
   }, [author, reset]);
@@ -67,6 +68,14 @@ export const UpdateAuthorForm = ({
         placeholder="Biografia do Autor"
         register={register}
         error={errors.bio?.message}
+      />
+
+      <FormInput
+        label="URL da Capa"
+        name="coverUrl"
+        placeholder="URL da Capa"
+        register={register}
+        error={errors.coverUrl?.message}
       />
 
       <div className="flex justify-end gap-2">

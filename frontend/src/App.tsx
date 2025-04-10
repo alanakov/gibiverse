@@ -19,10 +19,10 @@ export default function App() {
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-
             <Route path="/home" element={<HomePage />} />
             <Route path="/authors" element={<AuthorsPage />} />
-            <Route path="/books" element={<ComicBooksPage />} />
+            <Route path="/comicbooks" element={<ComicBooksPage />} />
+            path
             <Route path="/genres" element={<GenresPage />} />
             <Route path="/collections" element={<CollectionsPage />} />
           </Routes>

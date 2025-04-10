@@ -10,7 +10,7 @@ export const DashboardSidebar = () => {
   const sidebarItems = [
     { label: "Home", href: "/home", icon: BiSolidHome },
     { label: "Autores", href: "/authors", icon: IoIosPerson },
-    { label: "Gibis", href: "/books", icon: FaBookOpen },
+    { label: "Gibis", href: "/comicbooks", icon: FaBookOpen }, // Updated path
     { label: "Gêneros", href: "/genres", icon: IoMdPricetags },
     { label: "Coleções", href: "/collections", icon: BsCollectionFill },
   ];

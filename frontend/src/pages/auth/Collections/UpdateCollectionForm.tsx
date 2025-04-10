@@ -38,6 +38,7 @@ export function UpdateCollectionForm({
       name: collection.name,
       description: collection.description || "",
       authorId: collection.authorId,
+      coverUrl: collection.coverUrl || "",
     },
   });
 
@@ -66,6 +67,13 @@ export function UpdateCollectionForm({
           <p className="text-sm text-red-500">{errors.authorId.message}</p>
         )}
       </div>
+      <FormInput
+        label="URL da Capa"
+        name="coverUrl"
+        placeholder="URL da Capa"
+        register={register}
+        error={errors.coverUrl?.message}
+      />
       <div className="flex justify-end gap-2">
         <button
           type="button"

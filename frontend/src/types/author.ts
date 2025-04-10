@@ -2,4 +2,5 @@ export interface Author {
   id: number;
   name: string;
   bio: string;
+  coverUrl: string;
 }

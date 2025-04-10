@@ -1,6 +1,7 @@
 export interface Collection {
   id: number;
   name: string;
-  description?: string;
+  description: string;
+  coverUrl: string;
   authorId: number;
 }
