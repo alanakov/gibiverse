@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { loginUser } from "../src/controllers/LoginController";
 import UserModel from "../src/models/UserModel";
 import { generateToken } from "../src/utils/auth/jwt";
+import { loginUser } from "../src/controllers/login/loginUser.controller";
 
 jest.mock("../src/models/UserModel");
 jest.mock("../src/utils/jwt");
