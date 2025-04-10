@@ -13,7 +13,6 @@ export function useCreateCollection(onSuccess?: () => void) {
       toast.success("Coleção criada com sucesso!");
       onSuccess?.();
     } catch (error) {
-      console.error("Erro ao criar coleção:", error);
       toast.error("Erro ao criar coleção");
     } finally {
       setIsSubmitting(false);

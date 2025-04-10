@@ -13,7 +13,6 @@ export function useCreateComicBook(onSuccess?: () => void) {
       toast.success("ComicBook criado com sucesso!");
       onSuccess?.();
     } catch (error) {
-      console.error("Erro ao criar comicBook", error);
       toast.error("Erro ao criar comicBook");
     } finally {
       setIsSubmitting(false);

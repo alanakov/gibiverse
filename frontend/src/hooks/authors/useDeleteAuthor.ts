@@ -12,7 +12,6 @@ export function useDeleteAuthor(onSuccess?: () => void) {
       toast.success("Autor excluído com sucesso!");
       onSuccess?.();
     } catch (error) {
-      console.error("Erro ao excluir autor:", error);
       toast.error("Erro ao excluir autor");
     } finally {
       setIsDeleting(false);

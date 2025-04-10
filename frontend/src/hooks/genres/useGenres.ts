@@ -19,7 +19,6 @@ export function useGenres(initialPage = 1, pageSize = 10) {
       setTotalPages(data.totalPages);
       setIsLoaded(true);
     } catch (error) {
-      console.error("Erro ao buscar gêneros:", error);
       toast.error("Erro ao carregar gêneros");
     } finally {
       setIsLoading(false);

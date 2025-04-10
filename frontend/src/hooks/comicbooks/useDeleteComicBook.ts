@@ -12,7 +12,6 @@ export function useDeleteComicBook(onSuccess?: () => void) {
       toast.success("ComicBook excluído com sucesso!");
       onSuccess?.();
     } catch (error) {
-      console.error("Erro ao excluir comicBook:", error);
       toast.error("Erro ao excluir comicBook");
     } finally {
       setIsDeleting(false);

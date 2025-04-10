@@ -13,7 +13,6 @@ export function useUpdateAuthor(id: number, onSuccess?: () => void) {
       toast.success("Autor atualizado com sucesso!");
       onSuccess?.();
     } catch (error) {
-      console.error("Erro ao atualizar autor:", error);
       toast.error("Erro ao atualizar autor");
     } finally {
       setIsSubmitting(false);

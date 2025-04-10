@@ -16,7 +16,6 @@ export function useCollections(initialPage = 1, pageSize = 10) {
       setCollections(data.data);
       setTotalPages(data.totalPages);
     } catch (error) {
-      console.error("Erro ao buscar coleções:", error);
       toast.error("Erro ao carregar coleções");
     } finally {
       setIsLoading(false);

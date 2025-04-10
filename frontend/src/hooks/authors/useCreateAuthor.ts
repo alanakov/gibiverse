@@ -13,7 +13,6 @@ export function useCreateAuthor(onSuccess?: () => void) {
       toast.success("Autor criado com sucesso!");
       onSuccess?.();
     } catch (error) {
-      console.error("Erro ao criar autor", error);
       toast.error("Erro ao criar autor");
     } finally {
       setIsSubmitting(false);

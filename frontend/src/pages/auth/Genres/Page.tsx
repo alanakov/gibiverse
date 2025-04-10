@@ -14,6 +14,7 @@ import { useDeleteGenre } from "@/hooks/genres/useDeleteGenre";
 import { Genre } from "@/types/genre";
 import { getGenreById } from "@/http/genres/getGenreById";
 import { UpdateGenreForm } from "./UpdateGenreForm";
+import { toast } from "sonner";
 
 export function GenresPage() {
   const { genres, currentPage, totalPages, fetchGenres, setCurrentPage } =
@@ -36,7 +37,7 @@ export function GenresPage() {
       const genre = await getGenreById(id);
       setSelectedGenreToEdit(genre);
     } catch (error) {
-      console.error("Erro ao buscar gênero:", error);
+      toast.error("Erro ao buscar gênero");
     }
   };
 
