@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { DashboardSidebar } from "@/components/custom/DashboardSidebar";
 import { CollectionsHeader } from "./CollectionsHeader";
 import { CollectionsTable } from "./CollectionsTable";
 import { DashboardPagination } from "@/components/custom/DashboardPagination";
@@ -32,6 +31,10 @@ export function CollectionsPage() {
     fetchCollections();
   }, [currentPage]);
 
+  const handleCloseSheet = () => {
+    setSelectedCollectionToEdit(null);
+  };
+
   const handleEdit = async (id: number) => {
     try {
       const collection = await getCollectionById(id);
@@ -43,7 +46,6 @@ export function CollectionsPage() {
 
   return (
     <div className="flex min-h-screen w-full">
-      <DashboardSidebar />
       <div className="flex flex-1 flex-col space-y-10 p-10">
         <CollectionsHeader onCollectionCreated={fetchCollections} />
         <div className="flex flex-1 flex-col justify-between">
@@ -53,9 +55,10 @@ export function CollectionsPage() {
             onEdit={(collection) => handleEdit(collection.id)}
             currentPage={currentPage}
           />
+
           <Sheet
             open={!!selectedCollectionToEdit}
-            onOpenChange={() => setSelectedCollectionToEdit(null)}
+            onOpenChange={handleCloseSheet}
           >
             <SheetContent className="border-0 bg-(--background-color) p-4 sm:max-w-md">
               <SheetHeader>
@@ -68,14 +71,15 @@ export function CollectionsPage() {
                 <UpdateCollectionForm
                   collection={selectedCollectionToEdit}
                   onSuccess={() => {
+                    handleCloseSheet();
                     fetchCollections();
-                    setSelectedCollectionToEdit(null);
                   }}
-                  onCancel={() => setSelectedCollectionToEdit(null)}
+                  onCancel={handleCloseSheet}
                 />
               )}
             </SheetContent>
           </Sheet>
+
           <DashboardPagination
             currentPage={currentPage}
             totalPages={totalPages}
