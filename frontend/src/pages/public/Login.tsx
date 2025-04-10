@@ -3,31 +3,32 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { AuthForm } from "@/components/custom/AuthForm";
 import api from "@/services/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 const loginSchema = z.object({
   email: z.string().email("E-mail inválido").min(1, "O e-mail é obrigatório"),
   password: z.string().min(6, "A senha deve ter no mínimo 6 caracteres"),
 });
 
+type LoginData = z.infer<typeof loginSchema>;
+
 export function Login() {
   const navigate = useNavigate();
+  const { setIsAuthenticated } = useAuth();
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async ({ email, password }: LoginData) => {
     try {
-      const response = await api.post("/login", {
-        email: data.email,
-        senha: data.password,
+      const { data } = await api.post("/login", {
+        email,
+        senha: password,
       });
 
-      localStorage.setItem("authToken", response.data.token);
-
+      localStorage.setItem("authToken", data.token);
+      setIsAuthenticated(true);
       toast.success("Login realizado com sucesso!");
       navigate("/home");
     } catch (error: any) {
-      console.error("Erro ao fazer login:", error);
-      toast.error(
-        error.response?.data?.error || "Erro ao fazer login. Tente novamente.",
-      );
+      toast.error(error.response?.data?.error ?? "Erro ao fazer login");
     }
   };
 

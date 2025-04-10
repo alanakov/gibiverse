@@ -26,7 +26,7 @@ export function AuthForm(props: AuthFormProps) {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md rounded bg-zinc-800 p-8 shadow">
+      <div className="w-full min-w-lg rounded bg-zinc-800 p-8 shadow">
         <header className="mb-6 flex items-center gap-3">
           <img className="w-8" src="../../src/assets/logo.svg" />
           <h1 className="text-2xl font-bold">Gibiverse</h1>
