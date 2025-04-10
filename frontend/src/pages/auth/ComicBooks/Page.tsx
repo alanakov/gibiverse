@@ -14,6 +14,7 @@ import { ComicBooksTable } from "./ComicBooksTable";
 import { UpdateComicBookForm } from "./UpdateComicBookForm";
 import { getComicBookById } from "@/http/comicBooks/getComicBookById";
 import { ComicBooksHeader } from "./ComicBookHeader";
+import { toast } from "sonner";
 
 export function ComicBooksPage() {
   const {
@@ -38,7 +39,7 @@ export function ComicBooksPage() {
       const comicBook = await getComicBookById(id);
       setSelectedComicBookToEdit(comicBook);
     } catch (error) {
-      console.error("Erro ao buscar gibi:", error);
+      toast.error("Erro ao buscar gibi");
     }
   };
 

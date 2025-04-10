@@ -14,6 +14,7 @@ import { UpdateAuthorForm } from "./UpdateAuthorForm";
 import { useAuthors } from "@/hooks/authors/useAuthors";
 import { useDeleteAuthor } from "@/hooks/authors/useDeleteAuthor";
 import { Author } from "@/types/author";
+import { toast } from "sonner";
 
 export function AuthorsPage() {
   const { authors, currentPage, totalPages, fetchAuthors, setCurrentPage } =
@@ -35,7 +36,7 @@ export function AuthorsPage() {
       const author = await getAuthorById(id);
       setSelectedAuthorToEdit(author);
     } catch (error) {
-      console.error("Erro ao buscar autor:", error);
+      toast.error("Erro ao buscar autor");
     }
   };
 
