@@ -19,7 +19,7 @@ import { PrivateRoute } from "./components/auth/PrivateRoute";
 import { NotFound } from "./pages/NotFound";
 
 const ProtectedRoutes = () => (
-  <div className="flex">
+  <div className="ml-20 flex">
     <DashboardSidebar />
     <PrivateRoute>
       <Routes>
