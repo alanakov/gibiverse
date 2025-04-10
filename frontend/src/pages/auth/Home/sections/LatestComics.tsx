@@ -66,14 +66,20 @@ export function LatestComics() {
     <div>
       <h2 className="mb-6 text-xl font-semibold">Últimos gibis cadastrados</h2>
       <div className="flex flex-nowrap items-center justify-center gap-6">
-        {comics.map((comic) => (
-          <CustomCard
-            key={comic.id}
-            imageUrl={comic.coverUrl}
-            name={comic.title}
-            onClick={() => handleComicClick(comic)}
-          />
-        ))}
+        {comics.length > 0 ? (
+          comics.map((comic) => (
+            <CustomCard
+              key={comic.id}
+              imageUrl={comic.coverUrl}
+              name={comic.title}
+              onClick={() => handleComicClick(comic)}
+            />
+          ))
+        ) : (
+          <p className="text-muted-foreground text-center">
+            Nenhum gibi cadastrado até o momento.
+          </p>
+        )}
       </div>
 
       {selectedComic && (

@@ -20,7 +20,7 @@ export function LatestAuthors() {
     const fetchAuthors = async () => {
       try {
         const response = await api.get("/authors", {
-          params: { page: 1, limit: 9999 }, // traz tudo
+          params: { page: 1, limit: 9999 },
         });
 
         const latestAuthors = response.data.data
@@ -28,7 +28,7 @@ export function LatestAuthors() {
             (a: Author, b: Author) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
           )
-          .slice(0, 5); // pega só os 5 mais recentes
+          .slice(0, 5);
 
         setAuthors(latestAuthors);
       } catch (error) {
@@ -56,14 +56,20 @@ export function LatestAuthors() {
         Últimos autores cadastrados
       </h2>
       <div className="flex flex-nowrap items-center justify-center gap-6">
-        {authors.slice(0, 5).map((author) => (
-          <CustomCard
-            key={author.id}
-            imageUrl={author.coverUrl}
-            name={author.name}
-            onClick={() => handleAuthorClick(author)}
-          />
-        ))}
+        {authors.length > 0 ? (
+          authors.map((author) => (
+            <CustomCard
+              key={author.id}
+              imageUrl={author.coverUrl}
+              name={author.name}
+              onClick={() => handleAuthorClick(author)}
+            />
+          ))
+        ) : (
+          <p className="text-muted-foreground text-center">
+            Nenhum autor cadastrado até o momento.
+          </p>
+        )}
       </div>
 
       {selectedAuthor && (
