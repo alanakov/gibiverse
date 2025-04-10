@@ -13,7 +13,6 @@ export function useUpdateGenre(id: number, onSuccess?: () => void) {
       toast.success("Gênero atualizado com sucesso!");
       onSuccess?.();
     } catch (error) {
-      console.error("Erro ao atualizar gênero:", error);
       toast.error("Erro ao atualizar gênero");
     } finally {
       setIsSubmitting(false);

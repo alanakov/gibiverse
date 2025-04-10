@@ -14,6 +14,7 @@ import { useCollections } from "@/hooks/collections/useCollections";
 import { useDeleteCollection } from "@/hooks/collections/useDeleteCollection";
 import { Collection } from "@/types/collection";
 import { getCollectionById } from "@/http/collections/getCollectionById";
+import { toast } from "sonner";
 
 export function CollectionsPage() {
   const {
@@ -40,7 +41,7 @@ export function CollectionsPage() {
       const collection = await getCollectionById(id);
       setSelectedCollectionToEdit(collection);
     } catch (error) {
-      console.error("Erro ao buscar coleção:", error);
+      toast.error("Erro ao buscar coleção");
     }
   };
 

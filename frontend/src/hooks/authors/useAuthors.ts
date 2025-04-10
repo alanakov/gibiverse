@@ -19,7 +19,6 @@ export function useAuthors(initialPage = 1, pageSize = 10) {
       setTotalPages(data.totalPages);
       setIsLoaded(true);
     } catch (error) {
-      console.error("Erro ao buscar autores:", error);
       toast.error("Erro ao carregar autores");
     } finally {
       setIsLoading(false);

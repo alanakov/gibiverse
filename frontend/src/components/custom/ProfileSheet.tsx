@@ -17,11 +17,6 @@ export const ProfileSheet = () => {
     formState: { errors, isSubmitting },
   } = useForm<ProfileSchemaType>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      cpf: "",
-    },
   });
 
   useEffect(() => {
@@ -29,23 +24,17 @@ export const ProfileSheet = () => {
       reset({
         name: user.name,
         email: user.email,
-        cpf: user.cpf ?? "", // Use nullish coalescing to provide empty string as fallback
+        cpf: user.cpf || "",
       });
     }
   }, [user, reset]);
 
-  const onSubmit = async (data: ProfileSchemaType) => {
-    try {
-      await updateUser(data);
-      setOpen(false);
-    } catch (error) {
-      console.error("Erro ao atualizar perfil:", error);
-    }
-  };
+  const onSubmit = handleSubmit(async (data) => {
+    await updateUser(data);
+    setOpen(false);
+  });
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -60,7 +49,7 @@ export const ProfileSheet = () => {
         className="w-[400px] border-0 bg-(--background-color) p-6"
       >
         <h2 className="mb-4 text-lg font-semibold">Perfil do Usuário</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4">
           <FormInput
             label="Nome"
             name="name"
@@ -72,13 +61,13 @@ export const ProfileSheet = () => {
             name="email"
             type="email"
             register={register}
-            error={errors.email?.message}
+            disabled
           />
           <FormInput
             label="CPF"
             name="cpf"
-            register={register}
             type="text"
+            register={register}
             disabled
           />
           <Button

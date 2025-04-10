@@ -19,9 +19,9 @@ export const DashboardSidebar = () => {
     <div className="flex">
       <aside className="w-[80px] shrink-0 border-r border-zinc-800 md:w-[90px]">
         <header className="flex w-full flex-col items-center justify-center space-y-3 bg-(--background-color) p-3">
-          <div className="flex justify-center">
-            <img className="w-10" src="/src/assets/logo.svg" alt="Logo" />
-          </div>
+          <NavLink to="/home" className="flex justify-center">
+            <img className="mb-4 w-10" src="/src/assets/logo.svg" alt="Logo" />
+          </NavLink>
           <ProfileSheet />
         </header>
 

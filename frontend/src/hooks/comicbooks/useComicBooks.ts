@@ -16,7 +16,6 @@ export function useComicBooks(initialPage = 1, pageSize = 10) {
       setComicBooks(data.data);
       setTotalPages(data.totalPages);
     } catch (error) {
-      console.error("Erro ao buscar gibis:", error);
       toast.error("Erro ao carregar gibis");
     } finally {
       setIsLoading(false);

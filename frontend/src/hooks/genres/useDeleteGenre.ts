@@ -12,7 +12,6 @@ export function useDeleteGenre(onSuccess?: () => void) {
       toast.success("Gênero excluído com sucesso!");
       onSuccess?.();
     } catch (error) {
-      console.error("Erro ao excluir gênero:", error);
       toast.error("Erro ao excluir gênero");
     } finally {
       setIsDeleting(false);

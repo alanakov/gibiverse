@@ -13,7 +13,6 @@ export function useCreateGenre(onSuccess?: () => void) {
       toast.success("Gênero criado com sucesso!");
       onSuccess?.();
     } catch (error) {
-      console.error("Erro ao criar gênero", error);
       toast.error("Erro ao criar gênero");
     } finally {
       setIsSubmitting(false);

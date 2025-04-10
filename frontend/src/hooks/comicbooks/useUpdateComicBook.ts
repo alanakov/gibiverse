@@ -13,7 +13,6 @@ export function useUpdateComicBook(id: number, onSuccess?: () => void) {
       toast.success("ComicBook atualizado com sucesso!");
       onSuccess?.();
     } catch (error) {
-      console.error("Erro ao atualizar comicBook:", error);
       toast.error("Erro ao atualizar comicBook");
     } finally {
       setIsSubmitting(false);

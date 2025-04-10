@@ -1,23 +1,19 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "@/services/api";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  cpf: string | null;
+}
 
 interface ProfileContextProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  user: { id: string; name: string; email: string; cpf?: string } | null;
-  setUser: (user: {
-    id: string;
-    name: string;
-    email: string;
-    cpf?: string;
-  }) => void;
-  updateUser: (updatedUser: {
-    name: string;
-    email: string;
-    cpf?: string;
-  }) => Promise<void>;
+  user: User | null;
+  updateUser: (data: Omit<User, "id">) => Promise<void>;
 }
 
 const ProfileContext = createContext<ProfileContextProps | undefined>(
@@ -29,50 +25,36 @@ export const ProfileProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { token } = useAuth();
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState<{
-    id: string;
-    name: string;
-    email: string;
-    cpf?: string;
-  } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      if (!token) return;
-
-      try {
-        const response = await api.get("/users/me");
-        setUser(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar usuário:", error);
-        toast.error("Erro ao carregar informações do usuário.");
-      }
-    };
-
     fetchUser();
-  }, [token]);
+  }, []);
 
-  const updateUser = async (updatedUser: {
-    name: string;
-    email: string;
-    cpf?: string;
-  }) => {
+  const fetchUser = async () => {
     try {
-      const response = await api.put(`/users/${user?.id}`, updatedUser);
-      setUser(response.data);
-      toast.success("Usuário atualizado com sucesso!");
-    } catch (error) {
-      console.error("Erro ao atualizar usuário:", error);
-      toast.error("Erro ao atualizar usuário. Tente novamente.");
+      const { data } = await api.get<User>("/users/me");
+      setUser(data);
+    } catch {
+      toast.error("Erro ao carregar informações do usuário");
+    }
+  };
+
+  const updateUser = async (userData: Omit<User, "id">) => {
+    if (!user) return;
+
+    try {
+      const { data } = await api.put<User>(`/users/${user.id}`, userData);
+      setUser(data);
+      toast.success("Perfil atualizado com sucesso!");
+    } catch {
+      toast.error("Erro ao atualizar perfil");
     }
   };
 
   return (
-    <ProfileContext.Provider
-      value={{ open, setOpen, user, setUser, updateUser }}
-    >
+    <ProfileContext.Provider value={{ open, setOpen, user, updateUser }}>
       {children}
     </ProfileContext.Provider>
   );
@@ -80,8 +62,7 @@ export const ProfileProvider = ({
 
 export const useProfile = () => {
   const context = useContext(ProfileContext);
-  if (!context) {
-    throw new Error("useProfile must be used within a ProfileProvider");
-  }
+  if (!context)
+    throw new Error("useProfile must be used within ProfileProvider");
   return context;
 };

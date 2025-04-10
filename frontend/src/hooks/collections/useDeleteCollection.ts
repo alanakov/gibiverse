@@ -12,7 +12,6 @@ export function useDeleteCollection(onSuccess?: () => void) {
       toast.success("Coleção excluída com sucesso!");
       onSuccess?.();
     } catch (error) {
-      console.error("Erro ao excluir coleção:", error);
       toast.error("Erro ao excluir coleção");
     } finally {
       setIsDeleting(false);

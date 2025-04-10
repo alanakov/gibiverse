@@ -13,7 +13,6 @@ export function useUpdateCollection(id: number, onSuccess?: () => void) {
       toast.success("Coleção atualizado com sucesso!");
       onSuccess?.();
     } catch (error) {
-      console.error("Erro ao atualizar coleção:", error);
       toast.error("Erro ao atualizar coleção");
     } finally {
       setIsSubmitting(false);
