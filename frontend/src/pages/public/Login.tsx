@@ -20,15 +20,23 @@ export function Login() {
     try {
       const { data } = await api.post("/login", {
         email,
-        senha: password,
+        password,
       });
+
+      if (!data.token) {
+        throw new Error("Token não recebido do servidor");
+      }
 
       localStorage.setItem("authToken", data.token);
       setIsAuthenticated(true);
       toast.success("Login realizado com sucesso!");
       navigate("/home");
     } catch (error: any) {
-      toast.error(error.response?.data?.error ?? "Erro ao fazer login");
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Falha na autenticação. Verifique suas credenciais.";
+      toast.error(errorMessage);
     }
   };
 
