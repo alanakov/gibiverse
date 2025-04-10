@@ -1,12 +1,10 @@
 import express from "express";
-import {
-  createCollection,
-  destroyCollectionById,
-  getAllCollections,
-  getCollectionById,
-  updateCollection,
-} from "../controllers/CollectionController";
 import { authMiddleware } from "../middleware/authMiddleware";
+import { createCollection } from "../controllers/collection/createCollection.controller";
+import { getAllCollections } from "../controllers/collection/getAllCollection.controller";
+import { getCollectionById } from "../controllers/collection/getCollectionById.controller";
+import { updateCollection } from "../controllers/collection/updateCollection.controller";
+import { deleteCollectionById } from "../controllers/collection/deleteCollectionById.controller";
 
 const collectionRouter = express.Router();
 
@@ -17,7 +15,7 @@ collectionRouter.put("/collections/:id", authMiddleware, updateCollection);
 collectionRouter.delete(
   "/collections/:id",
   authMiddleware,
-  destroyCollectionById
+  deleteCollectionById
 );
 
 export default collectionRouter;
