@@ -11,9 +11,10 @@ import { useGenres } from "@/hooks/genres/useGenres";
 interface GenreSelectProps {
   value: number | null;
   onChange: (id: number) => void;
+  required?: boolean;
 }
 
-export function GenreSelect({ value, onChange }: GenreSelectProps) {
+export function GenreSelect({ value, onChange, required }: GenreSelectProps) {
   const { genres, fetchGenres } = useGenres();
   const [selectedValue, setSelectedValue] = useState<string>("");
 
@@ -37,7 +38,10 @@ export function GenreSelect({ value, onChange }: GenreSelectProps) {
 
   return (
     <div>
-      <label className="mb-1 block text-sm text-zinc-200">Gênero</label>
+      <label className="mb-1 block text-sm text-zinc-200">
+        Gênero
+        {required && <span className="ml-1 text-red-500">*</span>}
+      </label>
       <Select value={selectedValue} onValueChange={handleChange}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Selecione um gênero">

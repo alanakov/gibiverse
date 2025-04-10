@@ -32,6 +32,7 @@ export function CreateGenreForm({ onSuccess, onCancel }: CreateGenreFormProps) {
         placeholder="Nome do Gênero"
         register={register}
         error={errors.name?.message}
+        required
       />
 
       <div className="flex justify-end gap-2">

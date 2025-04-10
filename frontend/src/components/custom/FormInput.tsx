@@ -1,38 +1,29 @@
 import { Input } from "@/components/ui/input";
 
-interface FormInputProps {
+interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   name: string;
-  type?: string;
-  placeholder?: string;
   register: any;
   error?: string;
-  disabled?: boolean;
+  required?: boolean;
 }
 
 export function FormInput({
   label,
   name,
-  type = "text",
-  placeholder,
   register,
   error,
-  disabled = false,
+  required,
+  ...rest
 }: FormInputProps) {
   return (
-    <div className="flex flex-col gap-1">
-      <label htmlFor={name} className="text-sm font-medium text-zinc-300">
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-white">
         {label}
+        {required && <span className="ml-1 text-red-500">*</span>}
       </label>
-      <Input
-        id={name}
-        type={type}
-        placeholder={placeholder}
-        {...register(name)}
-        disabled={disabled}
-        className={error ? "border-red-500" : ""}
-      />
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      <Input {...register(name)} {...rest} />
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
 }

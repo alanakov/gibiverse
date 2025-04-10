@@ -40,6 +40,7 @@ export function CreateCollectionForm({
         placeholder="Nome da Coleção"
         register={register}
         error={errors.name?.message}
+        required
       />
       <FormTextarea
         label="Descrição"
@@ -47,12 +48,14 @@ export function CreateCollectionForm({
         placeholder="Descrição da Coleção"
         register={register}
         error={errors.description?.message}
+        required
       />
 
       <div>
         <AuthorSelect
           value={watch("authorId")}
           onChange={(id) => setValue("authorId", id)}
+          required
         />
         {errors.authorId && (
           <p className="text-sm text-red-500">{errors.authorId.message}</p>
@@ -65,6 +68,7 @@ export function CreateCollectionForm({
         placeholder="URL da Imagem da Coleção"
         register={register}
         error={errors.coverUrl?.message}
+        required
       />
       <div className="flex justify-end gap-2">
         <button

@@ -41,6 +41,7 @@ export function CreateComicBookForm({
         placeholder="Título do Gibi"
         register={register}
         error={errors.title?.message}
+        required
       />
       <FormTextarea
         label="Descrição"
@@ -48,12 +49,14 @@ export function CreateComicBookForm({
         placeholder="Descrição do Gibi"
         register={register}
         error={errors.description?.message}
+        required
       />
 
       <div>
         <GenreSelect
           value={watch("genreId")}
           onChange={(id) => setValue("genreId", id)}
+          required
         />
         {errors.genreId && (
           <p className="text-sm text-red-500">{errors.genreId.message}</p>
@@ -63,6 +66,7 @@ export function CreateComicBookForm({
         <AuthorSelect
           value={watch("authorId")}
           onChange={(id) => setValue("authorId", id)}
+          required
         />
         {errors.authorId && (
           <p className="text-sm text-red-500">{errors.authorId.message}</p>
@@ -81,6 +85,7 @@ export function CreateComicBookForm({
         placeholder="URL da Capa do Gibi"
         register={register}
         error={errors.coverUrl?.message}
+        required
       />
 
       <div className="flex justify-end gap-2">

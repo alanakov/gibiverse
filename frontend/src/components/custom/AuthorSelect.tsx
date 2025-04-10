@@ -11,9 +11,10 @@ import { useAuthors } from "@/hooks/authors/useAuthors";
 interface AuthorSelectProps {
   value: number | null;
   onChange: (id: number) => void;
+  required?: boolean;
 }
 
-export function AuthorSelect({ value, onChange }: AuthorSelectProps) {
+export function AuthorSelect({ value, onChange, required }: AuthorSelectProps) {
   const { authors, fetchAuthors } = useAuthors();
   const [selectedValue, setSelectedValue] = useState<string>("");
 
@@ -37,7 +38,10 @@ export function AuthorSelect({ value, onChange }: AuthorSelectProps) {
 
   return (
     <div>
-      <label className="mb-1 block text-sm text-zinc-200">Autor</label>
+      <label className="mb-1 block text-sm text-zinc-200">
+        Autor
+        {required && <span className="ml-1 text-red-500">*</span>}
+      </label>
       <Select value={selectedValue} onValueChange={handleChange}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Selecione um autor">

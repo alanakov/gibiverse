@@ -4,6 +4,7 @@ interface FormTextareaProps {
   register: any;
   error?: string;
   placeholder?: string;
+  required?: boolean;
 }
 
 export const FormTextarea = ({
@@ -12,11 +13,13 @@ export const FormTextarea = ({
   register,
   error,
   placeholder,
+  required,
 }: FormTextareaProps) => {
   return (
     <div className="flex flex-col gap-1">
       <label htmlFor={name} className="text-sm font-medium text-zinc-300">
         {label}
+        {required && <span className="ml-1 text-red-500">*</span>}
       </label>
       <textarea
         id={name}

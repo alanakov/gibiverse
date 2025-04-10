@@ -36,6 +36,7 @@ export function CreateAuthorForm({
         placeholder="Nome do Autor"
         register={register}
         error={errors.name?.message}
+        required
       />
       <FormTextarea
         label="Biografia"
@@ -43,6 +44,7 @@ export function CreateAuthorForm({
         placeholder="Biografia do Autor"
         register={register}
         error={errors.bio?.message}
+        required
       />
       <FormInput
         label="URL da Imagem do Autor"
@@ -50,6 +52,7 @@ export function CreateAuthorForm({
         placeholder="URL da Imagem do Autor"
         register={register}
         error={errors.coverUrl?.message}
+        required
       />
       <div className="flex justify-end gap-2">
         <button
