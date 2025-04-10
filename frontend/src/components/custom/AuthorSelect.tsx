@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { getAllAuthors } from "@/http/authors/getAllAuthors";
 import {
   Select,
   SelectContent,
@@ -7,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAuthors } from "@/hooks/authors/useAuthors";
 
 interface AuthorSelectProps {
   value: number | null;
@@ -14,24 +14,14 @@ interface AuthorSelectProps {
 }
 
 export function AuthorSelect({ value, onChange }: AuthorSelectProps) {
-  interface Author {
-    id: number;
-    name: string;
-  }
-  const [authors, setAuthors] = useState<Author[]>([]);
+  const { authors, fetchAuthors } = useAuthors();
   const [selectedValue, setSelectedValue] = useState<string>("");
 
   useEffect(() => {
-    async function fetchAuthors() {
-      try {
-        const data = await getAllAuthors();
-        setAuthors(data.data);
-      } catch (error) {
-        console.error("Erro ao buscar autores:", error);
-      }
+    if (authors.length === 0) {
+      fetchAuthors();
     }
-    fetchAuthors();
-  }, []);
+  }, [fetchAuthors, authors]);
 
   useEffect(() => {
     if (value !== null) {

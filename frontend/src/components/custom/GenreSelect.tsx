@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getAllGenres } from "@/http/genres/getAllGenres";
+import { useGenres } from "@/hooks/genres/useGenres";
 
 interface GenreSelectProps {
   value: number | null;
@@ -14,24 +14,14 @@ interface GenreSelectProps {
 }
 
 export function GenreSelect({ value, onChange }: GenreSelectProps) {
-  interface Genre {
-    id: number;
-    name: string;
-  }
-  const [genres, setGenres] = useState<Genre[]>([]);
+  const { genres, fetchGenres } = useGenres();
   const [selectedValue, setSelectedValue] = useState<string>("");
 
   useEffect(() => {
-    async function fetchGenres() {
-      try {
-        const data = await getAllGenres();
-        setGenres(data.data);
-      } catch (error) {
-        console.error("Erro ao buscar gêneros:", error);
-      }
+    if (genres.length === 0) {
+      fetchGenres();
     }
-    fetchGenres();
-  }, []);
+  }, [fetchGenres, genres]);
 
   useEffect(() => {
     if (value !== null) {

@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
 import { AuthForm } from "@/components/custom/AuthForm";
+import api from "@/services/api";
 
 const loginSchema = z.object({
   email: z.string().email("E-mail inválido").min(1, "O e-mail é obrigatório"),
@@ -13,11 +14,20 @@ export function Login() {
 
   const onSubmit = async (data: any) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //simulando
+      const response = await api.post("/login", {
+        email: data.email,
+        senha: data.password,
+      });
+
+      localStorage.setItem("authToken", response.data.token);
+
       toast.success("Login realizado com sucesso!");
-      navigate("/dashboard");
-    } catch {
-      toast.error("Erro ao fazer login. Tente novamente.");
+      navigate("/home");
+    } catch (error: any) {
+      console.error("Erro ao fazer login:", error);
+      toast.error(
+        error.response?.data?.error || "Erro ao fazer login. Tente novamente.",
+      );
     }
   };
 

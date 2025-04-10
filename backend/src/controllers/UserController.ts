@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import UserModel from "../models/UserModel";
 import { paginate } from "../utils/paginate";
 import * as bcrypt from "bcrypt";
+import { generateToken } from "../utils/jwt"; // Importa a função para gerar o token
 
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -57,11 +58,18 @@ export const createUser = async (req: Request, res: Response) => {
       cpf,
     });
 
+    // Gera o token JWT
+    const token = generateToken({ id: user.id!, email: user.email! });
+
+    // Gera o token JWT
+    const token = generateToken({ id: user.id!, email: user.email! });
+
     return res.status(201).json({
       id: user.id,
       name: user.name,
       email: user.email,
-      cpf: user.cpf,
+      token,
+      // Não retornar a senha, mesmo criptografada
     });
   } catch (error) {
     console.error("Erro no registro:", error);
@@ -115,7 +123,7 @@ export const updateUser = async (
   res: Response
 ) => {
   try {
-    const usuarioLogado = req.body.usuario.usuario.idUsuario;
+    const usuarioLogado = req.user?.id;
     const idUsuarioAtualizar = Number(req.params.id);
 
     if (usuarioLogado !== idUsuarioAtualizar) {
@@ -124,16 +132,14 @@ export const updateUser = async (
         .json({ error: "Você não tem permissão para editar este usuário" });
     }
 
-    const { name, email, cpf, password } = req.body;
-    if (!name || !email || !cpf) {
-      return res
-        .status(400)
-        .json({ error: "Nome, email e CPF são obrigatórios" });
+    const { name, email, cpf } = req.body;
+    if (!name || !email) {
+      return res.status(400).json({ error: "Nome e email são obrigatórios" });
     }
 
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: "Email inválido" });
+    // Validação de CPF
+    if (!cpfValidator.cpf.isValid(cpf)) {
+      return res.status(400).json({ error: "CPF inválido" });
     }
 
     // Validação de CPF
@@ -164,6 +170,9 @@ export const updateUser = async (
     user.name = name;
     user.email = email;
     user.cpf = cpf;
+    user.name = name;
+    user.email = email;
+    if (cpf) user.cpf = cpf;
 
     await user.save();
 
@@ -174,6 +183,7 @@ export const updateUser = async (
       cpf: user.cpf,
     });
   } catch (error) {
+    console.error("Erro ao atualizar usuário:", error);
     res.status(500).json({ error: "Erro interno no servidor" });
   }
 };

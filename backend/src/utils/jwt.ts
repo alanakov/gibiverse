@@ -1,13 +1,13 @@
 import jwt from "jsonwebtoken";
-import UserModel from "../models/UserModel";
 
-const JWT_SECRET = process.env.JWT_SECRET || "segredo_bem_secreto";
-const JWT_EXPIRES_IN = "7d";
+const SECRET_KEY = "sua_chave_secreta"; // Substitua por uma chave segura
 
-export const generateToken = (user: UserModel): string => {
-  return jwt.sign({ user }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+export const generateToken = (user: { id: number; email: string }) => {
+  return jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {
+    expiresIn: "1d", // Token válido por 1 dia
+  });
 };
 
-export const verifyToken = (token: string): any => {
-  return jwt.verify(token, JWT_SECRET);
+export const verifyToken = (token: string) => {
+  return jwt.verify(token, SECRET_KEY);
 };
