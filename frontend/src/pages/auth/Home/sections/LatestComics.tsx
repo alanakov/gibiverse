@@ -13,8 +13,8 @@ interface Comic {
   authorId: number;
   genreId: number;
   collectionId?: number;
-  Author: { id: number; name: string };
-  Genre: { id: number; name: string };
+  Author?: { id: number; name: string };
+  Genre?: { id: number; name: string };
   Collection?: { id: number; name: string };
 }
 
@@ -28,15 +28,16 @@ export function LatestComics() {
         const response = await api.get("/comicbooks", {
           params: {
             page: 1,
-            limit: 5,
-            include: "author,genre,collection",
+            limit: 9999,
           },
         });
 
-        const latestComics = response.data.data.sort(
-          (a: Comic, b: Comic) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        );
+        const latestComics = response.data.data
+          .sort(
+            (a: Comic, b: Comic) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          )
+          .slice(0, 5);
 
         setComics(latestComics);
       } catch (error) {
@@ -48,14 +49,24 @@ export function LatestComics() {
   }, []);
 
   const handleComicClick = async (comic: Comic) => {
-    setSelectedComic(comic);
+    try {
+      const response = await api.get(`/comicbooks/${comic.id}`, {
+        params: {
+          include: "author,genre,collection",
+        },
+      });
+
+      setSelectedComic(response.data);
+    } catch (err) {
+      toast.error("Erro ao carregar os detalhes do gibi.");
+    }
   };
 
   return (
     <div>
       <h2 className="mb-6 text-xl font-semibold">Últimos gibis cadastrados</h2>
       <div className="flex flex-nowrap items-center justify-center gap-6">
-        {comics.slice(0, 5).map((comic) => (
+        {comics.map((comic) => (
           <CustomCard
             key={comic.id}
             imageUrl={comic.coverUrl}
@@ -69,7 +80,7 @@ export function LatestComics() {
         <ComicDetailsModal
           isOpen={!!selectedComic}
           onClose={() => setSelectedComic(null)}
-          comic={selectedComic}
+          comicId={selectedComic.id}
         />
       )}
     </div>

@@ -23,7 +23,9 @@ export function CustomCard({ imageUrl, name, onClick }: CustomCardProps) {
         />
       </div>
       <CardContent className="pb-6 text-center text-white">
-        <h3 className="text-lg font-semibold">{name}</h3>
+        <h3 className="mx-auto w-full max-w-[180px] truncate text-lg font-semibold">
+          {name}
+        </h3>
       </CardContent>
     </Card>
   );

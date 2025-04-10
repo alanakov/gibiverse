@@ -61,11 +61,21 @@ export function ComicBookRow({
 
   return (
     <TableRow className="hover:bg-zinc-800">
-      <TableCell className="w-[200px]">{comicBook.title}</TableCell>
-      <TableCell className="w-[300px]">{comicBook.description}</TableCell>
-      <TableCell className="w-[150px]">{relatedData.authorName}</TableCell>
-      <TableCell className="w-[150px]">{relatedData.genreName}</TableCell>
-      <TableCell className="w-[150px]">{relatedData.collectionName}</TableCell>
+      <TableCell className="w-[200px] max-w-[200px] truncate overflow-hidden whitespace-nowrap">
+        {comicBook.title}
+      </TableCell>
+      <TableCell className="w-[300px] max-w-[300px] truncate overflow-hidden whitespace-nowrap">
+        {comicBook.description}
+      </TableCell>
+      <TableCell className="w-[150px] max-w-[150px] truncate overflow-hidden whitespace-nowrap">
+        {relatedData.authorName}
+      </TableCell>
+      <TableCell className="w-[150px] max-w-[150px] truncate overflow-hidden whitespace-nowrap">
+        {relatedData.genreName}
+      </TableCell>
+      <TableCell className="w-[150px] max-w-[150px] truncate overflow-hidden whitespace-nowrap">
+        {relatedData.collectionName}
+      </TableCell>
       <TableCell className="w-[100px] text-center">
         <ComicBookActions
           comicBook={comicBook}

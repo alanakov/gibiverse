@@ -4,7 +4,7 @@ import { verifyToken } from "../utils/jwt";
 declare global {
   namespace Express {
     interface Request {
-      user?: { id: number; email: string }; // Adiciona a propriedade `user` ao tipo Request
+      user?: { id: number; email: string };
     }
   }
 }

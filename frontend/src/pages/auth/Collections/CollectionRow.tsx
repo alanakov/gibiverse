@@ -33,10 +33,16 @@ export function CollectionRow({
 
   return (
     <TableRow className="hover:bg-zinc-800">
-      <TableCell>{collection.name}</TableCell>
-      <TableCell>{collection.description}</TableCell>
-      <TableCell>{authorName}</TableCell>
-      <TableCell className="text-center">
+      <TableCell className="w-[200px] max-w-[200px] truncate overflow-hidden whitespace-nowrap">
+        {collection.name}
+      </TableCell>
+      <TableCell className="w-[300px] max-w-[300px] truncate overflow-hidden whitespace-nowrap">
+        {collection.description}
+      </TableCell>
+      <TableCell className="w-[200px] max-w-[200px] truncate overflow-hidden whitespace-nowrap">
+        {authorName}
+      </TableCell>
+      <TableCell className="w-[100px] text-center">
         <CollectionActions
           collection={collection}
           onEdit={onEdit}

@@ -43,12 +43,16 @@ export function AuthorDetailsModal({
             </div>
             <div className="flex h-[380px] flex-col">
               <div className="flex-1 space-y-4">
-                <DialogTitle className="text-2xl font-bold">
-                  {author.name}
-                </DialogTitle>
-                <p className="max-h-[250px] overflow-y-auto text-gray-300">
-                  {author.bio}
-                </p>
+                <div className="max-w-[200px]">
+                  <DialogTitle className="max-w-[400px] text-2xl font-bold break-all">
+                    {author.name}
+                  </DialogTitle>
+                </div>
+                <div className="w-full max-w-[400px]">
+                  <p className="max-h-[250px] overflow-y-auto break-all text-gray-300">
+                    {author.bio}
+                  </p>
+                </div>
               </div>
             </div>
           </div>

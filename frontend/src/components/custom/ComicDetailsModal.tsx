@@ -6,25 +6,51 @@ import {
   DialogTitle,
 } from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+import { useEffect, useState } from "react";
+import api from "@/services/api";
+import { toast } from "sonner";
 
 interface ComicDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  comic: {
-    title: string;
-    description: string;
-    coverUrl: string;
-    Author: { id: number; name: string };
-    Genre: { id: number; name: string };
-    Collection?: { id: number; name: string };
-  };
+  comicId: number;
+}
+
+interface Comic {
+  id: number;
+  title: string;
+  description: string;
+  coverUrl: string;
+  Author?: { id: number; name: string };
+  Genre?: { id: number; name: string };
+  Collection?: { id: number; name: string };
 }
 
 export function ComicDetailsModal({
   isOpen,
   onClose,
-  comic,
+  comicId,
 }: ComicDetailsModalProps) {
+  const [comic, setComic] = useState<Comic | null>(null);
+
+  useEffect(() => {
+    if (isOpen && comicId) {
+      api
+        .get(`/comicbooks/${comicId}`, {
+          params: {
+            include: "author,genre,collection",
+          },
+        })
+        .then((res) => setComic(res.data))
+        .catch((err) => {
+          toast.error("Erro ao buscar dados do gibi.");
+          console.error(err);
+        });
+    }
+  }, [isOpen, comicId]);
+
+  if (!comic) return null;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogPortal>
@@ -49,19 +75,9 @@ export function ComicDetailsModal({
                 <DialogTitle className="text-2xl font-bold">
                   {comic.title}
                 </DialogTitle>
-                <p className="max-h-[250px] overflow-y-auto text-gray-300">
+                <p className="max-h-[250px] max-w-[440px] overflow-y-auto break-words text-gray-300">
                   {comic.description}
                 </p>
-              </div>
-
-              <div className="mt-auto flex w-100 items-center justify-between pt-4">
-                <p className="italic">
-                  <span className="font-semibold italic">Autor:</span>{" "}
-                  {comic.Author?.name || "Autor desconhecido"}
-                </p>
-                <span className="rounded-md bg-zinc-700 px-4 py-1 text-sm text-white">
-                  {comic.Genre?.name || "Sem gênero"}
-                </span>
               </div>
             </div>
           </div>

@@ -20,13 +20,15 @@ export function LatestAuthors() {
     const fetchAuthors = async () => {
       try {
         const response = await api.get("/authors", {
-          params: { page: 1, limit: 5 },
+          params: { page: 1, limit: 9999 }, // traz tudo
         });
 
-        const latestAuthors = response.data.data.sort(
-          (a: Author, b: Author) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        );
+        const latestAuthors = response.data.data
+          .sort(
+            (a: Author, b: Author) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          )
+          .slice(0, 5); // pega só os 5 mais recentes
 
         setAuthors(latestAuthors);
       } catch (error) {
@@ -42,7 +44,9 @@ export function LatestAuthors() {
       const response = await api.get(`/authors/${author.id}`);
       setSelectedAuthor(response.data);
     } catch (error) {
-      console.error("Erro ao buscar detalhes do autor:", error);
+      toast.error(
+        "Erro ao carregar detalhes do autor. Tente novamente mais tarde.",
+      );
     }
   };
 
