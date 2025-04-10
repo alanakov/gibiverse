@@ -9,7 +9,7 @@ interface CustomCardProps {
 export function CustomCard({ imageUrl, name, onClick }: CustomCardProps) {
   return (
     <Card
-      className="flex w-[200px] cursor-pointer flex-col border-0 bg-zinc-800 p-0 transition-all hover:scale-105 sm:w-[250px]"
+      className="flex w-[200px] cursor-pointer flex-col border-0 bg-zinc-800 p-0 transition-all hover:scale-105 sm:w-[150px]"
       onClick={onClick}
     >
       <div className="aspect-[2/3] w-full overflow-hidden">
@@ -23,7 +23,7 @@ export function CustomCard({ imageUrl, name, onClick }: CustomCardProps) {
         />
       </div>
       <CardContent className="pb-6 text-center text-white">
-        <h3 className="mx-auto w-full max-w-[180px] truncate text-lg font-semibold">
+        <h3 className="mx-auto w-full max-w-[150px] truncate text-sm font-semibold">
           {name}
         </h3>
       </CardContent>

@@ -8,7 +8,7 @@ export function HomePage() {
   if (!user) return null;
 
   return (
-    <div className="mx-auto mb-10 max-w-[1400px] pr-10 pl-[90px]">
+    <div className="mx-auto mb-10 max-w-[1400px] pr-10 ">
       <div className="mb-20 flex items-center gap-2 py-8">
         <h1 className="text-2xl font-bold text-red-300">Olá, {user.name}!</h1>
         <h1 className="text-2xl">👋</h1>
