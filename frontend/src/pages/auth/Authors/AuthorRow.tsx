@@ -11,9 +11,9 @@ interface AuthorRowProps {
 export function AuthorRow({ author, onEdit, onDelete }: AuthorRowProps) {
   return (
     <TableRow className="hover:bg-zinc-800">
-      <TableCell>{author.name}</TableCell>
-      <TableCell>{author.bio}</TableCell>
-      <TableCell className="text-center">
+      <TableCell className="w-[200px]">{author.name}</TableCell>
+      <TableCell className="w-[300px]">{author.bio}</TableCell>
+      <TableCell className="w-[100px] text-center">
         <AuthorActions author={author} onEdit={onEdit} onDelete={onDelete} />
       </TableCell>
     </TableRow>

@@ -29,10 +29,10 @@ export function CollectionsTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Nome</TableHead>
-            <TableHead>Descrição</TableHead>
-            <TableHead>Autor</TableHead>
-            <TableHead className="text-center">Ações</TableHead>
+            <TableHead className="w-[200px]">Nome</TableHead>
+            <TableHead className="w-[300px]">Descrição</TableHead>
+            <TableHead className="w-[150px]">Autor</TableHead>
+            <TableHead className="w-[100px] text-center">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
