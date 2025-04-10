@@ -3,9 +3,9 @@ import { generateToken } from "../utils/jwt";
 import UserModel from "../models/UserModel";
 
 export const loginUser = async (req: Request, res: Response) => {
-  const { email, senha } = req.body;
+  const { email, password } = req.body;
 
-  if (!email || !senha) {
+  if (!email || !password) {
     return res.status(400).json({ error: "Email e senha são obrigatórios" });
   }
 
@@ -21,7 +21,7 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Usuário não encontrado" });
     }
 
-    const validatePassword = await user.validarSenha(senha);
+    const validatePassword = await user.validarSenha(password);
 
     if (!validatePassword) {
       return res.status(401).json({ error: "Credenciais inválidas" });
