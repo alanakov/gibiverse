@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAuthorByIdService } from "../../services/author/getAuthorById.service";
+import { getAuthorByIdService } from "../../services/genre/getGenreById.service";
 
 export const getAuthorById = async (
   req: Request<{ id: string }>,

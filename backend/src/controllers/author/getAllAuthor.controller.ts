@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAllAuthorsService } from "../../services/author/getAllAuthor.service";
+import { getAllAuthorsService } from "../../services/author/getAllAuthors.service";
 
 export const getAllAuthors = async (req: Request, res: Response) => {
   try {
