@@ -38,12 +38,10 @@ export function GenreActions({ genre, onEdit, onDelete }: GenreActionsProps) {
           <EditButton onClick={() => onEdit?.(genre)} />
         </DropdownMenuItem>
 
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()} asChild>
-          <DeleteButton
-            itemName={genre.name}
-            onDelete={() => onDelete?.(genre.id)}
-          />
-        </DropdownMenuItem>
+        <DeleteButton
+          itemName={genre.name}
+          onDelete={() => onDelete?.(genre.id)}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -31,6 +31,7 @@ export function CollectionsTable({
           <TableRow>
             <TableHead>Nome</TableHead>
             <TableHead>Descrição</TableHead>
+            <TableHead>Autor</TableHead>
             <TableHead className="text-center">Ações</TableHead>
           </TableRow>
         </TableHeader>

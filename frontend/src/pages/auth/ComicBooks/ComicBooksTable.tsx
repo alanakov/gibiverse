@@ -31,6 +31,9 @@ export function ComicBooksTable({
           <TableRow>
             <TableHead>Título</TableHead>
             <TableHead>Descrição</TableHead>
+            <TableHead>Autor</TableHead>
+            <TableHead>Gênero</TableHead>
+            <TableHead>Coleção</TableHead>
             <TableHead className="text-center">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -46,7 +49,7 @@ export function ComicBooksTable({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={3} className="text-center">
+              <TableCell colSpan={6} className="text-center">
                 Nenhum gibi foi encontrado.
               </TableCell>
             </TableRow>

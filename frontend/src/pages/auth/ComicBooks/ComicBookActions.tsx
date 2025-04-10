@@ -42,12 +42,10 @@ export function ComicBookActions({
           <EditButton onClick={() => onEdit?.(comicBook)} />
         </DropdownMenuItem>
 
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()} asChild>
-          <DeleteButton
-            itemName={comicBook.title}
-            onDelete={() => onDelete?.(comicBook.id)}
-          />
-        </DropdownMenuItem>
+        <DeleteButton
+          itemName={comicBook.title}
+          onDelete={() => onDelete?.(comicBook.id)}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );

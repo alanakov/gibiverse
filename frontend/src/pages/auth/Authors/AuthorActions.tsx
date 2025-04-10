@@ -42,12 +42,10 @@ export function AuthorActions({
           <EditButton onClick={() => onEdit?.(author)} />
         </DropdownMenuItem>
 
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()} asChild>
-          <DeleteButton
-            itemName={author.name}
-            onDelete={() => onDelete?.(author.id)}
-          />
-        </DropdownMenuItem>
+        <DeleteButton
+          itemName={author.name}
+          onDelete={() => onDelete?.(author.id)}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );
