@@ -2,20 +2,22 @@ import { Request, Response } from "express";
 import UserModel from "../models/UserModel";
 import { paginate } from "../utils/paginate";
 import * as bcrypt from "bcrypt";
-import { generateToken } from "../utils/jwt"; // Importa a função para gerar o token
+import { generateToken } from "../utils/jwt";
+import { cpf as cpfValidator } from "cpf-cnpj-validator";
+import { Op } from "sequelize";
 
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, cpf } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !cpf) {
       return res
         .status(400)
         .json({ error: "Todos os campos são obrigatórios" });
     }
 
     // Validação de CPF
-    if (!cpfValidator.cpf.isValid(cpf)) {
+    if (!cpfValidator.isValid(cpf)) {
       return res.status(400).json({ error: "CPF inválido" });
     }
 
@@ -42,9 +44,7 @@ export const createUser = async (req: Request, res: Response) => {
     });
 
     if (existingUser) {
-      return res.status(409).json({
-        error: "Email ou CPF já cadastrado",
-      });
+      return res.status(409).json({ error: "Email ou CPF já cadastrado" });
     }
 
     // Criptografa a senha antes de salvar
@@ -61,15 +61,11 @@ export const createUser = async (req: Request, res: Response) => {
     // Gera o token JWT
     const token = generateToken({ id: user.id!, email: user.email! });
 
-    // Gera o token JWT
-    const token = generateToken({ id: user.id!, email: user.email! });
-
     return res.status(201).json({
       id: user.id,
       name: user.name,
       email: user.email,
       token,
-      // Não retornar a senha, mesmo criptografada
     });
   } catch (error) {
     console.error("Erro no registro:", error);
@@ -89,7 +85,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
       order: [["name", "ASC"]],
     });
 
-    // Exclude the password field from the retrieved data
+    // Exclui o campo de senha dos dados retornados
     result.data = result.data.map((user: any) => {
       const { password, ...userWithoutPassword } = user;
       return userWithoutPassword;
@@ -97,7 +93,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
     res.json(result);
   } catch (error) {
-    res.status(500).json({ error: "Erro interno no servidor " + error });
+    console.error("Erro ao listar usuários:", error);
+    res.status(500).json({ error: "Erro interno no servidor" });
   }
 };
 
@@ -110,11 +107,12 @@ export const getUserById = async (
       attributes: { exclude: ["password"] }, // Não retorna a senha
     });
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: "Usuário não encontrado" });
     }
     res.json(user);
   } catch (error) {
-    res.status(500).json({ error: "ERROR" });
+    console.error("Erro ao buscar usuário:", error);
+    res.status(500).json({ error: "Erro interno no servidor" });
   }
 };
 
@@ -132,18 +130,14 @@ export const updateUser = async (
         .json({ error: "Você não tem permissão para editar este usuário" });
     }
 
-    const { name, email, cpf } = req.body;
+    const { name, email, cpf, password } = req.body;
+
     if (!name || !email) {
       return res.status(400).json({ error: "Nome e email são obrigatórios" });
     }
 
     // Validação de CPF
-    if (!cpfValidator.cpf.isValid(cpf)) {
-      return res.status(400).json({ error: "CPF inválido" });
-    }
-
-    // Validação de CPF
-    if (!cpfValidator.cpf.isValid(cpf)) {
+    if (cpf && !cpfValidator.isValid(cpf)) {
       return res.status(400).json({ error: "CPF inválido" });
     }
 
@@ -169,9 +163,6 @@ export const updateUser = async (
 
     user.name = name;
     user.email = email;
-    user.cpf = cpf;
-    user.name = name;
-    user.email = email;
     if (cpf) user.cpf = cpf;
 
     await user.save();
@@ -195,12 +186,13 @@ export const destroyUser = async (
   try {
     const user = await UserModel.findByPk(req.params.id);
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: "Usuário não encontrado" });
     }
 
     await user.destroy();
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: "ERROR" });
+    console.error("Erro ao deletar usuário:", error);
+    res.status(500).json({ error: "Erro interno no servidor" });
   }
 };
