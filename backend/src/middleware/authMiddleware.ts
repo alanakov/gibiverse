@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyToken } from "../utils/jwt";
+import { extractTokenFromHeader } from "../utils/extractToken";
+import { isValidDecodedToken } from "../utils/validateDecodedToken";
 
 declare global {
   namespace Express {
@@ -14,22 +16,26 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.header("Authorization")?.replace("Bearer ", "");
+  const token = extractTokenFromHeader(req.header("Authorization"));
 
   if (!token) {
-    return res.status(401).json({ error: "Access denied. No token provided" });
+    return res
+      .status(401)
+      .json({ error: "Acesso negado. Token ausente ou malformado." });
   }
 
   try {
-    const decoded: any = verifyToken(token);
+    const decoded = verifyToken(token);
 
-    if (!decoded || !decoded.id) {
-      return res.status(401).json({ error: "Invalid token structure" });
+    if (!isValidDecodedToken(decoded)) {
+      return res.status(401).json({ error: "Token inválido." });
     }
 
     req.user = decoded;
     next();
-  } catch (error) {
-    return res.status(401).json({ error: "Access denied. Invalid token" });
+  } catch {
+    return res
+      .status(401)
+      .json({ error: "Acesso negado. Falha na autenticação." });
   }
 };
