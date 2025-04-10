@@ -76,9 +76,9 @@ export function CreateComicBookForm({
       </div>
 
       <FormInput
-        label="URL da Imagem do Autor"
+        label="URL da Capa do Gibi"
         name="coverUrl"
-        placeholder="URL da Imagem do Autor"
+        placeholder="URL da Capa do Gibi"
         register={register}
         error={errors.coverUrl?.message}
       />
