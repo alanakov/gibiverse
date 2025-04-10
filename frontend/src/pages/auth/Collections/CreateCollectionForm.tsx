@@ -59,9 +59,9 @@ export function CreateCollectionForm({
       </div>
 
       <FormInput
-        label="URL da Capa"
+        label="URL da Imagem da Coleção"
         name="coverUrl"
-        placeholder="URL da Capa"
+        placeholder="URL da Imagem da Coleção"
         register={register}
         error={errors.coverUrl?.message}
       />

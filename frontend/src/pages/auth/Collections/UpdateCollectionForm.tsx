@@ -68,9 +68,9 @@ export function UpdateCollectionForm({
         )}
       </div>
       <FormInput
-        label="URL da Capa"
+        label="URL da Foto da Coleção"
         name="coverUrl"
-        placeholder="URL da Capa"
+        placeholder="URL da Foto da Coleção"
         register={register}
         error={errors.coverUrl?.message}
       />

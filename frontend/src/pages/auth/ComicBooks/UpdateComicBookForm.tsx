@@ -84,13 +84,13 @@ export function UpdateComicBookForm({
       <div>
         <CollectionSelect
           value={watch("collectionId")}
-          onChange={(id) => setValue("collectionId", id)}
+          onChange={(id) => setValue("collectionId", id ?? undefined)}
         />
       </div>
       <FormInput
-        label="URL da Capa"
+        label="URL da Imagem do Autor"
         name="coverUrl"
-        placeholder="URL da imagem de capa"
+        placeholder="URL da Imagem do Autor"
         register={register}
         error={errors.coverUrl?.message}
       />
