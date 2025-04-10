@@ -116,49 +116,23 @@ export const getUserById = async (
   }
 };
 
-export const updateUser = async (
-  req: Request<{ id: string }>,
-  res: Response
-) => {
+export const updateUser = async (req: Request, res: Response) => {
   try {
-    const usuarioLogado = req.user?.id;
-    const idUsuarioAtualizar = Number(req.params.id);
+    const userId = req.user?.id;
+    const { name, email, cpf } = req.body;
 
-    if (usuarioLogado !== idUsuarioAtualizar) {
-      return res
-        .status(403)
-        .json({ error: "Você não tem permissão para editar este usuário" });
+    if (!userId) {
+      return res.status(401).json({ error: "Usuário não autenticado" });
     }
-
-    const { name, email, cpf, password } = req.body;
 
     if (!name || !email) {
       return res.status(400).json({ error: "Nome e email são obrigatórios" });
     }
 
-    // Validação de CPF
-    if (cpf && !cpfValidator.isValid(cpf)) {
-      return res.status(400).json({ error: "CPF inválido" });
-    }
+    const user = await UserModel.findByPk(userId);
 
-    const user = await UserModel.findByPk(req.params.id);
     if (!user) {
       return res.status(404).json({ error: "Usuário não encontrado" });
-    }
-
-    // Validação de senha (se foi fornecida)
-    if (password) {
-      const passwordValidation = UserModel.validarNivelSenha(password);
-      if (!passwordValidation.valida) {
-        return res.status(400).json({
-          error: "Senha muito fraca",
-          detalhes: passwordValidation.requisitos,
-        });
-      }
-
-      // Criptografa a nova senha
-      const saltRounds = 10;
-      user.password = await bcrypt.hash(password, saltRounds);
     }
 
     user.name = name;

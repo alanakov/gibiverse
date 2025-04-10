@@ -49,25 +49,23 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const getLoggedUser = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id; // Obtém o ID do usuário do middleware
-    console.log("ID do usuário decodificado:", userId); // Log para verificar o ID
+    const userId = req.user?.id;
 
     if (!userId) {
-      return res.status(400).json({ error: "ID do usuário não encontrado" });
+      return res.status(401).json({ error: "Usuário não autenticado" });
     }
 
     const user = await UserModel.findByPk(userId, {
-      attributes: ["id", "name", "email", "cpf"], // Exclui a senha
+      attributes: ["id", "name", "email", "cpf"],
     });
 
     if (!user) {
-      console.log("Usuário não encontrado no banco de dados."); // Log para verificar a ausência do usuário
       return res.status(404).json({ error: "Usuário não encontrado" });
     }
 
     res.json(user);
   } catch (error) {
-    console.error("Erro ao buscar usuário logado:", error);
+    console.error("Erro ao buscar usuário:", error);
     res.status(500).json({ error: "Erro interno no servidor" });
   }
 };
