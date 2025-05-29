@@ -24,7 +24,7 @@ export function Login() {
       });
 
       if (!data.token) {
-        throw new Error("Token não recebido do servidorr");
+        throw new Error("Token não recebido do servidor");
       }
 
       localStorage.setItem("authToken", data.token);
