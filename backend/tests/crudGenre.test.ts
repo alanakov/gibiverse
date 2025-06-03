@@ -6,6 +6,19 @@ import sequelize from "../src/config/database";
 import { updateGenre } from "../src/controllers/genre/updateGenre.controller";
 import { deleteGenreById } from "../src/controllers/genre/deleteGenreById.controller";
 
+// Mock do authMiddleware antes de importar o app
+jest.mock("../src/middleware/authMiddleware", () => ({
+  authMiddleware: jest.fn((req, res, next) => {
+    const token = req.headers.authorization;
+
+    if (!token || token !== "Bearer valid-token") {
+      return res.status(401).json({ error: "Acesso não autorizado" });
+    }
+    req.user = { id: 1, email: "test@example.com" };
+    next();
+  }),
+}));
+
 describe("Testes das rotas de gêneros", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
@@ -48,6 +61,7 @@ describe("Testes das rotas de gêneros", () => {
     });
 
     test("Erro 404 ao deletar gênero inexistente", async () => {
+      req.params = { id: "999" }; // Adicionando o parâmetro que estava faltando
       jest.spyOn(GenreModel, "findByPk").mockResolvedValue(null);
 
       await deleteGenreById(req as Request<{ id: string }>, res as Response);
@@ -58,64 +72,49 @@ describe("Testes das rotas de gêneros", () => {
   });
 
   describe("Testes de autenticação nas rotas", () => {
-    const unauthenticatedAuthMiddleware = jest.fn((req, res, next) => {
-      next();
-    });
-
     test("GET /genres deve exigir autenticação", async () => {
-      jest.mock("../src/middleware/authMiddleware", () => ({
-        authMiddleware: unauthenticatedAuthMiddleware,
-      }));
-
       const response = await request(app).get("/genres");
       expect(response.status).toBe(401);
       expect(response.body.error).toBe("Acesso não autorizado");
     });
 
-    test("GET /genre/:id deve exigir autenticação", async () => {
-      jest.mock("../src/middleware/authMiddleware", () => ({
-        authMiddleware: unauthenticatedAuthMiddleware,
-      }));
-
-      const response = await request(app).get("/genre/1");
+    test("GET /genres/:id deve exigir autenticação", async () => {
+      const response = await request(app).get("/genres/1");
       expect(response.status).toBe(401);
       expect(response.body.error).toBe("Acesso não autorizado");
     });
 
-    test("POST /genre deve exigir autenticação", async () => {
-      jest.mock("../src/middleware/authMiddleware", () => ({
-        authMiddleware: unauthenticatedAuthMiddleware,
-      }));
-
-      const response = await request(app).post("/genre").send({
+    test("POST /genres deve exigir autenticação", async () => {
+      const response = await request(app).post("/genres").send({
         name: "Novo Gênero",
       });
-
       expect(response.status).toBe(401);
       expect(response.body.error).toBe("Acesso não autorizado");
     });
 
-    test("PUT /genre/:id deve exigir autenticação", async () => {
-      jest.mock("../src/middleware/authMiddleware", () => ({
-        authMiddleware: unauthenticatedAuthMiddleware,
-      }));
-
-      const response = await request(app).put("/genre/1").send({
+    test("PUT /genres/:id deve exigir autenticação", async () => {
+      const response = await request(app).put("/genres/1").send({
         name: "Gênero Atualizado",
       });
-
       expect(response.status).toBe(401);
       expect(response.body.error).toBe("Acesso não autorizado");
     });
 
-    test("DELETE /genre/:id deve exigir autenticação", async () => {
-      jest.mock("../src/middleware/authMiddleware", () => ({
-        authMiddleware: unauthenticatedAuthMiddleware,
-      }));
-
-      const response = await request(app).delete("/genre/1");
+    test("DELETE /genres/:id deve exigir autenticação", async () => {
+      const response = await request(app).delete("/genres/1");
       expect(response.status).toBe(401);
       expect(response.body.error).toBe("Acesso não autorizado");
+    });
+
+    test("Acesso com token válido deve retornar sucesso", async () => {
+      // Mock da resposta do controller
+      jest.spyOn(GenreModel, "findAll").mockResolvedValueOnce([]);
+
+      const response = await request(app)
+        .get("/genres")
+        .set("Authorization", "Bearer valid-token");
+
+      expect(response.status).not.toBe(401);
     });
   });
 });

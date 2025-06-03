@@ -6,6 +6,19 @@ import sequelize from "../src/config/database";
 import { updateComicBook } from "../src/controllers/comicBook/updateComicBook.controller";
 import { deleteComicBookById } from "../src/controllers/comicBook/deleteComicBookById.controller";
 
+// Mock do authMiddleware antes de importar o app
+jest.mock("../src/middleware/authMiddleware", () => ({
+  authMiddleware: jest.fn((req, res, next) => {
+    const token = req.headers.authorization;
+
+    if (!token || token !== "Bearer valid-token") {
+      return res.status(401).json({ error: "Acesso não autorizado" });
+    }
+    req.user = { id: 1, email: "test@example.com" };
+    next();
+  }),
+}));
+
 describe("Testes das rotas de gibis", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
@@ -53,6 +66,7 @@ describe("Testes das rotas de gibis", () => {
     });
 
     test("Erro 404 ao deletar gibi inexistente", async () => {
+      req.params = { id: "999" };
       jest.spyOn(ComicBookModel, "findByPk").mockResolvedValue(null);
 
       await deleteComicBookById(
@@ -66,36 +80,21 @@ describe("Testes das rotas de gibis", () => {
   });
 
   describe("Testes de autenticação nas rotas", () => {
-    const unauthenticatedAuthMiddleware = jest.fn((req, res, next) => {
-      next();
-    });
-
-    test("GET /comic-books deve exigir autenticação", async () => {
-      jest.mock("../src/middleware/authMiddleware", () => ({
-        authMiddleware: unauthenticatedAuthMiddleware,
-      }));
-
-      const response = await request(app).get("/comic-books");
+    // Teste para verificar se as rotas estão protegidas
+    test("GET /comicbooks deve exigir autenticação", async () => {
+      const response = await request(app).get("/comicbooks");
       expect(response.status).toBe(401);
       expect(response.body.error).toBe("Acesso não autorizado");
     });
 
-    test("GET /comic-book/:id deve exigir autenticação", async () => {
-      jest.mock("../src/middleware/authMiddleware", () => ({
-        authMiddleware: unauthenticatedAuthMiddleware,
-      }));
-
-      const response = await request(app).get("/comic-book/1");
+    test("GET /comicbooks/:id deve exigir autenticação", async () => {
+      const response = await request(app).get("/comicbooks/1");
       expect(response.status).toBe(401);
       expect(response.body.error).toBe("Acesso não autorizado");
     });
 
-    test("POST /comic-book deve exigir autenticação", async () => {
-      jest.mock("../src/middleware/authMiddleware", () => ({
-        authMiddleware: unauthenticatedAuthMiddleware,
-      }));
-
-      const response = await request(app).post("/comic-book").send({
+    test("POST /comicbooks deve exigir autenticação", async () => {
+      const response = await request(app).post("/comicbooks").send({
         title: "Novo Gibi",
         description: "Descrição do gibi",
         coverUrl: "url-da-foto.jpg",
@@ -103,17 +102,12 @@ describe("Testes das rotas de gibis", () => {
         collectionId: 1,
         authorId: 1,
       });
-
       expect(response.status).toBe(401);
       expect(response.body.error).toBe("Acesso não autorizado");
     });
 
-    test("PUT /comic-book/:id deve exigir autenticação", async () => {
-      jest.mock("../src/middleware/authMiddleware", () => ({
-        authMiddleware: unauthenticatedAuthMiddleware,
-      }));
-
-      const response = await request(app).put("/comic-book/1").send({
+    test("PUT /comicbooks/:id deve exigir autenticação", async () => {
+      const response = await request(app).put("/comicbooks/1").send({
         title: "Gibi Atualizado",
         description: "Nova descrição",
         coverUrl: "nova-url.jpg",
@@ -121,19 +115,26 @@ describe("Testes das rotas de gibis", () => {
         collectionId: 1,
         authorId: 1,
       });
-
       expect(response.status).toBe(401);
       expect(response.body.error).toBe("Acesso não autorizado");
     });
 
-    test("DELETE /comic-book/:id deve exigir autenticação", async () => {
-      jest.mock("../src/middleware/authMiddleware", () => ({
-        authMiddleware: unauthenticatedAuthMiddleware,
-      }));
-
-      const response = await request(app).delete("/comic-book/1");
+    test("DELETE /comicbooks/:id deve exigir autenticação", async () => {
+      const response = await request(app).delete("/comicbooks/1");
       expect(response.status).toBe(401);
       expect(response.body.error).toBe("Acesso não autorizado");
+    });
+
+    // Teste adicional para verificar acesso com token válido
+    test("Acesso com token válido deve retornar sucesso", async () => {
+      // Mock da resposta do controller
+      jest.spyOn(ComicBookModel, "findAll").mockResolvedValueOnce([]);
+
+      const response = await request(app)
+        .get("/comicbooks")
+        .set("Authorization", "Bearer valid-token");
+
+      expect(response.status).not.toBe(401);
     });
   });
 });
