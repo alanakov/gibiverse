@@ -32,7 +32,7 @@ describe("Testes de edição de usuário", () => {
     };
 
     // Resetar mocks
-    cpfValidator.cpf.isValid = jest.fn();
+    jest.clearAllMocks();
     mockBcrypt.hash.mockReset();
   });
 
@@ -65,7 +65,7 @@ describe("Testes de edição de usuário", () => {
       cpf: "12345678901",
     };
 
-    cpfValidator.cpf.isValid.mockReturnValue(false);
+    (cpfValidator.cpf.isValid as jest.Mock).mockReturnValue(false);
 
     await updateUser(req as Request<{ id: string }>, res as Response);
 
@@ -82,7 +82,7 @@ describe("Testes de edição de usuário", () => {
       cpf: "12345678901",
     };
 
-    cpfValidator.cpf.isValid.mockReturnValue(true);
+    (cpfValidator.cpf.isValid as jest.Mock).mockReturnValue(true);
     (UserModel.findByPk as jest.Mock).mockResolvedValue(null);
 
     await updateUser(req as Request<{ id: string }>, res as Response);
@@ -109,7 +109,7 @@ describe("Testes de edição de usuário", () => {
       save: jest.fn(),
     };
 
-    cpfValidator.cpf.isValid.mockReturnValue(true);
+    (cpfValidator.cpf.isValid as jest.Mock).mockReturnValue(true);
     (UserModel.findByPk as jest.Mock).mockResolvedValue(mockUser);
     (UserModel.validarNivelSenha as jest.Mock).mockReturnValue({
       valida: false,
@@ -153,7 +153,7 @@ describe("Testes de edição de usuário", () => {
       save: jest.fn().mockResolvedValue(true),
     };
 
-    cpfValidator.cpf.isValid.mockReturnValue(true);
+    (cpfValidator.cpf.isValid as jest.Mock).mockReturnValue(true);
     (UserModel.findByPk as jest.Mock).mockResolvedValue(mockUser);
 
     await updateUser(req as Request<{ id: string }>, res as Response);
@@ -161,7 +161,7 @@ describe("Testes de edição de usuário", () => {
     expect(mockUser.name).toBe("Alana Atualizada");
     expect(mockUser.email).toBe("alana.nova@example.com");
     expect(mockUser.cpf).toBe("12345678901");
-    expect(mockBcrypt.hash).not.toHaveBeenCalled(); // Não deve chamar hash para senha
+    expect(mockBcrypt.hash).not.toHaveBeenCalled();
     expect(mockUser.save).toHaveBeenCalled();
 
     expect(res.status).toHaveBeenCalledWith(200);
@@ -189,7 +189,7 @@ describe("Testes de edição de usuário", () => {
       save: jest.fn().mockResolvedValue(true),
     };
 
-    cpfValidator.cpf.isValid.mockReturnValue(true);
+    (cpfValidator.cpf.isValid as jest.Mock).mockReturnValue(true);
     (UserModel.findByPk as jest.Mock).mockResolvedValue(mockUser);
     (UserModel.validarNivelSenha as jest.Mock).mockReturnValue({
       valida: true,
@@ -235,7 +235,7 @@ describe("Testes de edição de usuário", () => {
       save: jest.fn().mockRejectedValue(new Error("Erro no banco de dados")),
     };
 
-    cpfValidator.cpf.isValid.mockReturnValue(true);
+    (cpfValidator.cpf.isValid as jest.Mock).mockReturnValue(true);
     (UserModel.findByPk as jest.Mock).mockResolvedValue(mockUser);
 
     await updateUser(req as Request<{ id: string }>, res as Response);
