@@ -8,7 +8,7 @@ import authorRouter from "./routes/AuthorRoutes";
 import sequelize from "./config/database";
 
 const app = express();
-const port = 3001;
+const port = 3000;
 
 sequelize
   .sync({ alter: true })
