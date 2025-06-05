@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "Gibiverse é uma plataforma web para gerenciamento de gibis. O projeto é dividido em frontend e backend.",
   "main": "commitlint.config.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alanakov/gibiverse.git"
@@ -19,6 +17,8 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^22.15.29",
     "husky": "^9.1.7"
   }
 }
