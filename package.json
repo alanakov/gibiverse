@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "description": "Gibiverse é uma plataforma web para gerenciamento de gibis. O projeto é dividido em frontend e backend.",
   "main": "commitlint.config.js",
-  "scripts": {},
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "eslint --fix",
+    "*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alanakov/gibiverse.git"
@@ -19,7 +25,10 @@
     "@commitlint/config-conventional": "^19.8.1",
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.15.29",
+    "eslint": "^9.28.0",
     "gerador-validador-cpf": "^6.3.0",
-    "husky": "^9.1.7"
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.0",
+    "prettier": "^3.5.3"
   }
 }
