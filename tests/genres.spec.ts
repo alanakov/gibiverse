@@ -1,122 +1,137 @@
 import { expect, test } from '@playwright/test';
 import { login } from './helpers/auth.helper';
+import { generateRandomString } from './helpers/test-data.helper';
 
 test.describe('Genres Page', () => {
+    const baseUrl = 'http://localhost:5173';
+    const baseUrlGenres = baseUrl + '/genres';
+    const uniqueName = generateRandomString(10);
 
     test.beforeEach(async ({ page }) => {
         await login(page);
     });
 
     test('list genre', async ({ page }) => {
-        await page.goto('http://localhost:5173/genres');
+        await page.goto(baseUrlGenres);
 
         await expect(page.getByRole('heading', { name: 'Gêneros' })).toBeVisible();
-        await expect(page.getByRole('button', { name: 'Criar gênero' })).toBeVisible();
+        await expect(
+            page.locator('button[type="button"]:has-text("Criar Gênero")')
+        ).toBeVisible();
 
-        await expect(page.getByRole('columnheader', { name: 'Nome' })).toBeVisible();
-        await expect(page.getByRole('columnheader', { name: 'Ações' })).toBeVisible();
+        await expect(page.getByRole('cell', { name: 'Nome' })).toBeVisible();
+        await expect(page.getByRole('cell', { name: 'Ações' })).toBeVisible();
     });
 
     test('create genre', async ({ page }) => {
-    await page.goto('http://localhost:5173/genres');
+        await page.goto(baseUrlGenres);
+        const genreUniqueName = `Gênero de Teste : Criação ${uniqueName}`;
 
-    const genreNameToCreate = 'Gênero de Teste';
+        await page.locator('button[type="button"]:has-text("Criar Gênero")').click();
 
-    await page.getByRole('button', { name: 'Criar gênero' }).click();
+        await page.locator('input[name="name"]').fill(genreUniqueName);
+        await page.getByRole('button', { name: 'Salvar' }).click();
 
-    await page.locator('input[name="name"]').fill(genreNameToCreate);
-    await page.getByRole('button', { name: 'Salvar' }).click();
-    
-    await expect(page.getByText(genreNameToCreate)).toBeVisible();
+        await page.reload();
+
+        await expect(page.getByText(genreUniqueName)).toBeVisible();
     });
 
     test('edit genre', async ({ page }) => {
-        await page.goto('http://localhost:5173/genres');
+        await page.goto(baseUrlGenres);
+        const genreUniqueName = `Gênero de Teste : Edição ${uniqueName}`;
 
-        const genreNameToCreate = 'Gênero Para Editar';
-        const genreNameEdited = 'Gênero Editado';
+        await page.locator('button[type="button"]:has-text("Criar Gênero")').click();
 
-        await page.getByRole('button', { name: 'Criar gênero' }).click();
-        await page.locator('input[name="name"]').fill(genreNameToCreate);
+        await page.locator('input[name="name"]').fill(genreUniqueName);
         await page.getByRole('button', { name: 'Salvar' }).click();
 
-        await expect(page.getByText(genreNameToCreate)).toBeVisible();
+        await page.reload();
 
-        const genreRow = page.locator('tr', { hasText: genreNameToCreate });
+        await expect(page.getByText(genreUniqueName)).toBeVisible();
 
-        await genreRow.getByRole('button').click(); 
-
+        await page.locator('tr', { hasText: genreUniqueName }).locator('button[aria-haspopup="menu"]').click();
         await page.getByText('Editar').click();
-
-        await page.locator('input[name="name"]').fill(genreNameEdited);
+        await page.locator('input[name="name"]').fill(`${genreUniqueName} - Editado`);
         await page.getByRole('button', { name: 'Salvar' }).click();
 
-        await expect(page.getByText(genreNameEdited)).toBeVisible();
-        await expect(page.getByText(genreNameToCreate)).not.toBeVisible();
+        await page.reload();
+
+        await expect(page.getByText(`${genreUniqueName} - Editado`)).toBeVisible();
     });
 
     test('delete genre', async ({ page }) => {
-        await page.goto('http://localhost:5173/genres');
+        await page.goto(baseUrlGenres);
+        const genreUniqueName = `Gênero de Teste : Exclusão ${uniqueName}`;
 
-        const genreNameToDelete = 'Gênero Para Excluir';
+        await page.locator('button[type="button"]:has-text("Criar Gênero")').click();
 
-        await page.getByRole('button', { name: 'Criar gênero' }).click();
-        await page.locator('input[name="name"]').fill(genreNameToDelete);
+        await page.locator('input[name="name"]').fill(genreUniqueName);
         await page.getByRole('button', { name: 'Salvar' }).click();
 
-        await expect(page.getByText(genreNameToDelete)).toBeVisible();
+        await page.reload();
 
-        const genreRow = page.locator('tr', { hasText: genreNameToDelete });
+        await expect(page.getByText(genreUniqueName)).toBeVisible();
 
-        await genreRow.getByRole('button').click();
-
+        await page.locator('tr', { hasText: genreUniqueName }).locator('button[aria-haspopup="menu"]').click();
         await page.getByText('Excluir').click();
+        await page.locator('button[type="button"]:has-text("Excluir")').click();
 
-        await page.getByRole('dialog').getByRole('button', { name: 'Excluir' }).click();
+        await page.reload();
 
-        await expect(page.getByText(genreNameToDelete)).not.toBeVisible();
+        await expect(page.getByText(genreUniqueName)).not.toBeVisible();
     });
-    
+
     test('should not create genre with empty name', async ({ page }) => {
-        await page.goto('http://localhost:5173/genres');
-        
-        await page.getByRole('button', { name: 'Criar gênero' }).click();
+        await page.goto(baseUrlGenres);
+        const genreUniqueName = `Gênero de Teste : Falha Criação ${uniqueName}`;
+
+        await page.locator('button[type="button"]:has-text("Criar Gênero")').click();
         await page.getByRole('button', { name: 'Salvar' }).click();
 
-        await expect(page.getByText('O nome é obrigatório')).toBeVisible();
+        await expect(page.getByText('O nome deve ter pelo menos 3 caracteres')).toBeVisible();
     });
 
     test('should not edit genre with empty name', async ({ page }) => {
-        await page.goto('http://localhost:5173/genres');
-        const initialName = 'Gênero para Teste de Falha';
+        await page.goto(baseUrlGenres);
+        const genreUniqueName = `Gênero de Teste : Falha Edição ${uniqueName}`;
 
-        await page.getByRole('button', { name: 'Criar gênero' }).click();
-        await page.locator('input[name="name"]').fill(initialName);
+        await page.locator('button[type="button"]:has-text("Criar Gênero")').click();
+
+        await page.locator('input[name="name"]').fill(genreUniqueName);
         await page.getByRole('button', { name: 'Salvar' }).click();
 
-        const genreRow = page.locator('tr', { hasText: initialName });
-        await genreRow.getByRole('button').click();
+        await page.reload();
+
+        await expect(page.getByText(genreUniqueName)).toBeVisible();
+
+        await page.locator('tr', { hasText: genreUniqueName }).locator('button[aria-haspopup="menu"]').click();
         await page.getByText('Editar').click();
         await page.locator('input[name="name"]').fill('');
         await page.getByRole('button', { name: 'Salvar' }).click();
 
-        await expect(page.getByText('O nome é obrigatório')).toBeVisible();
+        await expect(page.getByText('O nome deve ter pelo menos 3 caracteres')).toBeVisible();
     });
 
     test('should not delete genre when canceling confirmation', async ({ page }) => {
-        await page.goto('http://localhost:5173/genres');
-        const genreName = 'Gênero para Cancelar Exclusão';
+        await page.goto(baseUrlGenres);
+        const genreUniqueName = `Gênero de Teste : Falha exclusão ${uniqueName}`;
 
-        await page.getByRole('button', { name: 'Criar gênero' }).click();
-        await page.locator('input[name="name"]').fill(genreName);
+        await page.locator('button[type="button"]:has-text("Criar Gênero")').click();
+
+        await page.locator('input[name="name"]').fill(genreUniqueName);
         await page.getByRole('button', { name: 'Salvar' }).click();
 
-        const genreRow = page.locator('tr', { hasText: genreName });
-        await genreRow.getByRole('button').click();
-        await page.getByText('Excluir').click();
-        
-        await page.getByRole('dialog').getByRole('button', { name: 'Cancelar' }).click();
+        await page.reload();
 
-        await expect(page.getByText(genreName)).toBeVisible();
+        await expect(page.getByText(genreUniqueName)).toBeVisible();
+
+        await page.locator('tr', { hasText: genreUniqueName }).locator('button[aria-haspopup="menu"]').click();
+        await page.getByText('Excluir').click();
+        await page.locator('button[type="button"]:has-text("Cancelar")').click();
+
+        await page.reload();
+
+        await expect(page.getByText(genreUniqueName)).toBeVisible();
     });
 });
