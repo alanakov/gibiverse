@@ -1,8 +1,10 @@
 import { expect, test } from '@playwright/test';
 
+const BASE_URL_LOGIN = 'http://localhost:5173/login';
+
 test.describe('Login Page', () => {
     test('successful login redirects to dashboard', async ({ page }) => {
-        await page.goto('http://localhost:5173/login');
+        await page.goto(BASE_URL_LOGIN);
 
         await page.fill('input[name="email"]', 'testuser@email.com');
         await page.fill('input[name="password"]', 'Password123@');
@@ -13,7 +15,7 @@ test.describe('Login Page', () => {
     })
 
     test('failed login', async ({ page }) => {
-        await page.goto('http://localhost:5173/login');
+        await page.goto(BASE_URL_LOGIN);
 
         await page.click('button[type="submit"]');
 

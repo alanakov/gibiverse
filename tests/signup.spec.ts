@@ -2,13 +2,14 @@ import { expect, test } from '@playwright/test';
 import { generate } from 'gerador-validador-cpf';
 import { generateRandomString } from './helpers/test-data.helper';
 
+const BASE_URL_SIGNUP = 'http://localhost:5173/signup';
+
 test.describe('Signup Page', () => {
     const uniqueId = generateRandomString(5);
     const baseUrl = 'http://localhost:5173';
-    const baseUrlSignup = baseUrl + '/signup';
 
     test('successful register redirects to login', async ({ page }) => {
-        await page.goto(baseUrlSignup);
+        await page.goto(BASE_URL_SIGNUP);
 
         const userEmail = `testuser_${uniqueId}@email.com`;
         const userCpf = generate({ format: true });
@@ -25,7 +26,7 @@ test.describe('Signup Page', () => {
     })
 
     test('failed register', async ({ page }) => {
-        await page.goto(baseUrlSignup);
+        await page.goto(BASE_URL_SIGNUP);
 
         const userEmail = `testuser_${uniqueId}@email.com`;
 
