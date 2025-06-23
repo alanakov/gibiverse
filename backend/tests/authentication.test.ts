@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from "express"; //OK
 import UserModel from "../src/models/UserModel";
 import { loginUser } from "../src/controllers/login/loginUser.controller";
 import { generateToken } from "../src/utils/auth/jwt";

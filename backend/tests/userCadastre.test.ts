@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from "express"; //OK
 import UserModel from "../src/models/UserModel";
 import { cpf as cpfValidator } from "cpf-cnpj-validator";
 import bcrypt from "bcrypt";
