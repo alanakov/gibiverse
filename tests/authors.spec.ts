@@ -2,7 +2,7 @@ import { expect, test, Page } from '@playwright/test';
 import { login } from './helpers/auth.helper';
 import { generateRandomString } from './helpers/test-data.helper';
 
-const BASE_URL_AUTHORS = 'http://localhost:5173/authors';
+const BASE_URL_AUTHORS = 'https://gibiverse.local/authors';
 const BIO = 'Este é um exemplo para teste.';
 const COVER_URL = 'https://i.pinimg.com/736x/34/5d/bd/345dbd1cfdb190df9940a53c5fe36049.jpg';
 
