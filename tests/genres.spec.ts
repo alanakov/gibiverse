@@ -2,7 +2,7 @@ import { expect, test, Page } from '@playwright/test';
 import { login } from './helpers/auth.helper';
 import { generateRandomString } from './helpers/test-data.helper';
 
-const BASE_URL_GENRES = 'http://localhost:5173/genres';
+const BASE_URL_GENRES = 'https://gibiverse.local/genres';
 
 async function createGenre(page: Page, genreName: string) {
     await page.goto(BASE_URL_GENRES);

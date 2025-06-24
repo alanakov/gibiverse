@@ -5,7 +5,8 @@
   "main": "commitlint.config.js",
   "scripts": {
     "prepare": "husky install",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint --fix",
@@ -27,7 +28,6 @@
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.15.29",
     "eslint": "^9.28.0",
-    "gerador-validador-cpf": "^6.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.0",
     "prettier": "^3.5.3"

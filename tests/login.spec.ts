@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const BASE_URL_LOGIN = 'http://localhost:5173/login';
+const BASE_URL_LOGIN = 'https://gibiverse.local/login';
 
 test.describe('Login Page', () => {
     test('successful login redirects to dashboard', async ({ page }) => {
@@ -11,7 +11,7 @@ test.describe('Login Page', () => {
 
         await page.click('button[type="submit"]');
 
-        await expect(page).toHaveURL('http://localhost:5173/home');
+        await expect(page).toHaveURL('https://gibiverse.local/home');
     })
 
     test('failed login', async ({ page }) => {
