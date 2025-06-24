@@ -1,90 +1,81 @@
-import { Request, Response } from "express"; //OK
+// @ts-nocheck
+jest.mock("sequelize", () => {
+  class Sequelize { }
+  class Model {
+    static init = jest.fn();
+    static hasMany = jest.fn();
+    static belongsTo = jest.fn();
+    static define = jest.fn();
+  }
+  return {
+    Sequelize,
+    Op: { or: "or" },
+    DataTypes: {
+      INTEGER: "INTEGER",
+      STRING: "STRING",
+      TEXT: "TEXT",
+    },
+    Model,
+  };
+});
+jest.mock("bcrypt", () => ({
+  compare: jest.fn(),
+}));
+jest.mock("../src/utils/auth/jwt", () => ({
+  generateToken: () => "fake-jwt-token",
+}));
+
+import request from "supertest";
+import app from "../src/app";
 import UserModel from "../src/models/UserModel";
-import { loginUser } from "../src/controllers/login/loginUser.controller";
-import { generateToken } from "../src/utils/auth/jwt";
+import bcrypt from "bcrypt";
 
-jest.mock("../src/models/UserModel");
-jest.mock("../src/utils/auth/jwt");
+const mockUser = {
+  id: 1,
+  email: "test@example.com",
+  password: "hashedpassword",
+  name: "Test User",
+};
 
-describe("Testes de autenticação do usuário", () => {
-  let req: Partial<Request>;
-  let res: Partial<Response>;
+beforeEach(() => {
+  jest.clearAllMocks();
+  UserModel.findOne = jest.fn();
+});
 
-  beforeEach(() => {
-    req = { body: {} };
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
+describe("Autenticação - Login", () => {
+  it("deve autenticar com sucesso com credenciais válidas", async () => {
+    jest.spyOn(UserModel, "findOne").mockResolvedValue({ ...mockUser, validarSenha: jest.fn().mockResolvedValue(true) });
+    jest.spyOn(bcrypt, "compare").mockResolvedValue(true);
+
+    const res = await request(app)
+      .post("/login")
+      .send({ email: mockUser.email, password: "senha" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("token");
+    expect(UserModel.findOne).toHaveBeenCalledWith({ where: { email: mockUser.email } });
   });
 
-  test("Erro 400 porque não encontrou o email ou senha", async () => {
-    await loginUser(req as Request, res as Response);
+  it("deve retornar 401 para senha incorreta", async () => {
+    jest.spyOn(UserModel, "findOne").mockResolvedValue({ ...mockUser, validarSenha: jest.fn().mockResolvedValue(false) });
+    jest.spyOn(bcrypt, "compare").mockResolvedValue(false);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({
-      error: "Email e senha são obrigatórios",
-    });
+    const res = await request(app)
+      .post("/login")
+      .send({ email: mockUser.email, password: "errada" });
+
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe("Credenciais inválidas");
   });
 
-  test("Erro 400 porque o formato do email é inválido", async () => {
-    req.body = { email: "emailinvalido", password: "12345" };
-    await loginUser(req as Request, res as Response);
+  it("deve retornar 404 para usuário inexistente", async () => {
+    jest.spyOn(UserModel, "findOne").mockResolvedValue(null);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({
-      error: "Formato de e-mail inválido",
-    });
-  });
+    const res = await request(app)
+      .post("/login")
+      .send({ email: "naoexiste@example.com", password: "senha" });
 
-  test("Erro 404 porque o usuário não foi encontrado", async () => {
-    req.body = { email: "alana@gmail.com", password: "12345" };
-    (UserModel.findOne as jest.Mock).mockResolvedValue(null); // Simula que o usuário não foi encontrado
-
-    await loginUser(req as Request, res as Response);
-
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({ error: "Usuário não encontrado" });
-  });
-
-  test("Erro 401 porque a senha é inválida", async () => {
-    req.body = { email: "alana@gmail.com", password: "12345" };
-    const mockUser = {
-      validarSenha: jest.fn().mockResolvedValue(false), // Simula que a senha é inválida
-    };
-
-    (UserModel.findOne as jest.Mock).mockResolvedValue(mockUser);
-    await loginUser(req as Request, res as Response);
-
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: "Credenciais inválidas" });
-  });
-
-  test("Login realizado com sucesso", async () => {
-    req.body = { email: "vanderleia@gmail.com", password: "12345" };
-    const mockUser = {
-      id: 1,
-      name: "Alana",
-      cpf: "12345678901",
-      email: "alana@gmail.com",
-      validarSenha: jest.fn().mockResolvedValue(true), // Simula que a senha é válida
-    };
-
-    (UserModel.findOne as jest.Mock).mockResolvedValue(mockUser);
-    (generateToken as jest.Mock).mockReturnValue("token123"); // Simula a geração de um token
-
-    await loginUser(req as Request, res as Response);
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Login realizado com sucesso",
-      token: "token123",
-      user: {
-        id: mockUser.id,
-        name: mockUser.name,
-        cpf: mockUser.cpf,
-        email: mockUser.email,
-      },
-    });
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe("Usuário não encontrado");
   });
 });

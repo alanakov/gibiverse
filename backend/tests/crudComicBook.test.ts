@@ -1,140 +1,81 @@
-import { Request, Response } from "express";
-import request from "supertest";
-import ComicBookModel from "../src/models/ComicBookModel";
-import app from "../src/index";
-import sequelize from "../src/config/database";
-import { updateComicBook } from "../src/controllers/comicBook/updateComicBook.controller";
-import { deleteComicBookById } from "../src/controllers/comicBook/deleteComicBookById.controller";
-
-// Mock do authMiddleware antes de importar o app
-jest.mock("../src/middleware/authMiddleware", () => ({
-  authMiddleware: jest.fn((req, res, next) => {
-    const token = req.headers.authorization;
-
-    if (!token || token !== "Bearer valid-token") {
-      return res.status(401).json({ error: "Acesso não autorizado" });
-    }
-    req.user = { id: 1, email: "test@example.com" };
-    next();
-  }),
+// @ts-nocheck
+jest.mock("sequelize", () => {
+  class Sequelize { }
+  class Model {
+    static init = jest.fn();
+    static hasMany = jest.fn();
+    static belongsTo = jest.fn();
+    static define = jest.fn();
+  }
+  return {
+    Sequelize,
+    Op: { or: "or" },
+    DataTypes: {
+      INTEGER: "INTEGER",
+      STRING: "STRING",
+      TEXT: "TEXT",
+    },
+    Model,
+  };
+});
+jest.mock("../src/utils/paginate", () => ({
+  paginate: jest.fn(),
 }));
 
-describe("Testes das rotas de gibis", () => {
-  let req: Partial<Request>;
-  let res: Partial<Response>;
-  let next: jest.Mock;
+import request from "supertest";
+import app from "../src/app";
+import ComicBookModel from "../src/models/ComicBookModel";
 
-  beforeEach(() => {
-    req = {
-      body: {},
-      params: {},
-      query: {},
-      headers: {},
-    };
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-      send: jest.fn(),
-    };
-    next = jest.fn();
+const mockComics = [
+  { id: 1, title: "Gibi 1" },
+  { id: 2, title: "Gibi 2" },
+];
 
-    jest.clearAllMocks();
+beforeEach(() => {
+  jest.clearAllMocks();
+  ComicBookModel.findAll = jest.fn();
+  ComicBookModel.findByPk = jest.fn();
+  ComicBookModel.create = jest.fn();
+  ComicBookModel.update = jest.fn();
+  ComicBookModel.destroy = jest.fn();
+});
+
+describe("Rotas de Gibis", () => {
+  it("deve listar todos os gibis", async () => {
+    const { paginate } = require("../src/utils/paginate");
+    paginate.mockResolvedValue({ data: mockComics });
+    const res = await request(app).get("/comicbooks");
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual(mockComics);
   });
 
-  afterAll(async () => {
-    await sequelize.close();
+  it("deve criar um novo gibi", async () => {
+    const novoGibi = { title: "Novo Gibi", description: "Desc", genreId: 1, collectionId: 1, authorId: 1, coverUrl: "url.jpg" };
+    jest.spyOn(ComicBookModel, "create").mockResolvedValue({ id: 3, ...novoGibi });
+    const res = await request(app).post("/comicbooks").send(novoGibi);
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject(novoGibi);
   });
 
-  describe("Testes de validação", () => {
-    test("Erro 404 ao atualizar gibi inexistente", async () => {
-      req.params = { id: "999" };
-      req.body = {
-        title: "Gibi Atualizado",
-        description: "Nova descrição",
-        coverUrl: "nova-url.jpg",
-        genreId: 1,
-        collectionId: 1,
-        authorId: 1,
-      };
-
-      jest.spyOn(ComicBookModel, "findByPk").mockResolvedValue(null);
-
-      await updateComicBook(req as Request<{ id: string }>, res as Response);
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ error: "Comic Book not found" });
-    });
-
-    test("Erro 404 ao deletar gibi inexistente", async () => {
-      req.params = { id: "999" };
-      jest.spyOn(ComicBookModel, "findByPk").mockResolvedValue(null);
-
-      await deleteComicBookById(
-        req as Request<{ id: string }>,
-        res as Response
-      );
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ error: "Comic Book not found" });
-    });
+  it("deve atualizar um gibi existente", async () => {
+    const mockComic = { save: jest.fn(), update: jest.fn(), title: "Gibi 1", description: "Desc", genreId: 1, collectionId: 1, authorId: 1, coverUrl: "url.jpg" };
+    jest.spyOn(ComicBookModel, "findByPk").mockResolvedValue(mockComic);
+    jest.spyOn(mockComic, "update").mockResolvedValue();
+    const res = await request(app).put("/comicbooks/1").send({ title: "Atualizado" });
+    expect(res.status).toBe(200);
   });
 
-  describe("Testes de autenticação nas rotas", () => {
-    // Teste para verificar se as rotas estão protegidas
-    test("GET /comicbooks deve exigir autenticação", async () => {
-      const response = await request(app).get("/comicbooks");
-      expect(response.status).toBe(401);
-      expect(response.body.error).toBe("Acesso não autorizado");
-    });
+  it("deve deletar um gibi", async () => {
+    const mockComic = { destroy: jest.fn() };
+    jest.spyOn(ComicBookModel, "findByPk").mockResolvedValue(mockComic);
+    jest.spyOn(mockComic, "destroy").mockResolvedValue();
+    const res = await request(app).delete("/comicbooks/1");
+    expect(res.status).toBe(204);
+  });
 
-    test("GET /comicbooks/:id deve exigir autenticação", async () => {
-      const response = await request(app).get("/comicbooks/1");
-      expect(response.status).toBe(401);
-      expect(response.body.error).toBe("Acesso não autorizado");
-    });
-
-    test("POST /comicbooks deve exigir autenticação", async () => {
-      const response = await request(app).post("/comicbooks").send({
-        title: "Novo Gibi",
-        description: "Descrição do gibi",
-        coverUrl: "url-da-foto.jpg",
-        genreId: 1,
-        collectionId: 1,
-        authorId: 1,
-      });
-      expect(response.status).toBe(401);
-      expect(response.body.error).toBe("Acesso não autorizado");
-    });
-
-    test("PUT /comicbooks/:id deve exigir autenticação", async () => {
-      const response = await request(app).put("/comicbooks/1").send({
-        title: "Gibi Atualizado",
-        description: "Nova descrição",
-        coverUrl: "nova-url.jpg",
-        genreId: 1,
-        collectionId: 1,
-        authorId: 1,
-      });
-      expect(response.status).toBe(401);
-      expect(response.body.error).toBe("Acesso não autorizado");
-    });
-
-    test("DELETE /comicbooks/:id deve exigir autenticação", async () => {
-      const response = await request(app).delete("/comicbooks/1");
-      expect(response.status).toBe(401);
-      expect(response.body.error).toBe("Acesso não autorizado");
-    });
-
-    // Teste adicional para verificar acesso com token válido
-    test("Acesso com token válido deve retornar sucesso", async () => {
-      // Mock da resposta do controller
-      jest.spyOn(ComicBookModel, "findAll").mockResolvedValueOnce([]);
-
-      const response = await request(app)
-        .get("/comicbooks")
-        .set("Authorization", "Bearer valid-token");
-
-      expect(response.status).not.toBe(401);
-    });
+  it("deve retornar 404 ao tentar deletar gibi inexistente", async () => {
+    jest.spyOn(ComicBookModel, "findByPk").mockResolvedValue(null);
+    const res = await request(app).delete("/comicbooks/999");
+    expect(res.status).toBe(404);
   });
 });

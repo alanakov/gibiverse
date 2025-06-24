@@ -1,3 +1,4 @@
 #!/bin/sh
 cd backend && npm test
-npm run test:e2e 
+cd ..        # volta para a raiz
+npm run test:e2e
