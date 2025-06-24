@@ -1,90 +1,76 @@
-import { Request, Response } from "express"; //OK
-import request from "supertest";
-import app from "../src/index";
-import UserModel from "../src/models/UserModel";
-import * as cpfValidator from "cpf-cnpj-validator";
-import bcrypt from "bcrypt";
-import { deleteUserById } from "../src/controllers/user/deleteUserById.controller";
-
-jest.mock("../src/models/UserModel", () => ({
-  findByPk: jest.fn(),
-  findOne: jest.fn(),
-  create: jest.fn(),
-  validarNivelSenha: jest.fn().mockReturnValue({
-    valida: true,
-    requisitos: {
-      temMaiuscula: true,
-      temMinuscula: true,
-      temNumero: true,
-      temEspecial: true,
-      tamanhoMinimo: true,
+// @ts-nocheck
+jest.mock("sequelize", () => {
+  class Sequelize { }
+  class Model {
+    static init = jest.fn();
+    static hasMany = jest.fn();
+    static belongsTo = jest.fn();
+    static define = jest.fn();
+  }
+  return {
+    Sequelize,
+    Op: { or: "or" },
+    DataTypes: {
+      INTEGER: "INTEGER",
+      STRING: "STRING",
+      TEXT: "TEXT",
     },
-  }),
+    Model,
+  };
+});
+jest.mock("../src/utils/paginate", () => ({
+  paginate: jest.fn(),
 }));
 
-jest.mock("cpf-cnpj-validator", () => ({
-  cpf: {
-    isValid: jest.fn().mockReturnValue(true),
-  },
-}));
+import request from "supertest";
+import app from "../src/app";
+import UserModel from "../src/models/UserModel";
 
-jest.mock("bcrypt", () => ({
-  hash: jest.fn().mockResolvedValue("hashedPassword"),
-  compare: jest.fn().mockResolvedValue(true),
-}));
+const mockUsers = [
+  { id: 1, name: "Usuário 1", email: "u1@exemplo.com" },
+  { id: 2, name: "Usuário 2", email: "u2@exemplo.com" },
+];
 
-jest.mock("../src/middleware/authMiddleware", () => ({
-  authMiddleware: jest.fn((req, res, next) => {
-    const token = req.headers.authorization;
-
-    if (!token || !token.startsWith("Bearer ")) {
-      return res.status(401).json({
-        error: "Acesso negado. Token ausente ou malformado.",
-      });
-    }
-
-    req.user = { id: 1, email: "test@example.com" };
-    next();
-  }),
-}));
-
-describe("Testes das rotas de usuário", () => {
-  let req: Partial<Request>;
-  let res: Partial<Response>;
-
-  beforeAll(() => {
-    jest.spyOn(console, "error").mockImplementation(() => {});
-    jest.spyOn(console, "log").mockImplementation(() => {});
-  });
-
-  beforeEach(() => {
-    req = {
-      body: {},
-      params: { id: "1" },
-      headers: {},
-      user: { id: 1, email: "test@example.com" },
-    };
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-      send: jest.fn(),
-    };
-    jest.clearAllMocks();
-  });
-
-  describe("Testes de validação", () => {
-    test("Erro 404 ao deletar usuário inexistente", async () => {
-      (UserModel.findByPk as jest.Mock).mockResolvedValueOnce(null);
-      req.params = { id: "999" };
-
-      await deleteUserById(req as Request<{ id: string }>, res as Response);
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Usuário não encontrado",
-      });
-    });
-  });
+beforeEach(() => {
+  jest.clearAllMocks();
+  UserModel.findAll = jest.fn();
+  UserModel.findByPk = jest.fn();
+  UserModel.destroy = jest.fn();
 });
 
-export {};
+describe("Rotas de Usuário", () => {
+  it("deve listar todos os usuários", async () => {
+    const { paginate } = require("../src/utils/paginate");
+    paginate.mockResolvedValue({ data: mockUsers });
+    const res = await request(app).get("/users");
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual(mockUsers);
+  });
+
+  it("deve buscar usuário por id", async () => {
+    jest.spyOn(UserModel, "findByPk").mockResolvedValue(mockUsers[0]);
+    const res = await request(app).get("/users/1");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(mockUsers[0]);
+  });
+
+  it("deve retornar 404 ao buscar usuário inexistente", async () => {
+    jest.spyOn(UserModel, "findByPk").mockResolvedValue(null);
+    const res = await request(app).get("/users/999");
+    expect(res.status).toBe(404);
+  });
+
+  it("deve deletar usuário", async () => {
+    const mockUser = { destroy: jest.fn() };
+    jest.spyOn(UserModel, "findByPk").mockResolvedValue(mockUser);
+    jest.spyOn(mockUser, "destroy").mockResolvedValue();
+    const res = await request(app).delete("/users/1");
+    expect(res.status).toBe(204);
+  });
+
+  it("deve retornar 404 ao tentar deletar usuário inexistente", async () => {
+    jest.spyOn(UserModel, "destroy").mockResolvedValue(0);
+    const res = await request(app).delete("/users/999");
+    expect(res.status).toBe(404);
+  });
+});

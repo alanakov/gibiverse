@@ -5,7 +5,7 @@
   "main": "commitlint.config.js",
   "scripts": {
     "prepare": "husky install",
-    "test:e2e": "playwright test",
+    "test:e2e": "npx playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
   "lint-staged": {
