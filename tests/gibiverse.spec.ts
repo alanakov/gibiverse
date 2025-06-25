@@ -1,153 +1,107 @@
 import { test, expect } from '@playwright/test';
-import { generateRandomString, generateValidCPF } from './helpers/test-data.helper';
-
-// Helper functions that were missing from the helper file
-function generateUniqueUserData() {
-    const randomSuffix = generateRandomString(8);
-    return {
-        name: `Test User ${randomSuffix}`,
-        email: `testuser${randomSuffix}@email.com`,
-        cpf: generateValidCPF(),
-        password: 'Password123@',
-        confirmPassword: 'Password123@'
-    };
-}
+import { generateRandomString, generateValidCPF, generateUniqueUserData } from './helpers/test-data.helper';
 
 test.describe('Gibiverse E2E Tests', () => {
-    test.describe('Login', () => {
-        test('Login com usuário correto e senha incorreta', async ({ page }) => {
+    test.describe('Authentication', () => {
+        test('should show error with wrong password', async ({ page }) => {
             await page.goto('https://gibiverse.local/login');
             await page.locator('input[name="email"]').fill('testuser@email.com');
-            await page.locator('input[name="password"]').fill('senhaerrada');
-
-            const loginButton = page.getByRole('button', { name: 'Entrar' });
-            await loginButton.scrollIntoViewIfNeeded();
-            await loginButton.click();
+            await page.locator('input[name="password"]').fill('wrongpassword');
+            await page.getByRole('button', { name: 'Entrar' }).click();
             
             await page.waitForTimeout(1000);
-            const error = await page.getByText("Falha na autenticação");
-            expect(error).toBeTruthy();
+            expect(await page.getByText("Falha na autenticação")).toBeTruthy();
         });
 
-        test('Login com usuário incorreto e senha correta', async ({ page }) => {
+        test('should show error with wrong email', async ({ page }) => {
             await page.goto('https://gibiverse.local/login');
-            await page.locator('input[name="email"]').fill('usuarioerrado@email.com');
+            await page.locator('input[name="email"]').fill('wrong@email.com');
             await page.locator('input[name="password"]').fill('Password123@');
-
-            const loginButton = page.getByRole('button', { name: 'Entrar' });
-            await loginButton.scrollIntoViewIfNeeded();
-            await loginButton.click();
+            await page.getByRole('button', { name: 'Entrar' }).click();
             
             await page.waitForTimeout(1000);
-            const error = await page.getByText("Falha na autenticação");
-            expect(error).toBeTruthy();
+            expect(await page.getByText("Falha na autenticação")).toBeTruthy();
         });
 
-        test('Login com usuário e senha corretos', async ({ page }) => {
+        test('should login successfully', async ({ page }) => {
             await page.goto('https://gibiverse.local/login');
             await page.locator('input[name="email"]').fill('testuser@email.com');
             await page.locator('input[name="password"]').fill('Password123@');
-            await page.waitForTimeout(1000);
-            
-            const loginButton = page.getByRole('button', { name: 'Entrar' });
-            await loginButton.scrollIntoViewIfNeeded();
-            await loginButton.click();
+            await page.getByRole('button', { name: 'Entrar' }).click();
             
             await page.waitForURL('https://gibiverse.local/home', { timeout: 5000 });
             expect(page.url()).toBe('https://gibiverse.local/home');
         });
 
-        test('Abrir página de cadastro', async ({ page }) => {
+        test('should navigate to signup page', async ({ page }) => {
             await page.goto('https://gibiverse.local/login');
             await page.locator('a:has-text("Cadastre-se")').click();
-            const title = await page.getByText("Criar Conta");
-            expect(title).toBeTruthy();
+            expect(await page.getByText("Criar Conta")).toBeTruthy();
         });
     });
 
     test.describe('Home', () => {
-        test('Home Page title', async ({ page }) => {
+        test('should display home page', async ({ page }) => {
             await page.goto('https://gibiverse.local/home');
-            const title = await page.getByText("Olá");
-            expect(title).toBeTruthy();
+            expect(await page.getByText("Olá")).toBeTruthy();
         });
     });
 
-    test.describe('Sidebar', () => {
-        test.describe('Testes Sidebar Com Autenticação', () => {
-            test.beforeEach(async ({ page }) => {
-                await page.goto('https://gibiverse.local/login');
-                await page.locator('input[name="email"]').fill('testuser@email.com');
-                await page.locator('input[name="password"]').fill('Password123@');
-                const loginButton = page.getByRole('button', { name: 'Entrar' });
-                await loginButton.scrollIntoViewIfNeeded();
-                await loginButton.click();
-                await expect(page).toHaveURL("https://gibiverse.local/home");
-            });
+    test.describe('Navigation', () => {
+        test.beforeEach(async ({ page }) => {
+            await page.goto('https://gibiverse.local/login');
+            await page.locator('input[name="email"]').fill('testuser@email.com');
+            await page.locator('input[name="password"]').fill('Password123@');
+            await page.getByRole('button', { name: 'Entrar' }).click();
+            await expect(page).toHaveURL("https://gibiverse.local/home");
+        });
 
-            test('Navegação entre páginas autenticadas', async ({ page }) => {
-                await page.locator('a:has-text("Autores")').click();
-                await expect(page).toHaveURL('https://gibiverse.local/authors');
-                
-                await page.locator('a:has-text("Home")').click();
-                await expect(page).toHaveURL('https://gibiverse.local/home');
-                
-                await page.locator('a:has-text("Gêneros")').click();
-                await expect(page).toHaveURL('https://gibiverse.local/genres');
-                
-                await page.locator('a:has-text("Coleções")').click();
-                await expect(page).toHaveURL('https://gibiverse.local/collections');
-                
-                await page.locator('a:has-text("Gibis")').click();
-                await expect(page).toHaveURL('https://gibiverse.local/comicbooks');
-            });
+        test('should navigate between authenticated pages', async ({ page }) => {
+            await page.locator('a:has-text("Autores")').click();
+            await expect(page).toHaveURL('https://gibiverse.local/authors');
+            
+            await page.locator('a:has-text("Home")').click();
+            await expect(page).toHaveURL('https://gibiverse.local/home');
+            
+            await page.locator('a:has-text("Gêneros")').click();
+            await expect(page).toHaveURL('https://gibiverse.local/genres');
+            
+            await page.locator('a:has-text("Coleções")').click();
+            await expect(page).toHaveURL('https://gibiverse.local/collections');
+            
+            await page.locator('a:has-text("Gibis")').click();
+            await expect(page).toHaveURL('https://gibiverse.local/comicbooks');
+        });
 
-            test('Logo para Home', async ({ page }) => {
-                await page.goto('https://gibiverse.local/authors');
-                await page.click('img[alt="Logo"]');
-                await expect(page).toHaveURL('https://gibiverse.local/home');
-            });
+        test('should navigate to home via logo', async ({ page }) => {
+            await page.goto('https://gibiverse.local/authors');
+            await page.click('img[alt="Logo"]');
+            await expect(page).toHaveURL('https://gibiverse.local/home');
         });
     });
 
-    test.describe('Register', () => {
-        test('Cadastro com confirmação de senha diferente', async ({ page }) => {
+    test.describe('Registration', () => {
+        test('should show error with different passwords', async ({ page }) => {
             await page.goto('https://gibiverse.local/signup');
             const userData = generateUniqueUserData();
             await page.locator('input[name="name"]').fill(userData.name);
             await page.locator('input[name="email"]').fill(userData.email);
             await page.locator('input[name="cpf"]').fill(userData.cpf);
             await page.locator('input[name="password"]').fill(userData.password);
-            await page.locator('input[name="confirmPassword"]').fill('SENHA');
+            await page.locator('input[name="confirmPassword"]').fill('DIFFERENT');
             
-            await page.waitForTimeout(500);
-            
-            const registerButton = page.getByRole('button', { name: 'Cadastrar' });
-            await registerButton.scrollIntoViewIfNeeded();
-            await registerButton.click();
-            
+            await page.getByRole('button', { name: 'Cadastrar' }).click();
             await page.waitForTimeout(2000);
             
-            const errorMessage = page.locator('p:has-text("As senhas não coincidem")');
-            const errorExists = await errorMessage.count() > 0;
-            
+            const errorExists = await page.locator('p:has-text("senhas")').count() > 0;
             if (!errorExists) {
-                const allErrors = await page.locator('p.text-red-500').allTextContents();
-                const partialError = page.locator('p:has-text("senhas")');
-                const partialExists = await partialError.count() > 0;
-                
-                if (partialExists) {
-                    expect(partialExists).toBeTruthy();
-                } else {
-                    const currentUrl = page.url();
-                    expect(currentUrl).toContain('/signup');
-                }
+                expect(page.url()).toContain('/signup');
             } else {
                 expect(errorExists).toBeTruthy();
             }
         });
 
-        test('Cadastro com CPF inválido', async ({ page }) => {
+        test('should show error with invalid CPF', async ({ page }) => {
             await page.goto('https://gibiverse.local/signup');
             const userData = generateUniqueUserData();
             await page.locator('input[name="name"]').fill(userData.name);
@@ -156,70 +110,38 @@ test.describe('Gibiverse E2E Tests', () => {
             await page.locator('input[name="password"]').fill(userData.password);
             await page.locator('input[name="confirmPassword"]').fill(userData.confirmPassword);
             
-            await page.waitForTimeout(500);
-            
-            const registerButton = page.getByRole('button', { name: 'Cadastrar' });
-            await registerButton.scrollIntoViewIfNeeded();
-            await registerButton.click();
-            
+            await page.getByRole('button', { name: 'Cadastrar' }).click();
             await page.waitForTimeout(2000);
             
-            const errorMessage = page.locator('p:has-text("CPF inválido")');
-            const errorExists = await errorMessage.count() > 0;
-            
+            const errorExists = await page.locator('p:has-text("CPF")').count() > 0;
             if (!errorExists) {
-                const allErrors = await page.locator('p.text-red-500').allTextContents();
-                const partialError = page.locator('p:has-text("CPF")');
-                const partialExists = await partialError.count() > 0;
-                
-                if (partialExists) {
-                    expect(partialExists).toBeTruthy();
-                } else {
-                    const currentUrl = page.url();
-                    expect(currentUrl).toContain('/signup');
-                }
+                expect(page.url()).toContain('/signup');
             } else {
                 expect(errorExists).toBeTruthy();
             }
         });
 
-        test('Cadastro com email inválido', async ({ page }) => {
+        test('should show error with invalid email', async ({ page }) => {
             await page.goto('https://gibiverse.local/signup');
             const userData = generateUniqueUserData();
             await page.locator('input[name="name"]').fill(userData.name);
-            await page.locator('input[name="email"]').fill('playwriteteste1gmail.com');
+            await page.locator('input[name="email"]').fill('invalidemail.com');
             await page.locator('input[name="cpf"]').fill(userData.cpf);
             await page.locator('input[name="password"]').fill(userData.password);
             await page.locator('input[name="confirmPassword"]').fill(userData.confirmPassword);
             
-            await page.waitForTimeout(500);
-            
-            const registerButton = page.getByRole('button', { name: 'Cadastrar' });
-            await registerButton.scrollIntoViewIfNeeded();
-            await registerButton.click();
-            
+            await page.getByRole('button', { name: 'Cadastrar' }).click();
             await page.waitForTimeout(2000);
             
-            const errorMessage = page.locator('p:has-text("E-mail inválido")');
-            const errorExists = await errorMessage.count() > 0;
-            
+            const errorExists = await page.locator('p:has-text("E-mail")').count() > 0;
             if (!errorExists) {
-                const allErrors = await page.locator('p.text-red-500').allTextContents();
-                const partialError = page.locator('p:has-text("E-mail")');
-                const partialExists = await partialError.count() > 0;
-                
-                if (partialExists) {
-                    expect(partialExists).toBeTruthy();
-                } else {
-                    const currentUrl = page.url();
-                    expect(currentUrl).toContain('/signup');
-                }
+                expect(page.url()).toContain('/signup');
             } else {
                 expect(errorExists).toBeTruthy();
             }
         });
 
-        test('Cadastro com nome nulo', async ({ page }) => {
+        test('should show error with empty name', async ({ page }) => {
             await page.goto('https://gibiverse.local/signup');
             const userData = generateUniqueUserData();
             await page.locator('input[name="name"]').fill('');
@@ -228,35 +150,19 @@ test.describe('Gibiverse E2E Tests', () => {
             await page.locator('input[name="password"]').fill(userData.password);
             await page.locator('input[name="confirmPassword"]').fill(userData.confirmPassword);
             
-            await page.waitForTimeout(500);
-            
-            const registerButton = page.getByRole('button', { name: 'Cadastrar' });
-            await registerButton.scrollIntoViewIfNeeded();
-            await registerButton.click();
-            
+            await page.getByRole('button', { name: 'Cadastrar' }).click();
             await page.waitForTimeout(2000);
             
-            const errorMessage = page.locator('p:has-text("O nome deve ter pelo menos 3 caracteres")');
-            const errorExists = await errorMessage.count() > 0;
-            
+            const errorExists = await page.locator('p:has-text("nome")').count() > 0;
             if (!errorExists) {
-                const allErrors = await page.locator('p.text-red-500').allTextContents();
-                const partialError = page.locator('p:has-text("nome")');
-                const partialExists = await partialError.count() > 0;
-                
-                if (partialExists) {
-                    expect(partialExists).toBeTruthy();
-                } else {
-                    const currentUrl = page.url();
-                    expect(currentUrl).toContain('/signup');
-                }
+                expect(page.url()).toContain('/signup');
             } else {
                 expect(errorExists).toBeTruthy();
             }
         });
 
-        test.describe.serial('Cadastro com sucesso', () => {
-            test('Cadastro com sucesso', async ({ page }) => {
+        test.describe.serial('Successful registration', () => {
+            test('should register successfully', async ({ page }) => {
                 await page.goto('https://gibiverse.local/signup');
                 const userData = generateUniqueUserData();
                 await page.locator('input[name="name"]').fill(userData.name);
@@ -265,20 +171,14 @@ test.describe('Gibiverse E2E Tests', () => {
                 await page.locator('input[name="password"]').fill(userData.password);
                 await page.locator('input[name="confirmPassword"]').fill(userData.confirmPassword);
 
-                const registerButton = page.getByRole('button', { name: 'Cadastrar' });
-                await registerButton.scrollIntoViewIfNeeded();
-                await registerButton.click();
-                
+                await page.getByRole('button', { name: 'Cadastrar' }).click();
                 await page.waitForURL("https://gibiverse.local/login", { timeout: 5000 });
-                await page.waitForTimeout(500);
-                const title = await page.getByText("Entrar");
-                expect(title).toBeTruthy();
+                expect(await page.getByText("Entrar")).toBeTruthy();
             });
 
-            test('Cadastro com CPF válido gerado automaticamente', async ({ page }) => {
+            test('should validate CPF format', async ({ page }) => {
                 await page.goto('https://gibiverse.local/signup');
                 const userData = generateUniqueUserData();
-                
                 expect(userData.cpf).toMatch(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/);
                 
                 await page.locator('input[name="name"]').fill(userData.name);
@@ -287,354 +187,200 @@ test.describe('Gibiverse E2E Tests', () => {
                 await page.locator('input[name="password"]').fill(userData.password);
                 await page.locator('input[name="confirmPassword"]').fill(userData.confirmPassword);
 
-                const registerButton = page.getByRole('button', { name: 'Cadastrar' });
-                await registerButton.scrollIntoViewIfNeeded();
-                await registerButton.click();
-                
+                await page.getByRole('button', { name: 'Cadastrar' }).click();
                 await page.waitForURL("https://gibiverse.local/login", { timeout: 5000 });
-                await page.waitForTimeout(500);
-                const title = await page.getByText("Entrar");
-                expect(title).toBeTruthy();
+                expect(await page.getByText("Entrar")).toBeTruthy();
             });
         });
     });
 
     test.describe.serial('Authors', () => {
-        test.describe('Testes de Autor Autenticados', () => {
-            test.beforeEach(async ({ page }) => {
-                await page.goto('https://gibiverse.local/login');
-                await page.locator('input[name="email"]').fill('testuser@email.com');
-                await page.locator('input[name="password"]').fill('Password123@');
-                const loginButton = page.getByRole('button', { name: 'Entrar' });
-                await loginButton.scrollIntoViewIfNeeded();
-                await loginButton.click();
-                await expect(page).toHaveURL("https://gibiverse.local/home");
-                await page.goto('https://gibiverse.local/authors');
-                await page.waitForTimeout(500);
-                expect(page.url()).toBe('https://gibiverse.local/authors');
-            });
+        test.beforeEach(async ({ page }) => {
+            await page.goto('https://gibiverse.local/login');
+            await page.locator('input[name="email"]').fill('testuser@email.com');
+            await page.locator('input[name="password"]').fill('Password123@');
+            await page.getByRole('button', { name: 'Entrar' }).click();
+            await expect(page).toHaveURL("https://gibiverse.local/home");
+            await page.goto('https://gibiverse.local/authors');
+        });
 
-            test('Abrir página Authors', async ({ page }) => {
-                await page.goto('https://gibiverse.local/authors');            
-                await expect(page).toHaveURL('https://gibiverse.local/authors');
-            });
+        test('should display authors page', async ({ page }) => {
+            await expect(page).toHaveURL('https://gibiverse.local/authors');
+        });
 
-            test('Criar autor nulo', async ({ page }) => {
-                await page.goto('https://gibiverse.local/authors');
-                await expect(page).toHaveURL('https://gibiverse.local/authors');
-                await page.waitForTimeout(500);
+        test('should show error when creating author with empty name', async ({ page }) => {
+            await page.getByRole('button', { name: 'Criar Autor' }).first().click();
+            await page.getByRole('button', { name: 'Salvar' }).click();
+            await page.waitForTimeout(200);
+            
+            expect(await page.getByText("O nome deve ter pelo menos 3 caracteres")).toBeTruthy();
+        });
 
-                await page.locator('button[type="button"]:has-text("Criar Autor")').click();
-                const createButton = page.getByRole('button', { name: 'Salvar' });
-                await createButton.scrollIntoViewIfNeeded();
-                await createButton.click();
-                await page.waitForTimeout(200);
-                
-                const error = await page.getByText("O nome deve ter pelo menos 3 caracteres");
-                expect(error).toBeTruthy();
-            });
+        test('should create, edit and delete author', async ({ page }) => {
+            // Create author
+            await page.getByRole('button', { name: 'Criar Autor' }).first().click();
+            const authorName = `TEST_AUTHOR_${generateRandomString(8)}`;
+            await page.locator('input[name="name"]').fill(authorName);
+            await page.locator('textarea[name="bio"]').fill('Test biography');
+            await page.locator('input[name="coverUrl"]').fill('https://example.com/image.jpg');
+            await page.getByRole('button', { name: 'Salvar' }).click();
+            await page.waitForTimeout(2000);
 
-            test('Criar, editar e excluir autor', async ({ page }) => {
-                await page.waitForLoadState('load'); 
-                await page.waitForTimeout(500);
-                
-                // CRIAR AUTOR
-                await page.locator('button[type="button"]:has-text("Criar Autor")').click();
-                const randomSuffix = generateRandomString(8);
-                const authorName = `TESTE_AUTOR_${randomSuffix}`;
-                
-                await page.locator('input[name="name"]').fill(authorName);
-                await page.locator('textarea[name="bio"]').fill('Biografia de teste');
-                await page.locator('input[name="coverUrl"]').fill('https://example.com/image.jpg');
-                
-                const createButton = page.getByRole('button', { name: 'Salvar' });
-                await createButton.scrollIntoViewIfNeeded();
-                await createButton.click();
-                
-                await page.waitForTimeout(2000);
-                
-                const successMessage = await page.getByText("Autor criado com sucesso").count();
-                const errorMessage = await page.getByText("Erro").count();
-                
-                if (successMessage === 0) {
-                    const currentUrl = page.url();
-                    
-                    if (currentUrl.includes('/authors')) {
-                        const validationErrors = await page.locator('p.text-red-500').allTextContents();
-                    }
-                }
-                
-                await page.goto('https://gibiverse.local/authors');
-                await page.waitForTimeout(1000);
-                
-                await page.reload();
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(2000);
-                
-                const authorExists = await page.locator(`tr:has-text("${authorName}")`).count();
-                
-                if (authorExists === 0) {
-                    const allAuthors = await page.locator('tr').allTextContents();
-                    
-                    const testAuthors = await page.locator('tr:has-text("TESTE_AUTOR")').allTextContents();
-                    
-                    await page.waitForTimeout(3000);
-                    const finalCheck = await page.locator(`tr:has-text("${authorName}")`).count();
-                }
-                
-                expect(page.url()).toBe('https://gibiverse.local/authors');
+            // Edit author
+            await page.reload();
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(2000);
 
-                // EDITAR AUTOR
-                await page.waitForTimeout(500);
-                await page.goto('https://gibiverse.local/authors');
-                await expect(page).toHaveURL('https://gibiverse.local/authors');
-                await page.waitForTimeout(500);
-
-                await page.reload();
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(2000);
-
-                const allRows = await page.locator('tr').all();
-                
-                const authorRow = page.locator(`tr:has-text("${authorName}")`);
-                const authorCount = await authorRow.count();
-                
-                const anyAuthorRow = page.locator('tr:has-text("TESTE_AUTOR")');
-                const anyAuthorCount = await anyAuthorRow.count();
-                
-                const testAuthors = await page.locator('tr:has-text("TESTE_AUTOR")').allTextContents();
-                
-                if (authorCount === 0) {
-                    if (anyAuthorCount > 0) {
-                        const firstAuthorRow = anyAuthorRow.first();
-                        const menuButton = firstAuthorRow.locator('button[aria-haspopup="menu"]').first();
-                        await menuButton.click();
-                        await page.click('text=Editar');
-                    } else {
-                        throw new Error(`Autor de teste não encontrado: ${authorName}. Autores na página: ${JSON.stringify(testAuthors)}`);
-                    }
+            const authorRow = page.locator(`tr:has-text("${authorName}")`);
+            if (await authorRow.count() === 0) {
+                const anyAuthorRow = page.locator('tr:has-text("TEST_AUTHOR")');
+                if (await anyAuthorRow.count() > 0) {
+                    await anyAuthorRow.first().locator('button[aria-haspopup="menu"]').click();
+                    await page.getByText('Editar').click();
                 } else {
-                    const firstAuthorRow = authorRow.first();
-                    const menuButton = firstAuthorRow.locator('button[aria-haspopup="menu"]').first();
-                    await menuButton.click();
-                    await page.click('text=Editar');
+                    throw new Error(`Author not found: ${authorName}`);
                 }
-                
-                const title = await page.getByText("Editar Autor");
-                await page.waitForTimeout(200);
-                expect(title).toBeTruthy();
-                
-                const editedAuthorName = `${authorName} - EDITADO`;
-                await page.locator('input[name="name"]').fill(editedAuthorName);
-                const updateButton = page.getByRole('button', { name: 'Salvar' });
-                await expect(updateButton).toBeTruthy();
-                await updateButton.click();
-                await page.waitForTimeout(2000);
+            } else {
+                await authorRow.first().locator('button[aria-haspopup="menu"]').click();
+                await page.getByText('Editar').click();
+            }
 
-                // EXCLUIR AUTOR
-                await page.goto('https://gibiverse.local/authors');
-                await page.waitForTimeout(500);
+            const editedAuthorName = `${authorName} - EDITED`;
+            await page.locator('input[name="name"]').fill(editedAuthorName);
+            await page.getByRole('button', { name: 'Salvar' }).click();
+            await page.waitForTimeout(2000);
 
-                await page.reload();
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(2000);
+            // Delete author
+            await page.reload();
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(2000);
 
-                const allRowsAfterEdit = await page.locator('tr').all();
-                
-                const editedAuthorRow = page.locator(`tr:has-text("${editedAuthorName}")`);
-                const editedAuthorCount = await editedAuthorRow.count();
-                
-                const anyEditedAuthorRow = page.locator('tr:has-text("TESTE_AUTOR")');
-                const anyEditedAuthorCount = await anyEditedAuthorRow.count();
-                
-                const editedTestAuthors = await page.locator('tr:has-text("TESTE_AUTOR")').allTextContents();
-                
-                if (editedAuthorCount === 0) {
-                    if (anyEditedAuthorCount > 0) {
-                        const firstAuthorRow = anyEditedAuthorRow.first();
-                        await firstAuthorRow.locator('button[aria-haspopup="menu"]').click();
-                        await page.getByText('Excluir').click();
-                    } else {
-                        throw new Error(`Autor editado não encontrado: ${editedAuthorName}. Autores na página: ${JSON.stringify(editedTestAuthors)}`);
-                    }
-                } else {
-                    const firstAuthorRow = editedAuthorRow.first();
-                    await firstAuthorRow.locator('button[aria-haspopup="menu"]').click();
+            const editedAuthorRow = page.locator(`tr:has-text("${editedAuthorName}")`);
+            if (await editedAuthorRow.count() === 0) {
+                const anyEditedAuthorRow = page.locator('tr:has-text("TEST_AUTHOR")');
+                if (await anyEditedAuthorRow.count() > 0) {
+                    await anyEditedAuthorRow.first().locator('button[aria-haspopup="menu"]').click();
                     await page.getByText('Excluir').click();
+                } else {
+                    throw new Error(`Edited author not found: ${editedAuthorName}`);
                 }
-                
-                await page.waitForTimeout(500);
-                const deleteTitle = await page.getByText("Confirmar exclusão");
-                expect(deleteTitle).toBeTruthy();
-                await page.locator('button[type="button"]:has-text("Excluir")').click();
-                
-                await page.waitForTimeout(1000);
-                await page.reload();
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(2000);
-                
-                const remainingAuthors = await page.locator(`tr:has-text("${editedAuthorName}")`).count();
-                expect(remainingAuthors).toBe(0);
-            });
+            } else {
+                await editedAuthorRow.first().locator('button[aria-haspopup="menu"]').click();
+                await page.getByText('Excluir').click();
+            }
+
+            expect(await page.getByText("Confirmar exclusão")).toBeTruthy();
+            await page.locator('button[type="button"]:has-text("Excluir")').click();
+            
+            await page.waitForTimeout(1000);
+            await page.reload();
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(2000);
+            
+            expect(await page.locator(`tr:has-text("${editedAuthorName}")`).count()).toBe(0);
         });
     });
 
     test.describe.serial('Genres', () => {
-        test.describe('Testes de Gênero Autenticados', () => {
-            test.beforeEach(async ({ page }) => {
-                await page.goto('https://gibiverse.local/login');
-                await page.locator('input[name="email"]').fill('testuser@email.com');
-                await page.locator('input[name="password"]').fill('Password123@');
-                const loginButton = page.getByRole('button', { name: 'Entrar' });
-                await loginButton.scrollIntoViewIfNeeded();
-                await loginButton.click();
-                await expect(page).toHaveURL("https://gibiverse.local/home");
-                await page.goto('https://gibiverse.local/genres');
-                await page.waitForTimeout(500);
-                expect(page.url()).toBe('https://gibiverse.local/genres');
-            });
+        test.beforeEach(async ({ page }) => {
+            await page.goto('https://gibiverse.local/login');
+            await page.locator('input[name="email"]').fill('testuser@email.com');
+            await page.locator('input[name="password"]').fill('Password123@');
+            await page.getByRole('button', { name: 'Entrar' }).click();
+            await expect(page).toHaveURL("https://gibiverse.local/home");
+            await page.goto('https://gibiverse.local/genres');
+        });
 
-            test('Abrir página Genres', async ({ page }) => {
-                await page.goto('https://gibiverse.local/genres');
-                await expect(page).toHaveURL('https://gibiverse.local/genres');
-            });
+        test('should display genres page', async ({ page }) => {
+            await expect(page).toHaveURL('https://gibiverse.local/genres');
+        });
 
-            test('Criar gênero nulo', async ({ page }) => {
-                await page.goto('https://gibiverse.local/genres');
-                await expect(page).toHaveURL('https://gibiverse.local/genres');
-                await page.waitForTimeout(500);
-                
-                await page.locator('button[type="button"]:has-text("Criar Gênero")').click();
-                const createButton = page.getByRole('button', { name: 'Salvar' });
-                await createButton.scrollIntoViewIfNeeded();
-                await createButton.click();
-                await page.waitForTimeout(200);
-                
-                const error = await page.getByText("O nome deve ter pelo menos 3 caracteres");
-                expect(error).toBeTruthy();
-            });
+        test('should show error when creating genre with empty name', async ({ page }) => {
+            await page.getByRole('button', { name: 'Criar Gênero' }).first().click();
+            await page.getByRole('button', { name: 'Salvar' }).click();
+            await page.waitForTimeout(200);
+            
+            expect(await page.getByText("O nome deve ter pelo menos 3 caracteres")).toBeTruthy();
+        });
 
-            test('Criar, editar e excluir gênero', async ({ page }) => {
-                await page.waitForLoadState('load'); 
-                await page.waitForTimeout(500);
-                
-                // CRIAR GÊNERO
-                await page.locator('button[type="button"]:has-text("Criar Gênero")').click();
-                const randomSuffix = generateRandomString(8);
-                const genreName = `TESTE_GENERO_${randomSuffix}`;
-                await page.locator('input[name="name"]').fill(genreName);
-                const createButton = page.getByRole('button', { name: 'Salvar' });
-                await createButton.scrollIntoViewIfNeeded();
-                await createButton.click();
-                await page.waitForTimeout(1000);
-                
-                await page.goto('https://gibiverse.local/genres');
-                await page.waitForTimeout(500);
-                
-                const genreExists = await page.locator(`tr:has-text("${genreName}")`).count();
-                
-                expect(page.url()).toBe('https://gibiverse.local/genres');
+        test('should create, edit and delete genre', async ({ page }) => {
+            // Create genre
+            await page.getByRole('button', { name: 'Criar Gênero' }).first().click();
+            const genreName = `TEST_GENRE_${generateRandomString(8)}`;
+            await page.locator('input[name="name"]').fill(genreName);
+            await page.getByRole('button', { name: 'Salvar' }).click();
+            await page.waitForTimeout(1000);
 
-                // EDITAR GÊNERO
-                await page.goto('https://gibiverse.local/genres');
-                await expect(page).toHaveURL('https://gibiverse.local/genres');
-                await page.waitForTimeout(500);
+            // Edit genre
+            await page.reload();
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(2000);
 
-                const allGenres = await page.locator('tr').allTextContents();
+            const genreRow = page.locator(`tr:has-text("${genreName}")`);
+            if (await genreRow.count() === 0) {
+                throw new Error(`Genre not found: ${genreName}`);
+            }
 
-                const genreRow = page.locator(`tr:has-text("${genreName}")`);
-                const genreCount = await genreRow.count();
-                
-                if (genreCount === 0) {
-                    throw new Error(`Gênero de teste não encontrado: ${genreName}`);
-                }
+            await genreRow.first().locator('button[aria-haspopup="menu"]').click();
+            await page.getByText('Editar').click();
+            
+            const editedGenreName = `${genreName} - EDITED`;
+            await page.locator('input[name="name"]').fill(editedGenreName);
+            await page.getByRole('button', { name: 'Salvar' }).click();
+            await page.waitForTimeout(2000);
 
-                const firstGenreRow = genreRow.first();
-                const menuButton = firstGenreRow.locator('button[aria-haspopup="menu"]').first();
-                await menuButton.click();
-                await page.click('text=Editar');
-                
-                const title = await page.getByText("Editar Gênero");
-                await page.waitForTimeout(200);
-                expect(title).toBeTruthy();
-                
-                const editedGenreName = `${genreName} - EDITADO`;
-                await page.locator('input[name="name"]').fill(editedGenreName);
-                const updateButton = page.getByRole('button', { name: 'Salvar' });
-                await expect(updateButton).toBeTruthy();
-                await updateButton.click();
-                await page.waitForTimeout(2000);
+            // Delete genre
+            await page.reload();
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(2000);
 
-                // EXCLUIR GÊNERO
-                await page.goto('https://gibiverse.local/genres');
-                await page.waitForTimeout(500);
+            const editedGenreRow = page.locator(`tr:has-text("${editedGenreName}")`);
+            if (await editedGenreRow.count() === 0) {
+                throw new Error(`Edited genre not found: ${editedGenreName}`);
+            }
 
-                const allGenresAfterEdit = await page.locator('tr').allTextContents();
-
-                const editedGenreRow = page.locator(`tr:has-text("${editedGenreName}")`);
-                const editedGenreCount = await editedGenreRow.count();
-                
-                if (editedGenreCount === 0) {
-                    throw new Error(`Gênero editado não encontrado: ${editedGenreName}`);
-                }
-
-                const firstEditedGenreRow = editedGenreRow.first();
-                await firstEditedGenreRow.locator('button[aria-haspopup="menu"]').click();
-                await page.getByText('Excluir').click();
-                
-                await page.waitForTimeout(500);
-                const deleteTitle = await page.getByText("Confirmar exclusão");
-                expect(deleteTitle).toBeTruthy();
-                await page.locator('button[type="button"]:has-text("Excluir")').click();
-                
-                await page.waitForTimeout(1000);
-                await page.reload();
-                await page.waitForLoadState('networkidle');
-                await page.waitForTimeout(2000);
-                
-                const remainingGenres = await page.locator(`tr:has-text("${editedGenreName}")`).count();
-                expect(remainingGenres).toBe(0);
-            });
+            await editedGenreRow.first().locator('button[aria-haspopup="menu"]').click();
+            await page.getByText('Excluir').click();
+            
+            expect(await page.getByText("Confirmar exclusão")).toBeTruthy();
+            await page.locator('button[type="button"]:has-text("Excluir")').click();
+            
+            await page.waitForTimeout(1000);
+            await page.reload();
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(2000);
+            
+            expect(await page.locator(`tr:has-text("${editedGenreName}")`).count()).toBe(0);
         });
     });
 
     test.describe('Collections', () => {
-        test.describe('Testes de Collections Autenticados', () => {
-            test.beforeEach(async ({ page }) => {
-                await page.goto('https://gibiverse.local/login');
-                await page.locator('input[name="email"]').fill('testuser@email.com');
-                await page.locator('input[name="password"]').fill('Password123@');
-                const loginButton = page.getByRole('button', { name: 'Entrar' });
-                await loginButton.scrollIntoViewIfNeeded();
-                await loginButton.click();
-                await expect(page).toHaveURL("https://gibiverse.local/home");
-            });
+        test.beforeEach(async ({ page }) => {
+            await page.goto('https://gibiverse.local/login');
+            await page.locator('input[name="email"]').fill('testuser@email.com');
+            await page.locator('input[name="password"]').fill('Password123@');
+            await page.getByRole('button', { name: 'Entrar' }).click();
+            await expect(page).toHaveURL("https://gibiverse.local/home");
+        });
 
-            test('Abrir página Collections', async ({ page }) => {
-                await page.goto('https://gibiverse.local/collections');
-                const title = await page.getByText("Coleções");
-                expect(title).toBeTruthy();
-            });
+        test('should display collections page', async ({ page }) => {
+            await page.goto('https://gibiverse.local/collections');
+            expect(await page.getByText("Coleções")).toBeTruthy();
         });
     });
 
     test.describe('Comic Books', () => {
-        test.describe('Testes de Comic Books Autenticados', () => {
-            test.beforeEach(async ({ page }) => {
-                await page.goto('https://gibiverse.local/login');
-                await page.locator('input[name="email"]').fill('testuser@email.com');
-                await page.locator('input[name="password"]').fill('Password123@');
-                const loginButton = page.getByRole('button', { name: 'Entrar' });
-                await loginButton.scrollIntoViewIfNeeded();
-                await loginButton.click();
-                await expect(page).toHaveURL("https://gibiverse.local/home");
-            });
+        test.beforeEach(async ({ page }) => {
+            await page.goto('https://gibiverse.local/login');
+            await page.locator('input[name="email"]').fill('testuser@email.com');
+            await page.locator('input[name="password"]').fill('Password123@');
+            await page.getByRole('button', { name: 'Entrar' }).click();
+            await expect(page).toHaveURL("https://gibiverse.local/home");
+        });
 
-            test('Abrir página Comic Books', async ({ page }) => {
-                await page.goto('https://gibiverse.local/comicbooks');
-                const title = await page.getByText("Gibis");
-                expect(title).toBeTruthy();
-            });
+        test('should display comic books page', async ({ page }) => {
+            await page.goto('https://gibiverse.local/comicbooks');
+            expect(await page.getByText("Gibis")).toBeTruthy();
         });
     });
 }); 

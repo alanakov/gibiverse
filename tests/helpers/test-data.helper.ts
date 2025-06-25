@@ -28,3 +28,14 @@ export function generateValidCPF(): string {
     
     return `${digits.slice(0, 3).join('')}.${digits.slice(3, 6).join('')}.${digits.slice(6, 9).join('')}-${digits.slice(9).join('')}`;
 }
+
+export function generateUniqueUserData() {
+    const randomSuffix = generateRandomString(8);
+    return {
+        name: `Test User ${randomSuffix}`,
+        email: `testuser${randomSuffix}@email.com`,
+        cpf: generateValidCPF(),
+        password: 'Password123@',
+        confirmPassword: 'Password123@'
+    };
+}
