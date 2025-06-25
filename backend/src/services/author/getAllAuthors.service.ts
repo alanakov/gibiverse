@@ -14,6 +14,6 @@ export const getAllAuthorsService = async ({
     model: AuthorModel,
     page,
     limit,
-    order: [["name", "ASC"]],
+    order: [["createdAt", "DESC"]]
   });
 };

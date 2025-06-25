@@ -14,6 +14,6 @@ export const getAllGenresService = async ({
     model: GenreModel,
     page,
     limit,
-    order: [["name", "ASC"]],
+    order: [["createdAt", "DESC"]]
   });
 };
