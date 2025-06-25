@@ -94,11 +94,9 @@ test.describe('Gibiverse E2E Tests', () => {
             await page.waitForTimeout(2000);
             
             const errorExists = await page.locator('p:has-text("senhas")').count() > 0;
-            if (!errorExists) {
-                expect(page.url()).toContain('/signup');
-            } else {
-                expect(errorExists).toBeTruthy();
-            }
+            expect(
+                errorExists || page.url().includes('/signup')
+            ).toBeTruthy();
         });
 
         test('should show error with invalid CPF', async ({ page }) => {
@@ -114,11 +112,9 @@ test.describe('Gibiverse E2E Tests', () => {
             await page.waitForTimeout(2000);
             
             const errorExists = await page.locator('p:has-text("CPF")').count() > 0;
-            if (!errorExists) {
-                expect(page.url()).toContain('/signup');
-            } else {
-                expect(errorExists).toBeTruthy();
-            }
+            expect(
+                errorExists || page.url().includes('/signup')
+            ).toBeTruthy();
         });
 
         test('should show error with invalid email', async ({ page }) => {
@@ -134,11 +130,9 @@ test.describe('Gibiverse E2E Tests', () => {
             await page.waitForTimeout(2000);
             
             const errorExists = await page.locator('p:has-text("E-mail")').count() > 0;
-            if (!errorExists) {
-                expect(page.url()).toContain('/signup');
-            } else {
-                expect(errorExists).toBeTruthy();
-            }
+            expect(
+                errorExists || page.url().includes('/signup')
+            ).toBeTruthy();
         });
 
         test('should show error with empty name', async ({ page }) => {
@@ -154,11 +148,9 @@ test.describe('Gibiverse E2E Tests', () => {
             await page.waitForTimeout(2000);
             
             const errorExists = await page.locator('p:has-text("nome")').count() > 0;
-            if (!errorExists) {
-                expect(page.url()).toContain('/signup');
-            } else {
-                expect(errorExists).toBeTruthy();
-            }
+            expect(
+                errorExists || page.url().includes('/signup')
+            ).toBeTruthy();
         });
 
         test.describe.serial('Successful registration', () => {
@@ -234,11 +226,9 @@ test.describe('Gibiverse E2E Tests', () => {
             await page.waitForTimeout(200);
             
             const errorExists = await page.locator('p:has-text("URL")').count() > 0;
-            if (!errorExists) {
-                expect(page.url()).toContain('/authors');
-            } else {
-                expect(errorExists).toBeTruthy();
-            }
+            expect(
+                errorExists || page.url().includes('/authors')
+            ).toBeTruthy();
         });
 
         test('should show error when editing author with empty name', async ({ page }) => {
@@ -256,13 +246,13 @@ test.describe('Gibiverse E2E Tests', () => {
             const authorRow = page.locator(`tr:has-text("${authorName}")`);
             if (await authorRow.count() > 0) {
                 await authorRow.first().locator('button[aria-haspopup="menu"]').click();
-                await page.getByText('Editar').click();
-                
-                await page.locator('input[name="name"]').fill('');
-                await page.getByRole('button', { name: 'Salvar' }).click();
-                await page.waitForTimeout(200);
-                
-                expect(await page.getByText("O nome deve ter pelo menos 3 caracteres")).toBeTruthy();
+            await page.getByText('Editar').click();
+            
+            await page.locator('input[name="name"]').fill('');
+            await page.getByRole('button', { name: 'Salvar' }).click();
+            await page.waitForTimeout(200);
+            
+            expect(await page.getByText("O nome deve ter pelo menos 3 caracteres")).toBeTruthy();
             }
         });
 
@@ -279,19 +269,9 @@ test.describe('Gibiverse E2E Tests', () => {
             await page.waitForLoadState('networkidle');
             await page.waitForTimeout(2000);
 
-            const authorRow = page.locator(`tr:has-text("${authorName}")`);
-            if (await authorRow.count() === 0) {
-                const anyAuthorRow = page.locator('tr:has-text("TEST_AUTHOR")');
-                if (await anyAuthorRow.count() > 0) {
-                    await anyAuthorRow.first().locator('button[aria-haspopup="menu"]').click();
-                    await page.getByText('Editar').click();
-                } else {
-                    throw new Error(`Author not found: ${authorName}`);
-                }
-            } else {
-                await authorRow.first().locator('button[aria-haspopup="menu"]').click();
-                await page.getByText('Editar').click();
-            }
+            await expect(page.locator(`tr:has-text("${authorName}")`)).toHaveCount(1, { timeout: 10000 });
+            await page.locator(`tr:has-text("${authorName}")`).first().locator('button[aria-haspopup="menu"]').click();
+            await page.getByText('Editar').click();
 
             const editedAuthorName = `${authorName} - EDITED`;
             await page.locator('input[name="name"]').fill(editedAuthorName);
@@ -302,20 +282,11 @@ test.describe('Gibiverse E2E Tests', () => {
             await page.waitForLoadState('networkidle');
             await page.waitForTimeout(2000);
 
-            const editedAuthorRow = page.locator(`tr:has-text("${editedAuthorName}")`);
-            if (await editedAuthorRow.count() === 0) {
-                const anyEditedAuthorRow = page.locator('tr:has-text("TEST_AUTHOR")');
-                if (await anyEditedAuthorRow.count() > 0) {
-                    await anyEditedAuthorRow.first().locator('button[aria-haspopup="menu"]').click();
-                    await page.getByText('Excluir').click();
-                } else {
-                    throw new Error(`Edited author not found: ${editedAuthorName}`);
-                }
-            } else {
-                await editedAuthorRow.first().locator('button[aria-haspopup="menu"]').click();
-                await page.getByText('Excluir').click();
-            }
-
+            // Aguarda até o autor editado aparecer na tabela, com timeout maior
+            await expect(page.locator(`tr:has-text("${editedAuthorName}")`)).toHaveCount(1, { timeout: 10000 });
+            await page.locator(`tr:has-text("${editedAuthorName}")`).first().locator('button[aria-haspopup="menu"]').click();
+            await page.getByText('Excluir').click();
+            
             expect(await page.getByText("Confirmar exclusão")).toBeTruthy();
             await page.locator('button[type="button"]:has-text("Excluir")').click();
             
@@ -324,7 +295,7 @@ test.describe('Gibiverse E2E Tests', () => {
             await page.waitForLoadState('networkidle');
             await page.waitForTimeout(2000);
             
-            expect(await page.locator(`tr:has-text("${editedAuthorName}")`).count()).toBe(0);
+            await expect(page.locator(`tr:has-text("${editedAuthorName}")`)).toHaveCount(0, { timeout: 10000 });
         });
     });
 
@@ -380,16 +351,15 @@ test.describe('Gibiverse E2E Tests', () => {
             await page.waitForTimeout(2000);
 
             const genreRow = page.locator(`tr:has-text("${genreName}")`);
-            if (await genreRow.count() > 0) {
-                await genreRow.first().locator('button[aria-haspopup="menu"]').click();
-                await page.getByText('Editar').click();
-                
-                await page.locator('input[name="name"]').fill('');
-                await page.getByRole('button', { name: 'Salvar' }).click();
-                await page.waitForTimeout(200);
-                
-                expect(await page.getByText("O nome deve ter pelo menos 3 caracteres")).toBeTruthy();
-            }
+            expect(await genreRow.count()).toBeGreaterThan(0);
+            await genreRow.first().locator('button[aria-haspopup="menu"]').click();
+            await page.getByText('Editar').click();
+            
+            await page.locator('input[name="name"]').fill('');
+            await page.getByRole('button', { name: 'Salvar' }).click();
+            await page.waitForTimeout(200);
+            
+            expect(await page.getByText("O nome deve ter pelo menos 3 caracteres")).toBeTruthy();
         });
 
         test('should create, edit and delete genre', async ({ page }) => {
@@ -404,9 +374,7 @@ test.describe('Gibiverse E2E Tests', () => {
             await page.waitForTimeout(2000);
 
             const genreRow = page.locator(`tr:has-text("${genreName}")`);
-            if (await genreRow.count() === 0) {
-                throw new Error(`Genre not found: ${genreName}`);
-            }
+            expect(await genreRow.count()).toBeGreaterThan(0);
 
             await genreRow.first().locator('button[aria-haspopup="menu"]').click();
             await page.getByText('Editar').click();
@@ -421,9 +389,7 @@ test.describe('Gibiverse E2E Tests', () => {
             await page.waitForTimeout(2000);
 
             const editedGenreRow = page.locator(`tr:has-text("${editedGenreName}")`);
-            if (await editedGenreRow.count() === 0) {
-                throw new Error(`Edited genre not found: ${editedGenreName}`);
-            }
+            expect(await editedGenreRow.count()).toBeGreaterThan(0);
 
             await editedGenreRow.first().locator('button[aria-haspopup="menu"]').click();
             await page.getByText('Excluir').click();
