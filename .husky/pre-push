@@ -1,0 +1,4 @@
+#!/bin/sh
+cd backend && npm test
+#cd ..        
+#npm run test:e2e

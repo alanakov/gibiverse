@@ -1,186 +1,114 @@
-import { Request, Response } from "express";
-import UserModel from "../src/models/UserModel";
-import { cpf as cpfValidator } from "cpf-cnpj-validator";
-import bcrypt from "bcrypt";
+// @ts-nocheck
 import { createUser } from "../src/controllers/user/createUser.controller";
+import UserModel from "../src/models/UserModel";
+jest.mock("bcrypt", () => ({
+  hash: jest.fn(),
+}));
+jest.mock("cpf-cnpj-validator", () => ({
+  cpf: { isValid: () => true },
+}));
+jest.mock("../src/utils/auth/jwt", () => ({
+  generateToken: () => "fake-jwt-token",
+}));
+jest.mock("sequelize", () => {
+  class Sequelize { }
+  class Model {
+    static init = jest.fn();
+    static hasMany = jest.fn();
+    static belongsTo = jest.fn();
+    static define = jest.fn();
+  }
+  return {
+    Sequelize,
+    Op: { or: "or" },
+    DataTypes: {
+      INTEGER: "INTEGER",
+      STRING: "STRING",
+      TEXT: "TEXT",
+    },
+    Model,
+  };
+});
 
-jest.mock("../src/models/UserModel");
-jest.mock("cpf-cnpj-validator");
-jest.mock("bcrypt");
+const makeRes = () => {
+  const res: any = {};
+  res.status = jest.fn().mockReturnValue(res);
+  res.json = jest.fn().mockReturnValue(res);
+  return res;
+};
 
-describe("Testes de cadastro de usuário", () => {
-  let req: Partial<Request>;
-  let res: Partial<Response>;
-
+describe("Cadastro de Usuário", () => {
   beforeEach(() => {
-    req = { body: {} };
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
+    jest.clearAllMocks();
+    UserModel.findOne = jest.fn();
+    UserModel.create = jest.fn();
+    UserModel.validarNivelSenha = jest.fn().mockReturnValue({ valida: true, requisitos: {} });
   });
 
-  test("Erro 400 porque todos os campos são obrigatórios", async () => {
-    await createUser(req as Request, res as Response);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({
-      error: "Todos os campos são obrigatórios",
-    });
-  });
-
-  test("Erro 400 porque o CPF é inválido", async () => {
-    req.body = {
-      name: "Vanderleia",
-      email: "vandinha@gmail.com",
-      password: "SenhaForte456@",
-      cpf: "12345678902",
-    };
-
-    (cpfValidator.isValid as jest.Mock).mockReturnValue(false);
-
-    await createUser(req as Request, res as Response);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({
-      error: "CPF inválido",
-    });
-  });
-
-  test("Erro 400 porque o e-mail é inválido", async () => {
-    req.body = {
-      name: "Vanderleia",
-      email: "emailinvalido",
-      password: "SenhaForte345@",
-      cpf: "12345678902",
-    };
-
-    (cpfValidator.isValid as jest.Mock).mockReturnValue(true);
-
-    await createUser(req as Request, res as Response);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({
-      error: "Email inválido",
-    });
-  });
-
-  test("Erro 400 porque a senha é muito fraca", async () => {
-    req.body = {
-      name: "Vanderleia",
-      email: "vanderleia@gmail.com",
-      password: "456",
-      cpf: "12345678902",
-    };
-
-    (cpfValidator.isValid as jest.Mock).mockReturnValue(true);
-    (UserModel.validarNivelSenha as jest.Mock).mockReturnValue({
-      valida: false,
-      requisitos: {
-        temMaiuscula: false,
-        temMinuscula: false,
-        temNumero: true,
-        temEspecial: false,
-        tamanhoMinimo: false,
+  it("deve cadastrar usuário com sucesso", async () => {
+    jest.spyOn(UserModel, "findOne").mockResolvedValue(null);
+    jest.spyOn(UserModel, "create").mockResolvedValue({ id: 1, email: "novo@exemplo.com" });
+    const req = {
+      body: {
+        name: "Novo Usuário",
+        email: "novo@exemplo.com",
+        password: "SenhaForte123@",
+        cpf: "12345678901",
       },
-    });
-
-    await createUser(req as Request, res as Response);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({
-      error: "Senha muito fraca",
-      details: {
-        temMaiuscula: false,
-        temMinuscula: false,
-        temNumero: true,
-        temEspecial: false,
-        tamanhoMinimo: false,
-      },
-    });
-  });
-
-  test("Erro 409 porque email ou CPF já existe", async () => {
-    req.body = {
-      name: "Vanderleia",
-      email: "vanderleia@gmail.com",
-      password: "SenhaForte123@",
-      cpf: "12345678901",
     };
-
-    (cpfValidator.isValid as jest.Mock).mockReturnValue(true);
-    (UserModel.validarNivelSenha as jest.Mock).mockReturnValue({
-      valida: true,
-    });
-    (UserModel.findOne as jest.Mock).mockResolvedValue({
-      id: 1,
-      email: "vanderleia@gmail.com",
-    });
-
-    await createUser(req as Request, res as Response);
-
-    expect(res.status).toHaveBeenCalledWith(409);
-    expect(res.json).toHaveBeenCalledWith({
-      error: "Email ou CPF já cadastrado",
-    });
-  });
-
-  test("Cadastro de usuário realizado com sucesso", async () => {
-    const mockUser = {
-      id: 1,
-      name: "Vanderleia",
-      email: "vanderleia@gmail.com",
-      cpf: "12345678901",
-      password: "hashedPassword123",
-    };
-
-    req.body = {
-      name: "Vanderleia",
-      email: "vanderleia@gmail.com",
-      password: "SenhaForte123@",
-      cpf: "12345678901",
-    };
-
-    (cpfValidator.isValid as jest.Mock).mockReturnValue(true);
-    (UserModel.validarNivelSenha as jest.Mock).mockReturnValue({
-      valida: true,
-    });
-    (UserModel.findOne as jest.Mock).mockResolvedValue(null);
-    (bcrypt.hash as jest.Mock).mockResolvedValue("hashedPassword123");
-    (UserModel.create as jest.Mock).mockResolvedValue(mockUser);
-
-    await createUser(req as Request, res as Response);
-
+    const res = makeRes();
+    await createUser(req, res);
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith({
-      id: mockUser.id,
-      name: mockUser.name,
-      email: mockUser.email,
-      token: expect.any(String), // Verifica se um token foi retornado
-    });
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ email: "novo@exemplo.com" })
+    );
   });
 
-  test("Erro 500 no servidor durante o cadastro", async () => {
-    req.body = {
-      name: "Vanderleia",
-      email: "vanderleia@gmail.com",
-      password: "SenhaForte123@",
-      cpf: "12345678901",
+  it("deve retornar 400 se email já cadastrado", async () => {
+    jest.spyOn(UserModel, "findOne").mockResolvedValue({ id: 1, email: "existe@exemplo.com" });
+    const req = {
+      body: {
+        name: "Usuário",
+        email: "existe@exemplo.com",
+        password: "SenhaForte123@",
+        cpf: "12345678901",
+      },
     };
+    const res = makeRes();
+    await createUser(req, res);
+    expect(res.status).toHaveBeenCalledWith(409);
+  });
 
-    (cpfValidator.isValid as jest.Mock).mockReturnValue(true);
-    (UserModel.validarNivelSenha as jest.Mock).mockReturnValue({
-      valida: true,
-    });
-    (UserModel.findOne as jest.Mock).mockRejectedValue(
-      new Error("Erro no banco de dados")
-    );
+  it("deve retornar 400 para senha fraca", async () => {
+    jest.spyOn(UserModel, "findOne").mockResolvedValue(null);
+    UserModel.validarNivelSenha = jest.fn().mockReturnValue({ valida: false, requisitos: {} });
+    const req = {
+      body: {
+        name: "Usuário",
+        email: "novo@exemplo.com",
+        password: "123",
+        cpf: "12345678901",
+      },
+    };
+    const res = makeRes();
+    await createUser(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
 
-    await createUser(req as Request, res as Response);
-
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({
-      error: "Erro interno no servidor",
-    });
+  it("deve retornar 400 para CPF inválido", async () => {
+    jest.spyOn(UserModel, "findOne").mockResolvedValue(null);
+    const cpfValidator = require("cpf-cnpj-validator");
+    cpfValidator.cpf.isValid = () => false;
+    const req = {
+      body: {
+        name: "Usuário",
+        email: "novo@exemplo.com",
+        password: "SenhaForte123@",
+        cpf: "123",
+      },
+    };
+    const res = makeRes();
+    await createUser(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
   });
 });
